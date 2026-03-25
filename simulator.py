@@ -2,7 +2,7 @@ import time
 
 
 class Simulator:
-    def run(self, params: dict) -> dict:
+    def run_sim_dummy(self, params: dict) -> dict:
         time.sleep(2)
         wind = float(params.get("wind_speed", 0))
         if wind >= 6.0:

@@ -16,7 +16,7 @@ def main() -> None:
 
     print("[Simulator] Running...")
     sim = Simulator()
-    result = sim.run(params)
+    result = sim.run_sim_dummy(params)
     print(f"  result: {result}")
 
     print("[XAI] Analyzing outcome...")
