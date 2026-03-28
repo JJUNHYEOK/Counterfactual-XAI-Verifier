@@ -5,8 +5,6 @@ from prompts.system_prompts import GENERATOR_SYSTEM_PROMPT
 
 class GPTGenerator:
     def __init__(self, api_key: str, model_name: str = "gpt-5.4-nano"):
-        # 제안서 상의 GPT-5.4는 아직 API로 풀리지 않았을 수 있으므로, 
-        # 현재 안정적인 최신 모델(예: gpt-4-turbo 또는 gpt-4o)을 기본값으로 세팅합니다.
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
