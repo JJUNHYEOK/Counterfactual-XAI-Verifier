@@ -1,0 +1,10 @@
+scenario_id: sim_run_001_cf_01
+parent_scenario_id: sim_run_001
+target_hypothesis: 풍속 증가와 통신 지연 증대로 인해 최소 이격 거리가 2.0미터 이하로 감소하게 설계.
+environment_parameters:
+  wind_speed_mps: 8.0
+  communication_delay_ms: 50.0
+  obstacle_density: LOW
+llm_reasoning: XAI 분석 결과에 따르면, 풍속이 0.45의 가장 높은 기여도를 가지며, 현재 2.0m/s에서 8.0m/s로 증가시키면
+  드론의 안정성과 이격 거리 유지 능력이 크게 저하될 것입니다. 또한, 통신 지연은 0.3의 중요도를 가지며, 10.0ms에서 50.0ms로 증가시켜
+  드론 간의 반응 시간이 늦어지고, 이격 거리 유지에 실패할 가능성을 높입니다.
