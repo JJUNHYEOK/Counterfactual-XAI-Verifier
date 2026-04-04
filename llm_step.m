@@ -22,8 +22,6 @@ if level == prev_level
     return;
 end
 
-% ❌ disp 없음 (중요)
-
 if level == 0
     text_out = "0";
 elseif level == 1
