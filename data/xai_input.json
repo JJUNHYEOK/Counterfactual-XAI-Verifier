@@ -1,0 +1,44 @@
+{
+  "scene_id": "run_001_frame_0231",
+  "task": "uav_collision_avoidance",
+  "perception": {
+    "detector": "yolox-small",
+    "input_resolution": [1920, 1080],
+    "detections": [
+      {
+        "label": "pole",
+        "score": 0.41,
+        "bbox_xywh": [812, 316, 42, 155]
+      },
+      {
+        "label": "tree",
+        "score": 0.52,
+        "bbox_xywh": [421, 290, 96, 214]
+      }
+    ]
+  },
+  "performance_signals": {
+    "confidence_trend": "decreasing",
+    "miss_rate_trend": "increasing",
+    "risk_score": 0.82,
+    "failure_type": "late_avoidance",
+    "corruption_type": "fog",
+    "severity": 3,
+    "baseline_confidence": 0.91,
+    "current_confidence": 0.63
+  },
+  "xai_signals": {
+    "method": "stub-xai",
+    "dominant_factors": [
+      { "name": "fog_density", "importance": 0.74 },
+      { "name": "visibility_reduction", "importance": 0.61 },
+      { "name": "edge_blurring", "importance": 0.42 }
+    ],
+    "attention_summary": "attention becomes unstable and spreads toward background edges under degraded conditions"
+  },
+  "scenario_constraints": {
+    "allow_weather_change": true,
+    "allow_lighting_change": true,
+    "allow_obstacle_density_change": false
+  }
+}

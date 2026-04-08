@@ -1,0 +1,5 @@
+openai==1.14.0
+python-dotenv==1.0.1
+PyYAML==6.0.1
+
+# 필요 시 계속 업데이트 예정 !
