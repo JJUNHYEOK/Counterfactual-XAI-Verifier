@@ -21,6 +21,7 @@ Counterfactual-XAI-Verifier/ (Branch: LLM)
 ├── requirements.txt           # 패키지 의존성 (openai, python-dotenv)
 ├── test_llm_standalone.py     # [Entry Point] LLM 파이프라인 단독 검증 스크립트
 └── README.md                  # 프로젝트 문서
+```
 
 ## ⚙️ 설치 및 환경 설정 (Prerequisites)
 
