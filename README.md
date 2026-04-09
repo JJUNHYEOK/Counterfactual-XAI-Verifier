@@ -1,71 +1,108 @@
-# 지능형 요구사항 검증 시스템 - XAI 파이프라인 (Zone 3)
+# Counterfactual-XAI-Verifier (XAI Branch)
 
-본 브랜치(Zone 3)는 UAV 자율비행 충돌 회피 검증 파이프라인에서  
-**XAI 분석 모듈의 Week 1 Dummy 루프**를 구현합니다.
+본 브랜치는 UAV 검증 파이프라인에서 **XAI(설명) 파트**를 담당합니다.
+XAI는 별도 예측 모델을 만드는 모듈이 아니라, **SI 시뮬레이션/평가 결과를 기반으로 환경 변수 기여도를 설명하는 직접형(post-hoc) 모듈**입니다.
 
-현재 목적은 실제 SHAP/모델 정확도가 아니라,  
-Simulator 출력(dict)을 받아 XAI 출력(dict)으로 **에러 없이 전달**되는지 검증하는 것입니다.
+## 브랜치 링크
 
-## 📂 디렉토리 구조 (File Tree)
+- SI 브랜치: [https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/MATLAB/Simulink/SI](https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/MATLAB/Simulink/SI)
+- XAI 브랜치: [https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/XAI](https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/XAI)
+- LLM 브랜치: [https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/LLM](https://github.com/JJUNHYEOK/Counterfactual-XAI-Verifier/tree/LLM)
+
+## 전체 파이프라인
+
+1. SI 브랜치에서 시나리오 실행 및 결과 산출
+2. XAI 브랜치에서 결과 원인 분석 및 변수 기여도 정량화
+3. LLM 브랜치에서 XAI 결과를 읽고 counterfactual 시나리오 생성
+4. 생성된 시나리오를 다시 SI 브랜치에 주입
+
+## XAI의 현재 역할
+
+- 입력: SI에서 생성된 `scenario`, `sim_result`, `eval_result`
+- 처리: 실패/성능저하 원인에 대한 환경 변수 기여도 계산
+- 출력: LLM이 바로 읽을 수 있는 `xai_input.json`
+
+즉, 현재 프로젝트에서 XAI 구현은 **환경 변수 기여도 분석 자체**입니다.
+
+## 입력/출력 스키마(요약)
+
+### XAI 입력(예시)
+
+```json
+{
+  "scene_id": "iter_001",
+  "scenario": {
+    "environment_parameters": {
+      "fog_density_percent": 30.0,
+      "illumination_lux": 4000.0,
+      "camera_noise_level": 0.1
+    }
+  },
+  "sim_result": {
+    "avg_confidence": 0.817,
+    "risk_score": 0.553
+  },
+  "eval_result": {
+    "map50": 0.4096,
+    "requirement_threshold": 0.85,
+    "requirement_violated": true
+  }
+}
+```
+
+### XAI 출력(LLM 입력, 예시)
+
+```json
+{
+  "scene_id": "iter_001",
+  "task": "uav_object_detection",
+  "performance_signals": {
+    "confidence_trend": "decreasing",
+    "miss_rate_trend": "increasing",
+    "risk_score": 0.59,
+    "failure_type": "detection_performance_drop",
+    "map50": 0.4096,
+    "threshold": 0.85
+  },
+  "xai_signals": {
+    "method": "direct-posthoc",
+    "dominant_factors": [
+      {"name": "fog_density", "importance": 0.409},
+      {"name": "illumination_lux", "importance": 0.455},
+      {"name": "camera_noise", "importance": 0.136}
+    ],
+    "attention_summary": "mAP50 is 0.4096 under fog=30.0, illum=4000.0, noise=0.10"
+  }
+}
+```
+
+## 폴더 구조
 
 ```text
 Counterfactual-XAI-Verifier/
-├── main.py                       # LLM -> Simulator -> XAI 더미 루프 실행
-├── simulator.py                  # 시뮬레이터 더미 로그 생성
-└── xai/
-    ├── __init__.py
-    └── dummy_analyzer.py         # analyze_xai_dummy(sim_log) 구현
+├── data/
+│   ├── scenario_iter_001.json
+│   ├── sim_result_iter_001.json
+│   ├── eval_iter_001.json
+│   └── xai_input.json
+├── schemas/
+│   └── xai_input.schema.json
+├── xai/
+│   ├── dummy_analyzer.py
+│   ├── io_adapter.py
+│   └── __init__.py
+├── main.py
+└── simulator.py
 ```
 
-## 🎯 Week 1 Dummy 구현 범위
-
-- 함수명: `analyze_xai_dummy(sim_log)`
-- 입력: Simulator가 넘겨주는 `dict` 형태 로그
-- 출력: 고정 더미 결과 `{"wind_speed_importance": 0.68}`
-- 제외: SHAP, feature importance 학습/추론 로직 (Week 2 이후)
-
-## 🧾 팀 공통 스키마 (초안)
-
-입력 `sim_log`
-
-```python
-{
-  "status": "success",
-  "min_distance": 2.4,
-  "wind_speed": 4.0
-}
-```
-
-출력
-
-```python
-{
-  "wind_speed_importance": 0.68
-}
-```
-
-## ⚙️ 실행 방법 (Usage)
-
-프로젝트 루트에서 실행:
+## 실행
 
 ```bash
 python main.py
 ```
 
-실행 흐름:
+## 네이밍/연동 원칙
 
-1. `generate_params_dummy()`가 테스트 파라미터 생성
-2. `Simulator.run_sim_dummy()`가 더미 시뮬레이션 로그 반환
-3. `analyze_xai_dummy(sim_log)`가 고정 XAI 더미 결과 반환
-
-## ✅ 완료 기준 체크
-
-- `from xai.dummy_analyzer import analyze_xai_dummy` 정상 import
-- 예시 `sim_log` 입력 시 dict 반환
-- Week 1 범위만 구현 (확장 로직 미포함)
-
-## 📌 향후 개발 계획 (Next Steps)
-
-- Week 2: 실제 XAI 연산 로직(예: 경량 feature importance) 연결
-- Week 3: 예외 처리/재시도/타입 검증 강화
-- Week 4: Counterfactual 생성 모듈(Zone 4)과 통합 테스트
+- 함수명/파일명/JSON key는 SI/LLM 브랜치 스타일을 우선 재사용
+- 새 네이밍은 최소화하고 snake_case 유지
+- 병합 비용이 큰 rename은 피하고, 브랜치 간 호환성을 최우선으로 유지
