@@ -1,0 +1,10 @@
+{
+  "scenario_id": "extreme_weather_003",
+  "target_hypothesis": "Maximizing fog density and camera noise while minimizing illumination",
+  "environment_parameters": {
+    "fog_density_percent": 100,
+    "illumination_lux": 500,
+    "camera_noise_level": 1
+  },
+  "llm_reasoning": "Based on the XAI analysis, the dominant factors affecting detection"
+}

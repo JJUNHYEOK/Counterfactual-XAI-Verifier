@@ -1,0 +1,125 @@
+{
+  "scenario": {
+    "scenario_id": "CF-002",
+    "target_hypothesis": "Maximizing fog density and camera noise while minimizing illumination",
+    "environment_parameters": {
+      "fog_density_percent": 100,
+      "illumination_lux": 500,
+      "camera_noise_level": 1
+    },
+    "llm_reasoning": "Based on the XAI analysis, the most dominant factors affecting the"
+  },
+  "sim_result": {
+    "collision_flag": null,
+    "running_min_dist": 1.6697754290362354E-13,
+    "avg_confidence": 0.37684493393450674,
+    "miss_count": 321,
+    "requirement_satisfied": null,
+    "risk_score": 0.84050559698334626,
+    "uav_xyz_final": [
+      19.275865271297722,
+      0.10367159233645851,
+      2.5
+    ],
+    "uav_rpy_final": [
+      0,
+      0,
+      0.19200000000000012
+    ],
+    "obs_xyz_final": [
+      12,
+      0,
+      1
+    ],
+    "tout_end": 20
+  },
+  "eval": {
+    "class_name": "obstacle",
+    "ap50": 0,
+    "map50": 0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "fn_count": 50,
+    "precision_curve": [
+      0,
+      0,
+      0
+    ],
+    "recall_curve": [
+      0,
+      0,
+      0
+    ],
+    "requirement_threshold": 0.85,
+    "requirement_violated": true,
+    "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0000"
+  },
+  "xai_input": {
+    "scene_id": "iter_003",
+    "task": "uav_object_detection",
+    "goal": "Find a weather-driven counterfactual edge case where mAP50 falls below 0.85",
+    "perception": {
+      "detector": "stub-or-external-detector",
+      "input_resolution": [
+        640,
+        360
+      ],
+      "detections": []
+    },
+    "performance_signals": {
+      "confidence_trend": "decreasing",
+      "miss_rate_trend": "increasing",
+      "risk_score": 1,
+      "failure_type": "detection_performance_drop",
+      "map50": 0,
+      "threshold": 0.85
+    },
+    "xai_signals": {
+      "method": "stub-xai",
+      "dominant_factors": [
+        {
+          "name": "fog_density",
+          "importance": 0.343
+        },
+        {
+          "name": "illumination_lux",
+          "importance": 0.314
+        },
+        {
+          "name": "camera_noise",
+          "importance": 0.343
+        }
+      ],
+      "attention_summary": "mAP50 is 0.0000 under fog=100.0, illum=500.0, noise=1.00"
+    },
+    "scenario_constraints": {
+      "allow_weather_change": true,
+      "allow_lighting_change": true,
+      "allow_obstacle_density_change": false
+    },
+    "sim_result": {
+      "collision_flag": null,
+      "running_min_dist": 1.6697754290362354E-13,
+      "avg_confidence": 0.37684493393450674,
+      "miss_count": 321,
+      "requirement_satisfied": null,
+      "risk_score": 0.84050559698334626,
+      "uav_xyz_final": [
+        19.275865271297722,
+        0.10367159233645851,
+        2.5
+      ],
+      "uav_rpy_final": [
+        0,
+        0,
+        0.19200000000000012
+      ],
+      "obs_xyz_final": [
+        12,
+        0,
+        1
+      ],
+      "tout_end": 20
+    }
+  }
+}
