@@ -1,0 +1,24 @@
+{
+  "collision_flag": null,
+  "running_min_dist": 1.6520118606422329E-13,
+  "avg_confidence": 0.42554959805555642,
+  "miss_count": 48,
+  "requirement_satisfied": null,
+  "risk_score": 0.62653830888012008,
+  "uav_xyz_final": [
+    20.934858259510545,
+    -0.048859214918062048,
+    2.5
+  ],
+  "uav_rpy_final": [
+    0,
+    0,
+    0.13200000000000006
+  ],
+  "obs_xyz_final": [
+    12,
+    0,
+    1
+  ],
+  "tout_end": 20
+}
