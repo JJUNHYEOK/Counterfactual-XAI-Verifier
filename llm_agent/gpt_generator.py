@@ -1,4 +1,3 @@
-# llm_agent/gpt_generator.py
 import os
 import json
 from openai import OpenAI
@@ -13,11 +12,22 @@ class GPTGenerator:
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
-    def generate_counterfactual(self, xai_data: dict) -> dict:
-        user_content = f"다음은 현재 시뮬레이션의 XAI 분석 결과입니다.\n\n{json.dumps(xai_data, ensure_ascii=False)}"
+    def generate_counterfactual(self, xai_data: dict, current_mAP: float, current_env: dict) -> dict:
+        """
+        XAI 결과, 현재 mAP 점수, 현재 환경 파라미터를 분석하여 임계점 탐색 시나리오를 생성합니다.
+        """
+        input_payload = {
+            "current_performance": {
+                "mAP50": f"{current_mAP:.2f}%",
+                "target_threshold": "85.00%"
+            },
+            "current_environment_parameters": current_env,  # [추가] LLM에게 현재 환경을 알려줌
+            "xai_analysis": xai_data
+        }
+
+        user_content = f"다음 데이터를 바탕으로 이전 상태에서 환경을 점진적으로 악화시키는 시나리오를 생성하세요.\n\n{json.dumps(input_payload, ensure_ascii=False, indent=2)}"
 
         try:
-            # [수정] get_completions -> completions 로 변경
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 response_format={"type": "json_object"},
@@ -29,5 +39,5 @@ class GPTGenerator:
             )
             return json.loads(response.choices[0].message.content)
         except Exception as e:
-            print(f"[Error] GPT 호출 중 오류: {e}")
+            print(f"[Error] GPT 호출 중 오류 발생: {e}")
             return None
