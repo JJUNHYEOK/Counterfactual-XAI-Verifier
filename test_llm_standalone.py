@@ -21,7 +21,7 @@ def main():
         "uav_blur_effects": {"motion_blur_intensity": 0.0, "zoom_blur_intensity": 0.0}
     }
     
-    print(f"🚀 임계점({THRESHOLD}%) 정밀 탐색 시작 (Baseline: {current_score}%)")
+    print(f"임계점({THRESHOLD}%) 정밀 탐색 시작 (Baseline: {current_score}%)")
 
     for i in range(1, 6):
         print(f"\n--- [Step {i}] 현재 탐지율: {current_score:.2f}% ---")
@@ -39,15 +39,15 @@ def main():
             next_env = result.get("environment_parameters", current_env) # 없으면 기존값 유지
             reason = result.get("adjustment_reasoning", "No reason provided")
             
-            print(f"📡 상태: {status}")
-            print(f"🤖 제안 파라미터: {json.dumps(next_env, ensure_ascii=False)}")
-            print(f"📝 논리: {reason}")
+            print(f"상태: {status}")
+            print(f"제안 파라미터: {json.dumps(next_env, ensure_ascii=False)}")
+            print(f"논리: {reason}")
 
             current_env = next_env
             current_score -= 4.0  
 
             if current_score < THRESHOLD:
-                print(f"\n🎯 [탐색 완료] 방어선 붕괴 지점 포착!")
+                print(f"\n[탐색 완료] 방어선 붕괴 지점 포착!")
                 print(f"최종 임계 조건: {json.dumps(current_env, ensure_ascii=False, indent=2)}")
                 print(f"최종 탐지율: {current_score:.2f}%")
                 break
