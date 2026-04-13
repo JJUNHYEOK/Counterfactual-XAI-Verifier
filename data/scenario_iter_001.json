@@ -1,0 +1,10 @@
+{
+  "scenario_id": "scenario_001",
+  "target_hypothesis": "Weather-driven counterfactual scenario to discover a UAV detection edge case with mAP50 below 0.85",
+  "environment_parameters": {
+    "fog_density_percent": 30.0,
+    "illumination_lux": 4000.0,
+    "camera_noise_level": 0.1
+  },
+  "llm_reasoning": "Initial seed scenario for weather degradation search."
+}

@@ -2,8 +2,12 @@ import time
 
 
 class Simulator:
+    def __init__(self, sleep_seconds: float = 2.0):
+        self.sleep_seconds = max(0.0, float(sleep_seconds))
+
     def run_sim_dummy(self, params: dict) -> dict:
-        time.sleep(2)
+        if self.sleep_seconds > 0.0:
+            time.sleep(self.sleep_seconds)
         scenario_id = str(params.get("scenario_id", "sim_run_001"))
         wind_speed = float(params.get("wind_speed", 0.0))
         delay = float(params.get("delay", 0.0))

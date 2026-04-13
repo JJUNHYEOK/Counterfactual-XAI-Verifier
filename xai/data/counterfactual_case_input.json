@@ -1,0 +1,79 @@
+{
+  "scene_id": "iter_001",
+  "task": "uav_object_detection",
+  "goal": "Find minimal environment changes to recover requirement satisfaction.",
+  "perception": {
+    "detector": "stub-or-external-detector",
+    "input_resolution": [640, 360],
+    "detections": []
+  },
+  "current_requirement": {
+    "metric": "map50",
+    "threshold": 0.85,
+    "requirement_violated": true
+  },
+  "scenario": {
+    "scenario_id": "scenario_001",
+    "environment_parameters": {
+      "fog_density_percent": 30.0,
+      "illumination_lux": 4000.0,
+      "camera_noise_level": 0.1
+    }
+  },
+  "performance_signals": {
+    "confidence_trend": "decreasing",
+    "miss_rate_trend": "increasing",
+    "risk_score": 0.59,
+    "failure_type": "detection_performance_drop",
+    "map50": 0.4096,
+    "threshold": 0.85
+  },
+  "xai_signals": {
+    "method": "direct-posthoc",
+    "dominant_factors": [
+      {
+        "name": "fog_density_percent",
+        "importance": 0.45
+      },
+      {
+        "name": "illumination_lux",
+        "importance": 0.35
+      },
+      {
+        "name": "camera_noise_level",
+        "importance": 0.2
+      }
+    ],
+    "attention_summary": "mAP50=0.4096 at fog=30.0, illumination=4000.0, noise=0.10"
+  },
+  "scenario_constraints": {
+    "allow_weather_change": true,
+    "allow_lighting_change": true,
+    "allow_obstacle_density_change": true
+  },
+  "sim_result": {
+    "avg_confidence": 0.817,
+    "risk_score": 0.553
+  },
+  "search_space": {
+    "bounds": {
+      "fog_density_percent": [0.0, 100.0],
+      "illumination_lux": [500.0, 20000.0],
+      "camera_noise_level": [0.0, 0.6]
+    },
+    "weights": {
+      "fog_density_percent": 1.0,
+      "illumination_lux": 1.0,
+      "camera_noise_level": 1.0
+    },
+    "mutable_parameters": [
+      "fog_density_percent",
+      "illumination_lux",
+      "camera_noise_level"
+    ]
+  },
+  "counterfactual_request": {
+    "target_status": "PASS",
+    "evaluator": "map50_proxy"
+  }
+}

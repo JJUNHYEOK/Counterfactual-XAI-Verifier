@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://counterfactual-xai-verifier/schemas/xai_input.schema.json",
+  "title": "XAIInputForLLM",
+  "type": "object",
+  "required": [
+    "scene_id",
+    "task",
+    "perception",
+    "performance_signals",
+    "xai_signals",
+    "scenario_constraints"
+  ],
+  "properties": {
+    "scene_id": {
+      "type": "string"
+    },
+    "task": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "current_requirement": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "requirement_violated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "current_environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "perception": {
+      "type": "object",
+      "required": [
+        "detector",
+        "input_resolution",
+        "detections"
+      ],
+      "properties": {
+        "detector": {
+          "type": "string"
+        },
+        "input_resolution": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "detections": {
+          "type": "array"
+        }
+      }
+    },
+    "performance_signals": {
+      "type": "object",
+      "required": [
+        "confidence_trend",
+        "miss_rate_trend",
+        "risk_score",
+        "failure_type"
+      ],
+      "properties": {
+        "confidence_trend": {
+          "type": "string"
+        },
+        "miss_rate_trend": {
+          "type": "string"
+        },
+        "risk_score": {
+          "type": "number"
+        },
+        "failure_type": {
+          "type": "string"
+        },
+        "map50": {
+          "type": "number"
+        },
+        "threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "xai_signals": {
+      "type": "object",
+      "required": [
+        "method",
+        "dominant_factors",
+        "attention_summary"
+      ],
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "dominant_factors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "importance"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "importance": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "attention_summary": {
+          "type": "string"
+        }
+      }
+    },
+    "scenario_constraints": {
+      "type": "object",
+      "properties": {
+        "allow_weather_change": {
+          "type": "boolean"
+        },
+        "allow_lighting_change": {
+          "type": "boolean"
+        },
+        "allow_obstacle_density_change": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sim_result": {
+      "type": "object"
+    },
+    "search_space": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "weights": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "mutable_parameters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "counterfactual_request": {
+      "type": "object",
+      "properties": {
+        "target_status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "evaluator": {
+          "type": "string",
+          "enum": [
+            "sim_dummy",
+            "map50_proxy"
+          ]
+        }
+      }
+    }
+  }
+}

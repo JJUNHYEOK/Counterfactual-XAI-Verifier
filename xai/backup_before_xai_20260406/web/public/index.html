@@ -1,0 +1,81 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>입법 이슈 탐지 엔진</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orbit orbit-a"></div>
+    <div class="bg-orbit orbit-b"></div>
+
+    <main class="layout">
+      <header class="hero">
+        <p class="eyebrow">LAW ISSUE ENGINE</p>
+        <h1>검색 기반 입법 충돌·위헌 리스크 탐지</h1>
+        <p class="subtitle">
+          법령을 직접 파일로 넣지 않고, 검색으로 선택한 법령끼리 충돌과 헌법 리스크를 확인합니다.
+        </p>
+      </header>
+
+      <section class="panel control-panel">
+        <div class="field-row two-col">
+          <label class="field">
+            <span>Open API 키(OC)</span>
+            <input id="apiKeyInput" type="password" placeholder="국가법령정보 OC 키 입력" />
+          </label>
+          <label class="field">
+            <span>법령 검색어</span>
+            <div class="search-row">
+              <input id="queryInput" type="text" placeholder="예: 개인정보보호법" />
+              <button id="searchBtn" class="btn btn-primary">검색</button>
+            </div>
+          </label>
+        </div>
+        <p class="hint">검색 후 대상 법령 1개(라디오)와 비교 법령 1개 이상(체크박스)을 선택한 뒤 분석하세요.</p>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="panel-title-row">
+          <h2>검색 결과</h2>
+          <button id="analyzeBtn" class="btn btn-accent" disabled>선택 법령 분석</button>
+        </div>
+        <div id="statusLine" class="status">검색어를 입력하고 검색을 시작하세요.</div>
+        <div id="searchResults" class="search-results"></div>
+      </section>
+
+      <section class="panel analysis-panel" id="analysisPanel" hidden>
+        <h2>분석 결과</h2>
+        <div id="scoreCards" class="score-grid"></div>
+
+        <article class="text-card">
+          <h3>종합 판단</h3>
+          <p id="overallStatement"></p>
+        </article>
+
+        <article class="text-card">
+          <h3>지표별 판단</h3>
+          <ul id="metricStatements" class="clean-list"></ul>
+        </article>
+
+        <article class="text-card">
+          <h3>법적 근거 설명</h3>
+          <ul id="legalReasons" class="clean-list"></ul>
+        </article>
+
+        <article class="text-card">
+          <h3>우선 보완 포인트</h3>
+          <ul id="actionFocus" class="clean-list"></ul>
+        </article>
+
+        <article class="text-card">
+          <h3>대표 충돌 근거</h3>
+          <div id="conflictTableWrap" class="table-wrap"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
