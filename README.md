@@ -1,57 +1,153 @@
-# 🛩️ 지능형 요구사항 검증 시스템 - LLM 파이프라인 (Zone 4)
+# Counterfactual-XAI-Verifier
 
-본 브랜치(`LLM`)는 UAV 자율비행 충돌 회피 및 경로 탐색 알고리즘 검증을 위한 지능형 요구사항 검증 시스템의 핵심 의사결정 엔진을 구현합니다. 
-XAI 모듈이 분석한 실패 원인(JSON)을 바탕으로, LLM이 시스템 실패를 유도하는 가혹한 Counterfactual 시나리오 파라미터(YAML)를 자동 생성합니다.
+UAV 구조 임무 중 비전 기반 객체 탐지 알고리즘의 신뢰성을 검증하는 **지능형 요구사항 검증 시스템**입니다.
+XAI 모듈이 분석한 탐지 실패 원인을 바탕으로 Counterfactual 기상 시나리오를 자동 생성하고, Simulink 시뮬레이션으로 검증합니다.
 
-## 📂 디렉토리 구조 (File Tree)
+> 본 브랜치(`test_v2`)는 `MATLAB/Simulink/SI`, `XAI`, `LLM` 브랜치를 통합한 브랜치입니다.
 
-```text
-llm_pipeline/
-├── data/                      # 모듈 간 데이터 연동 테스트를 위한 Mock 데이터
-│   ├── mock_xai_input.json    # [Input] XAI 모듈의 Causal Feature Importance 분석 결과
-│   └── mock_simulink_output.yaml # [Output] Simulink 실행을 위한 최종 Counterfactual 파라미터
-│
-├── prompts/                   # Multi-LLM 프롬프트 엔지니어링
-│   └── system_prompts.py      # GPT-5.4(일반 생성) 및 Claude 4.6(교차 검증) 시스템 프롬프트
-│
-├── core/                      # LLM API 통신 및 생성 코어 로직
-│   └── gpt_generator.py       # OpenAI API 연동 및 시나리오 파라미터 생성 엔진
-│
-├── parsers/                   # 데이터 입출력 인터프리터
-│   └── yaml_exporter.py       # LLM 자연어 출력을 안전한 YAML 포맷으로 파싱 및 저장
-│
-├── .env                       # API Key 환경변수 (Git 업로드 제외)
-├── .gitignore                 # 보안 및 캐시 파일 무시 설정
-├── requirements.txt           # 패키지 의존성 목록
-└── main.py                    # LLM 파이프라인 실행 진입점 (Entry Point)
+## 브랜치 구성
+
+| 브랜치 | 역할 |
+|--------|------|
+| `MATLAB/Simulink/SI` | UAV Simulink 시뮬레이션 + SI 파이프라인 |
+| `XAI` | 환경 변수 기여도 분석 모듈 |
+| `LLM` | GPT 기반 Counterfactual 시나리오 생성 |
+| `test_v2` | 전체 브랜치 통합 (현재 브랜치) |
+
+## 전체 파이프라인
+
+1. SI (Simulink)에서 시나리오 실행 및 결과 산출
+2. XAI에서 결과 원인 분석 및 환경 변수 기여도 정량화
+3. LLM에서 XAI 결과를 읽고 Counterfactual 시나리오 생성
+4. 생성된 시나리오를 다시 SI에 주입하여 반복 검증
+
+## 검증 요구사항
+
+- **정상 운용(Baseline):** 주간 맑은 날씨(시정 10km+, 10,000 Lux+)에서 조난자 탐지율 mAP50 90% 이상 유지
+- **강건성 방어(Defense):** LLM이 생성한 가혹 조건(안개, 저조도 등)에서도 최소 mAP50 85% 이상 방어
+- **최종 목적:** 시스템이 실패하는 최악의 조건(Worst-case Boundary)을 지능적으로 탐색하여 소프트웨어의 신뢰성 한계 식별
+
+## XAI 역할
+
+- 입력: SI에서 생성된 `scenario`, `sim_result`, `eval_result`
+- 처리: 실패/성능저하 원인에 대한 환경 변수 기여도 계산
+- 출력: LLM이 바로 읽을 수 있는 `xai_input.json`
+
+## 입력/출력 스키마(요약)
+
+### XAI 입력(예시)
+
+```json
+{
+  "scene_id": "iter_001",
+  "scenario": {
+    "environment_parameters": {
+      "fog_density_percent": 30.0,
+      "illumination_lux": 4000.0,
+      "camera_noise_level": 0.1
+    }
+  },
+  "sim_result": {
+    "avg_confidence": 0.817,
+    "risk_score": 0.553
+  },
+  "eval_result": {
+    "map50": 0.4096,
+    "requirement_threshold": 0.85,
+    "requirement_violated": true
+  }
+}
 ```
 
-## ⚙️ 설치 및 환경 설정 (Prerequisites)
+### XAI 출력(LLM 입력, 예시)
 
-**1. 패키지 설치**
-프로젝트 실행에 필요한 파이썬 라이브러리를 설치합니다.
+```json
+{
+  "scene_id": "iter_001",
+  "task": "uav_object_detection",
+  "performance_signals": {
+    "confidence_trend": "decreasing",
+    "miss_rate_trend": "increasing",
+    "risk_score": 0.59,
+    "failure_type": "detection_performance_drop",
+    "map50": 0.4096,
+    "threshold": 0.85
+  },
+  "xai_signals": {
+    "method": "direct-posthoc",
+    "dominant_factors": [
+      {"name": "fog_density", "importance": 0.409},
+      {"name": "illumination_lux", "importance": 0.455},
+      {"name": "camera_noise", "importance": 0.136}
+    ],
+    "attention_summary": "mAP50 is 0.4096 under fog=30.0, illum=4000.0, noise=0.10"
+  }
+}
+```
+
+## 폴더 구조
+
+```text
+Counterfactual-XAI-Verifier/
+├── core/
+│   ├── detector.py           # LLM 입력 빌더 및 스키마 검증
+│   └── schema.py             # JSON 스키마 검증 로직
+├── llm_agent/
+│   ├── __init__.py
+│   └── gpt_generator.py      # OpenAI API 연동 및 시나리오 생성 엔진
+├── matlab/
+│   ├── build_sim_input.m     # Simulink 입력 생성
+│   ├── run.m                 # 시뮬레이션 실행
+│   └── analyze_results.m     # 결과 분석
+├── prompts/
+│   ├── __init__.py
+│   └── system_prompts.py     # 에이전트 페르소나 정의
+├── xai/
+│   ├── __init__.py
+│   ├── dummy_analyzer.py     # XAI 분석 더미 구현
+│   └── io_adapter.py         # SI <-> XAI <-> LLM 인터페이스 어댑터
+├── data/                     # 시나리오 및 시뮬레이션 결과 데이터
+├── schemas/
+│   └── xai_input.schema.json # XAI 입력 JSON 스키마
+├── main.py                   # 전체 파이프라인 진입점 (LLM + core)
+├── simulator.py              # Python 시뮬레이터 인터페이스
+├── requirements.txt          # 패키지 의존성
+├── uav.slx                   # UAV Simulink 모델
+└── uav_cf_viewer.slx         # Counterfactual 뷰어 Simulink 모델
+```
+
+## 설치 및 실행
+
 ```bash
 pip install -r requirements.txt
 ```
 
-**2. 환경 변수 세팅 (.env)**
-프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 발급받은 API 키를 입력합니다. (이 파일은 `.gitignore`에 의해 Github에 올라가지 않습니다.)
+`.env` 파일 생성 후 API 키 입력:
+
 ```text
-OPENAI_API_KEY="sk-당신의_오픈AI_API_키"
+OPENAI_API_KEY="sk-your-openai-api-key"
 ```
 
-## 🚀 사용법 (Usage)
+### 전체 파이프라인 실행
 
-`main.py`를 실행하여 전체 파이프라인을 테스트할 수 있습니다.
 ```bash
 python main.py
 ```
 
-**실행 흐름:**
-1. `data/mock_xai_input.json` 파일에서 가상의 XAI 분석 결과를 로드합니다.
-2. `core/gpt_generator.py`가 XAI 데이터를 분석하여 가장 취약한 환경 변수를 악화시키는 시나리오를 추론합니다.
-3. `parsers/yaml_exporter.py`가 생성된 결과를 문법 오류 없이 파싱하여 `data/mock_simulink_output.yaml`로 저장합니다. 시스템 담당자는 이 파일을 Simulink에 바로 주입할 수 있습니다.
+### XAI 모듈 단독 실행
 
-## 📌 향후 개발 계획 (Next Steps)
-- [ ] Multi-LLM 라우팅 구현: Claude Opus 4.6을 활용한 생성 결과의 현실성 및 엣지 케이스 교차 검증 로직 추가.
-- [ ] API 연동 안정화: 타 모듈(XAI, Simulink) 개발 완료 시 실제 입출력 데이터 스트림으로 파이프라인 전환.
+```bash
+python xai/main.py
+```
+
+### LLM 단독 검증
+
+```bash
+python test_llm_standalone.py
+```
+
+## 네이밍/연동 원칙
+
+- 함수명/파일명/JSON key는 SI/LLM 브랜치 스타일을 우선 재사용
+- 새 네이밍은 최소화하고 snake_case 유지
+- 브랜치 간 호환성을 최우선으로 유지
