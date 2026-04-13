@@ -1,10 +1,10 @@
 {
-  "scenario_id": "edge_case_002",
-  "target_hypothesis": "Maximizing fog density and minimizing illumination will significantly",
+  "scenario_id": "fallback_next_35166",
+  "target_hypothesis": "Rule-based weather mutation to continue searching for mAP50 < 0.85 edge cases",
   "environment_parameters": {
     "fog_density_percent": 100,
     "illumination_lux": 500,
-    "camera_noise_level": 0.5
+    "camera_noise_level": 1
   },
-  "llm_reasoning": "Based on the XAI analysis, the most dominant factors affecting detection"
+  "llm_reasoning": "Fallback rule-based scenario update."
 }

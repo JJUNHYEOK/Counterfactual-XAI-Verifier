@@ -1,19 +1,19 @@
 {
   "collision_flag": null,
-  "running_min_dist": 0.0040000000000084412,
-  "avg_confidence": 0.81704774801951086,
-  "miss_count": 0,
+  "running_min_dist": 1.6697754290362354E-13,
+  "avg_confidence": 0.375099982531795,
+  "miss_count": 333,
   "requirement_satisfied": null,
-  "risk_score": 0.55308064262996515,
+  "risk_score": 0.8419808225564499,
   "uav_xyz_final": [
-    21.865097920865669,
-    -0.60361830061094635,
+    19.159542185249272,
+    0.072909598242941964,
     2.5
   ],
   "uav_rpy_final": [
     0,
     0,
-    -0.16800000000000004
+    0.1760000000000001
   ],
   "obs_xyz_final": [
     12,

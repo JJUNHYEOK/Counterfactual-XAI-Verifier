@@ -13,9 +13,9 @@
   "performance_signals": {
     "confidence_trend": "decreasing",
     "miss_rate_trend": "increasing",
-    "risk_score": 1,
+    "risk_score": 0.98,
     "failure_type": "detection_performance_drop",
-    "map50": 0,
+    "map50": 0.02,
     "threshold": 0.85
   },
   "xai_signals": {
@@ -34,7 +34,7 @@
         "importance": 0.343
       }
     ],
-    "attention_summary": "mAP50 is 0.0000 under fog=100.0, illum=500.0, noise=1.00"
+    "attention_summary": "mAP50 is 0.0200 under fog=100.0, illum=500.0, noise=1.00"
   },
   "scenario_constraints": {
     "allow_weather_change": true,

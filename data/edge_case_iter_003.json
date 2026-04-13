@@ -1,13 +1,13 @@
 {
   "scenario": {
-    "scenario_id": "CF-002",
-    "target_hypothesis": "Maximizing fog density and camera noise while minimizing illumination",
+    "scenario_id": "fallback_next_40392",
+    "target_hypothesis": "Rule-based weather mutation to continue searching for mAP50 < 0.85 edge cases",
     "environment_parameters": {
       "fog_density_percent": 100,
       "illumination_lux": 500,
       "camera_noise_level": 1
     },
-    "llm_reasoning": "Based on the XAI analysis, the most dominant factors affecting the"
+    "llm_reasoning": "Fallback rule-based scenario update."
   },
   "sim_result": {
     "collision_flag": null,
@@ -35,24 +35,26 @@
   },
   "eval": {
     "class_name": "obstacle",
-    "ap50": 0,
-    "map50": 0,
-    "tp_count": 0,
-    "fp_count": 3,
-    "fn_count": 50,
+    "ap50": 0.02,
+    "map50": 0.02,
+    "tp_count": 2,
+    "fp_count": 2,
+    "fn_count": 48,
     "precision_curve": [
       0,
       0,
-      0
+      0.33333333333333331,
+      0.5
     ],
     "recall_curve": [
       0,
       0,
-      0
+      0.02,
+      0.04
     ],
     "requirement_threshold": 0.85,
     "requirement_violated": true,
-    "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0000"
+    "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0200"
   },
   "xai_input": {
     "scene_id": "iter_003",
@@ -69,9 +71,9 @@
     "performance_signals": {
       "confidence_trend": "decreasing",
       "miss_rate_trend": "increasing",
-      "risk_score": 1,
+      "risk_score": 0.98,
       "failure_type": "detection_performance_drop",
-      "map50": 0,
+      "map50": 0.02,
       "threshold": 0.85
     },
     "xai_signals": {
@@ -90,7 +92,7 @@
           "importance": 0.343
         }
       ],
-      "attention_summary": "mAP50 is 0.0000 under fog=100.0, illum=500.0, noise=1.00"
+      "attention_summary": "mAP50 is 0.0200 under fog=100.0, illum=500.0, noise=1.00"
     },
     "scenario_constraints": {
       "allow_weather_change": true,

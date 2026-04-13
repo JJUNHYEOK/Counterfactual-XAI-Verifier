@@ -1,30 +1,30 @@
 {
   "scenario": {
-    "scenario_id": "edge_case_002",
-    "target_hypothesis": "Maximizing fog density and minimizing illumination will significantly",
+    "scenario_id": "fallback_next_35166",
+    "target_hypothesis": "Rule-based weather mutation to continue searching for mAP50 < 0.85 edge cases",
     "environment_parameters": {
       "fog_density_percent": 100,
       "illumination_lux": 500,
-      "camera_noise_level": 0.5
+      "camera_noise_level": 1
     },
-    "llm_reasoning": "Based on the XAI analysis, the most dominant factors affecting detection"
+    "llm_reasoning": "Fallback rule-based scenario update."
   },
   "sim_result": {
     "collision_flag": null,
-    "running_min_dist": 1.6520118606422329E-13,
-    "avg_confidence": 0.42554959805555642,
-    "miss_count": 48,
+    "running_min_dist": 1.6697754290362354E-13,
+    "avg_confidence": 0.37684493393450674,
+    "miss_count": 321,
     "requirement_satisfied": null,
-    "risk_score": 0.62653830888012008,
+    "risk_score": 0.84050559698334626,
     "uav_xyz_final": [
-      20.934858259510545,
-      -0.048859214918062048,
+      19.275865271297722,
+      0.10367159233645851,
       2.5
     ],
     "uav_rpy_final": [
       0,
       0,
-      0.13200000000000006
+      0.19200000000000012
     ],
     "obs_xyz_final": [
       12,
@@ -35,40 +35,30 @@
   },
   "eval": {
     "class_name": "obstacle",
-    "ap50": 0,
-    "map50": 0,
-    "tp_count": 0,
-    "fp_count": 11,
-    "fn_count": 50,
+    "ap50": 0.02,
+    "map50": 0.02,
+    "tp_count": 1,
+    "fp_count": 5,
+    "fn_count": 49,
     "precision_curve": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
+      1,
+      0.5,
+      0.33333333333333331,
+      0.25,
+      0.2,
+      0.16666666666666666
     ],
     "recall_curve": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      0.02
     ],
     "requirement_threshold": 0.85,
     "requirement_violated": true,
-    "summary": "fog=100.0, illum=500.0, noise=0.50 -> mAP50=0.0000"
+    "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0200"
   },
   "xai_input": {
     "scene_id": "iter_002",
@@ -85,9 +75,9 @@
     "performance_signals": {
       "confidence_trend": "decreasing",
       "miss_rate_trend": "increasing",
-      "risk_score": 1,
+      "risk_score": 0.98,
       "failure_type": "detection_performance_drop",
-      "map50": 0,
+      "map50": 0.02,
       "threshold": 0.85
     },
     "xai_signals": {
@@ -95,18 +85,18 @@
       "dominant_factors": [
         {
           "name": "fog_density",
-          "importance": 0.414
+          "importance": 0.343
         },
         {
           "name": "illumination_lux",
-          "importance": 0.379
+          "importance": 0.314
         },
         {
           "name": "camera_noise",
-          "importance": 0.207
+          "importance": 0.343
         }
       ],
-      "attention_summary": "mAP50 is 0.0000 under fog=100.0, illum=500.0, noise=0.50"
+      "attention_summary": "mAP50 is 0.0200 under fog=100.0, illum=500.0, noise=1.00"
     },
     "scenario_constraints": {
       "allow_weather_change": true,
@@ -115,20 +105,20 @@
     },
     "sim_result": {
       "collision_flag": null,
-      "running_min_dist": 1.6520118606422329E-13,
-      "avg_confidence": 0.42554959805555642,
-      "miss_count": 48,
+      "running_min_dist": 1.6697754290362354E-13,
+      "avg_confidence": 0.37684493393450674,
+      "miss_count": 321,
       "requirement_satisfied": null,
-      "risk_score": 0.62653830888012008,
+      "risk_score": 0.84050559698334626,
       "uav_xyz_final": [
-        20.934858259510545,
-        -0.048859214918062048,
+        19.275865271297722,
+        0.10367159233645851,
         2.5
       ],
       "uav_rpy_final": [
         0,
         0,
-        0.13200000000000006
+        0.19200000000000012
       ],
       "obs_xyz_final": [
         12,

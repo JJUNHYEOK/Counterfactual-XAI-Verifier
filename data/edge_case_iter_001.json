@@ -1,30 +1,30 @@
 {
   "scenario": {
-    "scenario_id": "scenario_001",
-    "target_hypothesis": "Weather-driven counterfactual scenario to discover a UAV detection edge case with mAP50 below 0.85",
+    "scenario_id": "extreme_fog_and_low_light",
+    "target_hypothesis": "Maximizing fog density and minimizing illumination while increasing",
     "environment_parameters": {
-      "fog_density_percent": 30,
-      "illumination_lux": 4000,
-      "camera_noise_level": 0.1
+      "fog_density_percent": 100,
+      "illumination_lux": 50,
+      "camera_noise_level": 1
     },
-    "llm_reasoning": "Initial seed scenario for weather degradation search."
+    "llm_reasoning": "The XAI analysis identified fog density, illumination lux, and camera"
   },
   "sim_result": {
     "collision_flag": null,
-    "running_min_dist": 0.0040000000000084412,
-    "avg_confidence": 0.81704774801951086,
-    "miss_count": 0,
+    "running_min_dist": 1.6697754290362354E-13,
+    "avg_confidence": 0.375099982531795,
+    "miss_count": 333,
     "requirement_satisfied": null,
-    "risk_score": 0.55308064262996515,
+    "risk_score": 0.8419808225564499,
     "uav_xyz_final": [
-      21.865097920865669,
-      -0.60361830061094635,
+      19.159542185249272,
+      0.072909598242941964,
       2.5
     ],
     "uav_rpy_final": [
       0,
       0,
-      -0.16800000000000004
+      0.1760000000000001
     ],
     "obs_xyz_final": [
       12,
@@ -35,104 +35,30 @@
   },
   "eval": {
     "class_name": "obstacle",
-    "ap50": 0.40962058450730632,
-    "map50": 0.40962058450730632,
-    "tp_count": 29,
-    "fp_count": 14,
-    "fn_count": 21,
+    "ap50": 0,
+    "map50": 0,
+    "tp_count": 0,
+    "fp_count": 6,
+    "fn_count": 50,
     "precision_curve": [
       0,
-      0.5,
-      0.66666666666666663,
-      0.75,
-      0.6,
-      0.5,
-      0.5714285714285714,
-      0.625,
-      0.66666666666666663,
-      0.6,
-      0.63636363636363635,
-      0.66666666666666663,
-      0.61538461538461542,
-      0.5714285714285714,
-      0.6,
-      0.625,
-      0.6470588235294118,
-      0.66666666666666663,
-      0.631578947368421,
-      0.65,
-      0.66666666666666663,
-      0.68181818181818177,
-      0.69565217391304346,
-      0.66666666666666663,
-      0.68,
-      0.65384615384615385,
-      0.66666666666666663,
-      0.6785714285714286,
-      0.68965517241379315,
-      0.7,
-      0.70967741935483875,
-      0.6875,
-      0.696969696969697,
-      0.67647058823529416,
-      0.65714285714285714,
-      0.66666666666666663,
-      0.67567567567567566,
-      0.65789473684210531,
-      0.66666666666666663,
-      0.675,
-      0.65853658536585369,
-      0.66666666666666663,
-      0.67441860465116277
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     "recall_curve": [
       0,
-      0.02,
-      0.04,
-      0.06,
-      0.06,
-      0.06,
-      0.08,
-      0.1,
-      0.12,
-      0.12,
-      0.14,
-      0.16,
-      0.16,
-      0.16,
-      0.18,
-      0.2,
-      0.22,
-      0.24,
-      0.24,
-      0.26,
-      0.28,
-      0.3,
-      0.32,
-      0.32,
-      0.34,
-      0.34,
-      0.36,
-      0.38,
-      0.4,
-      0.42,
-      0.44,
-      0.44,
-      0.46,
-      0.46,
-      0.46,
-      0.48,
-      0.5,
-      0.5,
-      0.52,
-      0.54,
-      0.54,
-      0.56,
-      0.58
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     "requirement_threshold": 0.85,
     "requirement_violated": true,
-    "summary": "fog=30.0, illum=4000.0, noise=0.10 -> mAP50=0.4096"
+    "summary": "fog=100.0, illum=50.0, noise=1.00 -> mAP50=0.0000"
   },
   "xai_input": {
     "scene_id": "iter_001",
@@ -149,9 +75,9 @@
     "performance_signals": {
       "confidence_trend": "decreasing",
       "miss_rate_trend": "increasing",
-      "risk_score": 0.59037941549269368,
+      "risk_score": 1,
       "failure_type": "detection_performance_drop",
-      "map50": 0.40962058450730632,
+      "map50": 0,
       "threshold": 0.85
     },
     "xai_signals": {
@@ -159,18 +85,18 @@
       "dominant_factors": [
         {
           "name": "fog_density",
-          "importance": 0.409
+          "importance": 0.334
         },
         {
           "name": "illumination_lux",
-          "importance": 0.455
+          "importance": 0.331
         },
         {
           "name": "camera_noise",
-          "importance": 0.136
+          "importance": 0.334
         }
       ],
-      "attention_summary": "mAP50 is 0.4096 under fog=30.0, illum=4000.0, noise=0.10"
+      "attention_summary": "mAP50 is 0.0000 under fog=100.0, illum=50.0, noise=1.00"
     },
     "scenario_constraints": {
       "allow_weather_change": true,
@@ -179,20 +105,20 @@
     },
     "sim_result": {
       "collision_flag": null,
-      "running_min_dist": 0.0040000000000084412,
-      "avg_confidence": 0.81704774801951086,
-      "miss_count": 0,
+      "running_min_dist": 1.6697754290362354E-13,
+      "avg_confidence": 0.375099982531795,
+      "miss_count": 333,
       "requirement_satisfied": null,
-      "risk_score": 0.55308064262996515,
+      "risk_score": 0.8419808225564499,
       "uav_xyz_final": [
-        21.865097920865669,
-        -0.60361830061094635,
+        19.159542185249272,
+        0.072909598242941964,
         2.5
       ],
       "uav_rpy_final": [
         0,
         0,
-        -0.16800000000000004
+        0.1760000000000001
       ],
       "obs_xyz_final": [
         12,

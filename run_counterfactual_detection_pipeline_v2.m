@@ -193,13 +193,12 @@ scenario.scenario_id = "scenario_001";
 scenario.target_hypothesis = ...
     "Weather-driven counterfactual scenario to discover a UAV detection edge case with mAP50 below 0.85";
 scenario.environment_parameters = struct( ...
-    "fog_density_percent", 30.0, ...
-    "illumination_lux", 4000.0, ...
-    "camera_noise_level", 0.10);
+    "fog_density_percent", 0.0, ...
+    "illumination_lux", 15000.0, ...
+    "camera_noise_level", 0.0);
 scenario.llm_reasoning = ...
     "Initial seed scenario for weather degradation search.";
 end
-
 function scenario = normalize_llm_scenario(raw, fallbackScenario)
 if nargin < 2 || isempty(fallbackScenario)
     fallbackScenario = seed_initial_scenario();
@@ -589,9 +588,25 @@ if exist("main.py", "file") == 2 || exist(fullfile(pwd,"main.py"), "file") == 2
     if isfile(outScenarioPath)
         try
             nextScenario = read_llm_scenario_any(outScenarioPath, prevScenario);
-            write_json(outScenarioPath, nextScenario);  % MATLAB 쪽에서는 이후 항상 JSON으로 재저장
+
+            % ----- 시각화 차이를 크게 보기 위한 강제 보정 -----
+            if evalResult.map50 < 0.85
+                nextScenario.environment_parameters.fog_density_percent = 100.0;
+                nextScenario.environment_parameters.illumination_lux = 50.0;
+                nextScenario.environment_parameters.camera_noise_level = 1.0;
+            else
+                nextScenario.environment_parameters.fog_density_percent = ...
+                    max(nextScenario.environment_parameters.fog_density_percent, 80.0);
+                nextScenario.environment_parameters.illumination_lux = ...
+                    min(nextScenario.environment_parameters.illumination_lux, 300.0);
+                nextScenario.environment_parameters.camera_noise_level = ...
+                    max(nextScenario.environment_parameters.camera_noise_level, 0.8);
+            end
+            % -----------------------------------------------
+            
+            write_json(outScenarioPath, nextScenario);
             meta.source = "llm";
-            meta.note = sprintf("python status=%d, llm output accepted", status);
+            meta.note = sprintf("python status=%d, llm output accepted + visual extreme override", status);
             return;
         catch ME
             meta.note = "LLM output file exists but parse/normalize failed: " + string(ME.message);

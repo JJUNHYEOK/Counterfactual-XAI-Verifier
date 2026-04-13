@@ -1,10 +1,10 @@
 {
-  "scenario_id": "scenario_001",
-  "target_hypothesis": "Weather-driven counterfactual scenario to discover a UAV detection edge case with mAP50 below 0.85",
+  "scenario_id": "extreme_fog_and_low_light",
+  "target_hypothesis": "Maximizing fog density and minimizing illumination while increasing",
   "environment_parameters": {
-    "fog_density_percent": 30,
-    "illumination_lux": 4000,
-    "camera_noise_level": 0.1
+    "fog_density_percent": 100,
+    "illumination_lux": 50,
+    "camera_noise_level": 1
   },
-  "llm_reasoning": "Initial seed scenario for weather degradation search."
+  "llm_reasoning": "The XAI analysis identified fog density, illumination lux, and camera"
 }

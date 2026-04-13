@@ -1,21 +1,23 @@
 {
   "class_name": "obstacle",
-  "ap50": 0,
-  "map50": 0,
-  "tp_count": 0,
-  "fp_count": 3,
-  "fn_count": 50,
+  "ap50": 0.02,
+  "map50": 0.02,
+  "tp_count": 2,
+  "fp_count": 2,
+  "fn_count": 48,
   "precision_curve": [
     0,
     0,
-    0
+    0.33333333333333331,
+    0.5
   ],
   "recall_curve": [
     0,
     0,
-    0
+    0.02,
+    0.04
   ],
   "requirement_threshold": 0.85,
   "requirement_violated": true,
-  "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0000"
+  "summary": "fog=100.0, illum=500.0, noise=1.00 -> mAP50=0.0200"
 }
