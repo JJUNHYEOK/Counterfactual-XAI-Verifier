@@ -281,17 +281,77 @@ class Map50ProxyEvaluator(BaseEvaluator):
             self._threshold - 0.05,
         )
         self._base_margin = self._threshold - self._base_map50
+        self._guidance_weights = self._resolve_guidance_weights()
+        self._guidance_sources: list[str] = []
         self._factor_effects = self._build_factor_effects()
 
+    def _resolve_guidance_weights(self) -> dict[str, float]:
+        request = self._payload.get("counterfactual_request")
+        request = request if isinstance(request, dict) else {}
+        blend = request.get("guidance_blend")
+        blend = blend if isinstance(blend, dict) else {}
+
+        xai_weight = max(0.0, _safe_float(blend.get("xai"), 0.4))
+        shap_global_weight = max(0.0, _safe_float(blend.get("shap_global"), 0.3))
+        shap_local_weight = max(0.0, _safe_float(blend.get("shap_local"), 0.3))
+
+        total = xai_weight + shap_global_weight + shap_local_weight
+        if total <= 1e-12:
+            return {"xai": 1.0, "shap_global": 0.0, "shap_local": 0.0}
+        return {
+            "xai": xai_weight / total,
+            "shap_global": shap_global_weight / total,
+            "shap_local": shap_local_weight / total,
+        }
+
     def _build_factor_effects(self) -> dict[str, float]:
+        def direction_to_sign(direction: Any) -> float | None:
+            if not isinstance(direction, str):
+                return None
+            lowered = direction.strip().lower()
+            if lowered in {"increase_failure", "increase", "positive", "up"}:
+                return 1.0
+            if lowered in {"decrease_failure", "decrease", "negative", "down"}:
+                return -1.0
+            return None
+
+        def add_effect(
+            effects: dict[str, float],
+            spec_names: list[str],
+            factor_name: str,
+            magnitude: float,
+            source_weight: float,
+            direction_hint: float | None = None,
+            fallback_sign_from_name: bool = True,
+        ) -> bool:
+            if not factor_name or magnitude <= 0.0 or source_weight <= 0.0:
+                return False
+            matched = _match_parameter_name(factor_name, spec_names)
+            if not matched:
+                return False
+            if direction_hint is None and fallback_sign_from_name:
+                direction_hint = _infer_effect_sign(matched, self._base_environment.get(matched, 0.0))
+            if direction_hint is None:
+                direction_hint = 1.0
+            effects[matched] = effects.get(matched, 0.0) + (source_weight * direction_hint * magnitude)
+            return True
+
         xai_signals = self._payload.get("xai_signals")
         xai_signals = xai_signals if isinstance(xai_signals, dict) else {}
         dominant_factors = xai_signals.get("dominant_factors")
         dominant_factors = dominant_factors if isinstance(dominant_factors, list) else []
 
+        shap_signals = self._payload.get("shap_signals")
+        shap_signals = shap_signals if isinstance(shap_signals, dict) else {}
+        shap_global = shap_signals.get("global_feature_importance")
+        shap_global = shap_global if isinstance(shap_global, list) else []
+        shap_local = shap_signals.get("local_feature_contributions")
+        shap_local = shap_local if isinstance(shap_local, list) else []
+
         spec_names = [spec.name for spec in self._specs]
         effects: dict[str, float] = {}
 
+        xai_added = False
         for factor in dominant_factors:
             if not isinstance(factor, dict):
                 continue
@@ -299,15 +359,72 @@ class Map50ProxyEvaluator(BaseEvaluator):
             if not factor_name:
                 continue
             importance = abs(_safe_float(factor.get("importance"), 0.0))
-            if importance <= 0.0:
+            direction_hint = direction_to_sign(factor.get("direction"))
+            xai_added = add_effect(
+                effects=effects,
+                spec_names=spec_names,
+                factor_name=factor_name,
+                magnitude=importance,
+                source_weight=self._guidance_weights["xai"],
+                direction_hint=direction_hint,
+            ) or xai_added
+        if xai_added:
+            self._guidance_sources.append("xai_signals.dominant_factors")
+
+        shap_global_added = False
+        for factor in shap_global:
+            if not isinstance(factor, dict):
                 continue
-            matched = _match_parameter_name(factor_name, spec_names)
-            if not matched:
+            factor_name = str(factor.get("name", factor.get("feature", ""))).strip()
+            importance = abs(
+                _safe_float(
+                    factor.get("importance", factor.get("mean_abs_shap", factor.get("abs_contribution_score", 0.0))),
+                    0.0,
+                )
+            )
+            direction_hint = direction_to_sign(factor.get("direction"))
+            shap_global_added = add_effect(
+                effects=effects,
+                spec_names=spec_names,
+                factor_name=factor_name,
+                magnitude=importance,
+                source_weight=self._guidance_weights["shap_global"],
+                direction_hint=direction_hint,
+            ) or shap_global_added
+        if shap_global_added:
+            self._guidance_sources.append("shap_signals.global_feature_importance")
+
+        shap_local_added = False
+        for factor in shap_local:
+            if not isinstance(factor, dict):
                 continue
-            sign = _infer_effect_sign(matched, self._base_environment.get(matched, 0.0))
-            effects[matched] = effects.get(matched, 0.0) + sign * importance
+            factor_name = str(factor.get("name", factor.get("feature", ""))).strip()
+            signed_score = _safe_float(
+                factor.get("contribution_score", factor.get("shap_value", factor.get("importance", 0.0))),
+                0.0,
+            )
+            magnitude = abs(
+                _safe_float(
+                    factor.get("abs_contribution_score", abs(signed_score)),
+                    abs(signed_score),
+                )
+            )
+            direction_hint = direction_to_sign(factor.get("direction"))
+            if direction_hint is None and abs(signed_score) > 1e-12:
+                direction_hint = 1.0 if signed_score > 0.0 else -1.0
+            shap_local_added = add_effect(
+                effects=effects,
+                spec_names=spec_names,
+                factor_name=factor_name,
+                magnitude=magnitude,
+                source_weight=self._guidance_weights["shap_local"],
+                direction_hint=direction_hint,
+            ) or shap_local_added
+        if shap_local_added:
+            self._guidance_sources.append("shap_signals.local_feature_contributions")
 
         if not effects:
+            self._guidance_sources.append("fallback_uniform_effects")
             for spec in self._specs:
                 sign = _infer_effect_sign(spec.name, self._base_environment.get(spec.name, 0.0))
                 effects[spec.name] = sign * (1.0 / max(1, len(self._specs)))
@@ -345,6 +462,8 @@ class Map50ProxyEvaluator(BaseEvaluator):
                 "base_map50": float(self._base_map50),
                 "factor_effects": self._factor_effects,
                 "factor_contributions": contributions,
+                "guidance_weights": self._guidance_weights,
+                "guidance_sources": self._guidance_sources,
             },
         }
 
@@ -559,6 +678,7 @@ def _build_parameter_changes(
 def _build_candidate_summary(
     source_status: str,
     target_status: str,
+    predicted_status: str,
     changes: list[dict[str, float | str]],
     decision_margin: float,
 ) -> str:
@@ -573,7 +693,8 @@ def _build_candidate_summary(
     arrow = "증가" if delta > 0 else "감소"
     return (
         f"{name} 값을 {abs(delta):.4g}만큼 {arrow}시키는 변화가 "
-        f"{source_status}->{target_status} 전환에 가장 크게 기여했습니다. "
+        f"{source_status}->{predicted_status} 결과 변화에 가장 크게 기여했습니다. "
+        f"(목표: {target_status}) "
         f"(candidate_margin={decision_margin:.4f})"
     )
 
@@ -659,6 +780,10 @@ def _search_counterfactual_candidates(
             abs(_safe_float(item["evaluation"].get("decision_margin"), 0.0)),
         ),
     )
+    if ordered:
+        first = ordered[0]
+        if (not first["meets_target"]) and first["distance_l1_normalized"] <= 1e-12 and len(ordered) > 1:
+            ordered = ordered[1:] + [first]
     return ordered[:num_candidates]
 
 
@@ -746,6 +871,7 @@ def _format_candidate_payload(
         "summary_explanation": _build_candidate_summary(
             source_status=source_status,
             target_status=target_status or predicted_status,
+            predicted_status=predicted_status,
             changes=changes,
             decision_margin=decision_margin,
         ),
@@ -788,6 +914,12 @@ def generate_counterfactual_and_boundary(
     base_eval = evaluator.evaluate(base_environment)
     source_status = str(base_eval.get("predicted_status", PASS_STATUS)).upper()
     decision_margin = _safe_float(base_eval.get("decision_margin"), 0.0)
+    raw_proxy = base_eval.get("raw_proxy_result")
+    raw_proxy = raw_proxy if isinstance(raw_proxy, dict) else {}
+    guidance_info = {
+        "guidance_sources": raw_proxy.get("guidance_sources", []),
+        "guidance_weights": raw_proxy.get("guidance_weights", {}),
+    }
 
     resolved_target = (target_status or "").strip().upper()
     if resolved_target not in (PASS_STATUS, FAIL_STATUS):
@@ -845,6 +977,7 @@ def generate_counterfactual_and_boundary(
         "target_status": resolved_target,
         "threshold_condition": threshold_condition,
         "mutable_parameters": mutable_parameters,
+        "guidance": guidance_info,
         "base_case": {
             "current_environment": base_environment,
             "predicted_status": source_status,
@@ -861,6 +994,7 @@ def generate_counterfactual_and_boundary(
         "search_mode": evaluator.mode_name,
         "search_method": "projected_gradient_multi_start",
         "threshold_condition": threshold_condition,
+        "guidance": guidance_info,
         "base_case": {
             "current_environment": base_environment,
             "predicted_status": source_status,

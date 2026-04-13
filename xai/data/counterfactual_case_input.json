@@ -74,6 +74,11 @@
   },
   "counterfactual_request": {
     "target_status": "PASS",
-    "evaluator": "map50_proxy"
+    "evaluator": "map50_proxy",
+    "guidance_blend": {
+      "xai": 0.4,
+      "shap_global": 0.3,
+      "shap_local": 0.3
+    }
   }
 }

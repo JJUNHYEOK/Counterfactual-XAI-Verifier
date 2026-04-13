@@ -128,6 +128,57 @@
         }
       }
     },
+    "shap_signals": {
+      "type": "object",
+      "properties": {
+        "source_schema": {
+          "type": "string"
+        },
+        "selected_failure_case_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "global_feature_importance": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "importance": {
+                "type": "number"
+              },
+              "direction": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "local_feature_contributions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "contribution_score": {
+                "type": "number"
+              },
+              "abs_contribution_score": {
+                "type": "number"
+              },
+              "direction": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "scenario_constraints": {
       "type": "object",
       "properties": {
@@ -189,6 +240,20 @@
             "sim_dummy",
             "map50_proxy"
           ]
+        },
+        "guidance_blend": {
+          "type": "object",
+          "properties": {
+            "xai": {
+              "type": "number"
+            },
+            "shap_global": {
+              "type": "number"
+            },
+            "shap_local": {
+              "type": "number"
+            }
+          }
         }
       }
     }

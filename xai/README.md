@@ -16,10 +16,12 @@
 3. decision boundary에 가까운 후보를 함께 산출해
 4. LLM이 후속 counterfactual 시나리오 생성에 재사용 가능한 JSON을 제공
 
-## 중요: XGBoost + SHAP 사용 상태
+## 중요: SHAP + Counterfactual 결합 방식
 
-- 현재 메인 흐름에서는 **XGBoost+SHAP를 사용하지 않습니다.**
-- `tabular_xai/`는 레거시/실험용 보관 영역이며, 현재 데모/발표 우선 흐름은 `main_counterfactual.py`입니다.
+- 현재 메인 흐름은 **counterfactual/boundary 탐색**입니다.
+- 여기에 SHAP을 결합하려면 `--shap_json_path`로 `tabular_xai` 결과(`xai_llm_output.json`)를 넣어
+  **SHAP-guided counterfactual**로 실행합니다.
+- `tabular_xai/`는 SHAP 신호 생성용 보조 모듈이며, 탐색 실행 엔트리는 `main_counterfactual.py`입니다.
 
 ## 전체 파이프라인 연결 위치
 
@@ -98,6 +100,19 @@ python main_counterfactual.py \
   --input_path data/counterfactual_case_sim_dummy.json \
   --output_dir outputs_counterfactual_sim \
   --mode auto \
+  --random_seed 42
+```
+
+SHAP 결합 실행 예시:
+
+```bash
+cd XAI
+python main_counterfactual.py \
+  --input_path data/counterfactual_case_input.json \
+  --shap_json_path tabular_xai/outputs_llm_ready/xai_llm_output.json \
+  --shap_case_id case_0007 \
+  --output_dir outputs_counterfactual_shap \
+  --mode map50_proxy \
   --random_seed 42
 ```
 
