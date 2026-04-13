@@ -1,0 +1,74 @@
+{
+  "scene_id": "sim_case_001",
+  "task": "uav_navigation",
+  "goal": "Find minimal parameter shift to recover safe flight status.",
+  "perception": {
+    "detector": "stub",
+    "input_resolution": [640, 360],
+    "detections": []
+  },
+  "performance_signals": {
+    "confidence_trend": "decreasing",
+    "miss_rate_trend": "increasing",
+    "risk_score": 0.81,
+    "failure_type": "near_collision",
+    "threshold": 1.0
+  },
+  "xai_signals": {
+    "method": "direct-posthoc",
+    "dominant_factors": [
+      {
+        "name": "wind_speed",
+        "importance": 0.55
+      },
+      {
+        "name": "delay",
+        "importance": 0.3
+      },
+      {
+        "name": "obstacle_density",
+        "importance": 0.15
+      }
+    ],
+    "attention_summary": "high wind + delay caused mission failure in simulator dummy case."
+  },
+  "current_requirement": {
+    "metric": "min_distance",
+    "threshold": 1.0,
+    "requirement_violated": true
+  },
+  "scenario": {
+    "scenario_id": "sim_case_001",
+    "environment_parameters": {
+      "wind_speed": 9.0,
+      "delay": 4.2,
+      "obstacle_density": 0.7
+    }
+  },
+  "scenario_constraints": {
+    "allow_weather_change": true,
+    "allow_lighting_change": true,
+    "allow_obstacle_density_change": true
+  },
+  "search_space": {
+    "bounds": {
+      "wind_speed": [0.0, 12.0],
+      "delay": [0.0, 6.0],
+      "obstacle_density": [0.0, 1.0]
+    },
+    "weights": {
+      "wind_speed": 1.0,
+      "delay": 1.0,
+      "obstacle_density": 1.0
+    },
+    "mutable_parameters": [
+      "wind_speed",
+      "delay",
+      "obstacle_density"
+    ]
+  },
+  "counterfactual_request": {
+    "target_status": "PASS",
+    "evaluator": "sim_dummy"
+  }
+}

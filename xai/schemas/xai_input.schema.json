@@ -21,6 +21,26 @@
     "goal": {
       "type": "string"
     },
+    "current_requirement": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "requirement_violated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "current_environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
     "perception": {
       "type": "object",
       "required": [
@@ -124,6 +144,53 @@
     },
     "sim_result": {
       "type": "object"
+    },
+    "search_space": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "weights": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "mutable_parameters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "counterfactual_request": {
+      "type": "object",
+      "properties": {
+        "target_status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "evaluator": {
+          "type": "string",
+          "enum": [
+            "sim_dummy",
+            "map50_proxy"
+          ]
+        }
+      }
     }
   }
 }

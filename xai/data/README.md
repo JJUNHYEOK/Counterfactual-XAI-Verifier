@@ -6,6 +6,8 @@ Input examples for XAI:
 - `scenario_iter_001.json`
 - `sim_result_iter_001.json`
 - `eval_iter_001.json`
+- `counterfactual_case_input.json` (counterfactual / boundary 탐색용 샘플)
+- `counterfactual_case_sim_dummy.json` (simulator dummy 기반 탐색 샘플)
 
 Output example from XAI:
 - `xai_input.json`
