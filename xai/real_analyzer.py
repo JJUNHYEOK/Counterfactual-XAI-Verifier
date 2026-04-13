@@ -13,7 +13,7 @@ def absolute_cleaner(val):
 
 class RealXAIAnalyzer:
     def __init__(self):
-        self.yolo_model = YOLO("yolov8n.pt")
+        self.yolo_model = YOLO("yolo11x.pt")
         # 무조건 2개의 초기 데이터가 있어야 XGBoost가 에러를 안 냅니다.
         self.history_X = [[0.0, 5000.0, 0.0, 0.0, 0.0], [100.0, 100.0, 1.0, 20.0, 10.0]]
         self.history_y = [0.95, 0.10]
