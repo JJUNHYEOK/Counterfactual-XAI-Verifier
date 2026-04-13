@@ -1,9 +1,0 @@
-﻿{
-  "name": "law-issue-engine",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Search-based legal conflict and constitutional risk web engine",
-  "scripts": {
-    "start": "node web/server.js"
-  }
-}

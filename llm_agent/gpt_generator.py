@@ -7,6 +7,11 @@ from prompts.system_prompts import GENERATOR_SYSTEM_PROMPT
 
 load_dotenv()
 
+if "SSL_CERT_FILE" in os.environ:
+    del os.environ["SSL_CERT_FILE"]
+if "REQUESTS_CA_BUNDLE" in os.environ:
+    del os.environ["REQUESTS_CA_BUNDLE"]
+
 class GPTGenerator:
     def __init__(self, model_name: str = "gpt-4-turbo"):
         api_key = os.environ.get("OPENAI_API_KEY")
