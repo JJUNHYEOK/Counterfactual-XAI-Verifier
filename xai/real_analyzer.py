@@ -1,10 +1,10 @@
 import numpy as np
 import xgboost as xgb
 import shap
+import os  # <--- 경로 처리를 위해 추가
 from ultralytics import YOLO
 
 def absolute_cleaner(val):
-    # 대괄호, 따옴표 등 온갖 쓰레기 문자를 다 날리고 숫자만 남깁니다.
     try:
         s = str(val).replace('[', '').replace(']', '').replace("'", "").replace('"', '').strip()
         return float(s)
@@ -13,31 +13,53 @@ def absolute_cleaner(val):
 
 class RealXAIAnalyzer:
     def __init__(self):
+        # 모델 로드 (최초 실행 시 다운로드될 수 있음)
         self.yolo_model = YOLO("yolo11x.pt")
-        # 무조건 2개의 초기 데이터가 있어야 XGBoost가 에러를 안 냅니다.
         self.history_X = [[0.0, 5000.0, 0.0, 0.0, 0.0], [100.0, 100.0, 1.0, 20.0, 10.0]]
         self.history_y = [0.95, 0.10]
 
     def analyze(self, image_path: str, scenario_data: dict):
-        # 1. YOLO 객체 탐지
+        # 1. YOLO 객체 탐지 수행
         results = self.yolo_model(image_path, verbose=False)
+        
+        # ---------------------------------------------------------
+        # [신규 추가] 바운딩 박스 이미지 저장 로직
+        # ---------------------------------------------------------
+        try:
+            # 파일명 변경: current_iter_1.jpg -> annotated_iter_1.jpg
+            base_name = os.path.basename(image_path)
+            annotated_name = base_name.replace("current", "annotated")
+            
+            # 이미지가 저장될 assets 폴더 경로 확보
+            save_dir = os.path.dirname(image_path)
+            annotated_path = os.path.join(save_dir, annotated_name)
+            
+            # 바운딩 박스 및 라벨이 그려진 이미지 저장
+            results[0].save(filename=annotated_path) 
+            # print(f"📸 Annotated image saved: {annotated_path}") # 디버깅용
+        except Exception as img_err:
+            print(f"⚠️ 이미지 저장 실패: {img_err}")
+        # ---------------------------------------------------------
+
+        # 2. 성능 지표(mAP50 대용) 계산
         boxes = results[0].boxes
         current_map50 = float(np.mean(boxes.conf.cpu().numpy())) if len(boxes) > 0 else 0.10
 
-        # 2. 파라미터 파싱 (지독한 클리너 적용)
+        # 3. 환경 파라미터 파싱
         env = scenario_data.get("environment_parameters", {})
         
-        fog = absolute_cleaner(env.get("weather_conditions", {}).get("fog_density_percent", 0.0))
-        lux = absolute_cleaner(env.get("sensor_noise", {}).get("low_contrast_factor", 5000.0))
-        noise = absolute_cleaner(env.get("sensor_noise", {}).get("gaussian_noise_level", 0.0))
-        m_blur = absolute_cleaner(env.get("uav_blur_effects", {}).get("motion_blur_intensity", 0.0))
-        z_blur = absolute_cleaner(env.get("uav_blur_effects", {}).get("zoom_blur_intensity", 0.0))
+        # 기존 클리너 사용
+        fog = absolute_cleaner(env.get("fog_density_percent", 0.0))
+        lux = absolute_cleaner(env.get("illumination_lux", 5000.0))
+        noise = absolute_cleaner(env.get("camera_noise_level", 0.0))
+        m_blur = absolute_cleaner(env.get("motion_blur_intensity", 0.0))
+        z_blur = absolute_cleaner(env.get("zoom_blur_intensity", 0.0))
         
         current_X = [fog, lux, noise, m_blur, z_blur]
         self.history_X.append(current_X)
         self.history_y.append(current_map50)
 
-        # 3. XGBoost & SHAP 훈련
+        # 4. XGBoost & SHAP 분석
         try:
             X_arr = np.array(self.history_X, dtype=np.float64)
             y_arr = np.array(self.history_y, dtype=np.float64)
@@ -49,14 +71,14 @@ class RealXAIAnalyzer:
             total = np.sum(shap_v) + 1e-9
             feature_importance = [
                 {"name": "fog", "importance": float(shap_v[0]/total)},
-                {"name": "low_contrast", "importance": float(shap_v[1]/total)},
+                {"name": "low_light", "importance": float(shap_v[1]/total)},
                 {"name": "noise", "importance": float(shap_v[2]/total)},
                 {"name": "motion_blur", "importance": float(shap_v[3]/total)},
                 {"name": "zoom_blur", "importance": float(shap_v[4]/total)}
             ]
             feature_importance.sort(key=lambda x: x["importance"], reverse=True)
         except Exception as e:
-            print(f"⚠️ SHAP 분석 에러 (무시하고 진행): {e}")
+            print(f"⚠️ SHAP 분석 에러: {e}")
             feature_importance = [{"name": "error_fallback", "importance": 1.0}]
             
         return current_map50, feature_importance
