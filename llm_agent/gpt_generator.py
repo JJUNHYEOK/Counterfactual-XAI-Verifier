@@ -13,7 +13,7 @@ if "REQUESTS_CA_BUNDLE" in os.environ:
     del os.environ["REQUESTS_CA_BUNDLE"]
 
 class GPTGenerator:
-    def __init__(self, model_name: str = "gpt-4-turbo"):
+    def __init__(self, model_name: str = "gpt-5.3-nano"):
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY가 설정되지 않았습니다. .env 파일을 확인하세요.")

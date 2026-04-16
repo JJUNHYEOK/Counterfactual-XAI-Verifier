@@ -1,0 +1,42 @@
+{
+  "iteration": 1,
+  "baseline_map50": 0.632946789264679,
+  "safety_line": 0.48294678926467893,
+  "panel_1_visual": {
+    "map50_score": 0.6313906908035278,
+    "params": {
+      "fog_density_percent": 0.0,
+      "illumination_lux": 900.0,
+      "camera_noise_level": 0.05,
+      "motion_blur_intensity": 15.0,
+      "zoom_blur_intensity": 0.0
+    },
+    "rendered_image": "current_iter_1.jpg"
+  },
+  "panel_2_xai": [
+    {
+      "name": "fog",
+      "importance": 0.6110461534997695
+    },
+    {
+      "name": "low_light",
+      "importance": 0.38895384229647667
+    },
+    {
+      "name": "noise",
+      "importance": 0.0
+    },
+    {
+      "name": "motion_blur",
+      "importance": 0.0
+    },
+    {
+      "name": "zoom_blur",
+      "importance": 0.0
+    }
+  ],
+  "panel_3_llm": {
+    "hypothesis": "Low Illumination 상황에서 급기동으로 인한 Motion Blur 결합 타격",
+    "reasoning": "📊 현재 상황\n현재 시뮬레이션에서 mAP50은 0.6329로, 목표 Safety Line인 0.4829보다 상당히 높은 수치입니다. 이는 모델이 충분히 탐지할 수 있는 상태임을 의미합니다. \n\n🎯 공격 전략\n우리는 Low Illumination(900 lux) 환경을 설정하여 조명의 강도를 낮추고, Motion Blur 강도를 15로 설정하여 UAV의 급기동을 모사할 것입니다. 카메라 노이즈는 0.05로 설정하여 약간의 디지털 노이즈를 추가할 예정입니다. \n\n📉 예상 효과\n이 조합을 통해 모델의 탐지 정확도를 점진적으로 낮출 수 있을 것으로 예상되며, 목표 Safety Line을 하회하는 지점을 찾는 데 도움이 될 것입니다. 이로 인해 mAP50이 0.4829 이하로 떨어질 가능성이 높아집니다."
+  }
+}

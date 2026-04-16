@@ -25,20 +25,21 @@ class RealXAIAnalyzer:
         # ---------------------------------------------------------
         # [신규 추가] 바운딩 박스 이미지 저장 로직
         # ---------------------------------------------------------
+        # [수정된 바운딩 박스 이미지 저장 로직] 대시보드 실시간 출력용
         try:
-            # 파일명 변경: current_iter_1.jpg -> annotated_iter_1.jpg
             base_name = os.path.basename(image_path)
-            annotated_name = base_name.replace("current", "annotated")
             
-            # 이미지가 저장될 assets 폴더 경로 확보
+            # 💡 [버그 수정] 원본 파일을 덮어쓰지 않도록 예외 처리
+            if "current" in base_name:
+                annotated_name = base_name.replace("current", "annotated")
+            else:
+                annotated_name = f"annotated_{base_name}" # 예: annotated_step_1.jpg
+                
             save_dir = os.path.dirname(image_path)
             annotated_path = os.path.join(save_dir, annotated_name)
-            
-            # 바운딩 박스 및 라벨이 그려진 이미지 저장
             results[0].save(filename=annotated_path) 
-            # print(f"📸 Annotated image saved: {annotated_path}") # 디버깅용
-        except Exception as img_err:
-            print(f"⚠️ 이미지 저장 실패: {img_err}")
+        except Exception as e:
+            print(f"⚠️ 이미지 저장 실패: {e}")
         # ---------------------------------------------------------
 
         # 2. 성능 지표(mAP50 대용) 계산
