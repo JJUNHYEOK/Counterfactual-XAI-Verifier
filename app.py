@@ -29,13 +29,19 @@ def get_latest_live_image():
     for path in IMAGE_DIR.glob("current_iter_*.jpg"):
         step_val = extract_step(path.stem, "current_iter")
         if step_val is not None:
-            parsed_img.append((step_val, path))
+            try:
+                mtime_ns = path.stat().st_mtime_ns
+            except FileNotFoundError:
+                continue
+            parsed_img.append((mtime_ns, step_val, path))
 
     if not parsed_img:
         return None, None
 
-    parsed_img.sort(key=lambda item: item[0])
-    return parsed_img[-1]
+    # step 번호가 아니라 "최근 갱신 시각" 기준으로 최신 프레임 선택
+    parsed_img.sort(key=lambda item: (item[0], item[1]))
+    _, latest_step, latest_path = parsed_img[-1]
+    return latest_step, latest_path
 
 
 @st.cache_data(show_spinner=False)
@@ -400,8 +406,12 @@ else:
             st.image(Image.open(IMAGE_DIR / "step_1.jpg"), caption="원본 베이스라인 이미지", use_container_width=True)
             
     else:
-        # 데이터가 1개 이상 있을 때만 슬라이더 렌더링 (RangeError 방지)
-        sel = st.select_slider("검증 단계 선택", options=steps)
+        # select_slider는 옵션이 1개일 때(min=max) RangeError가 날 수 있어 분기 처리
+        if len(steps) == 1:
+            sel = steps[0]
+            st.info(f"현재 선택 가능한 검증 단계가 1개(Step {sel})라 자동 선택했습니다.")
+        else:
+            sel = st.select_slider("검증 단계 선택", options=steps)
         d = load_json(sel)
         
         if d:
@@ -492,6 +502,8 @@ else:
                     if xai_rows:
                         df_xai = pd.DataFrame(xai_rows)
                         df_xai_plot = df_xai.iloc[::-1]
+                        max_importance = max(float(df_xai["importance"].max()), 0.0)
+                        xaxis_max = max_importance * 1.15 if max_importance > 0 else 1.0
                         fig_xai = px.bar(
                             df_xai_plot,
                             x="importance",
@@ -513,6 +525,7 @@ else:
                             paper_bgcolor="#0f172a",
                             plot_bgcolor="#0f172a",
                         )
+                        fig_xai.update_xaxes(range=[0, xaxis_max], autorange=False)
                         st.plotly_chart(fig_xai, use_container_width=True)
                     else:
                         st.caption("현재 step에는 SHAP 중요도 데이터가 없습니다.")
