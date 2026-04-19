@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import json
 import pandas as pd
 from pathlib import Path
@@ -6,7 +6,7 @@ import re
 from PIL import Image
 import plotly.express as px
 import threading 
-import main     
+import main2     
 from ultralytics import YOLO
 import numpy as np
 
@@ -23,7 +23,6 @@ def get_ui_detector():
 
 ui_detector = get_ui_detector()
 
-
 def get_latest_live_image():
     parsed_img = []
     for path in IMAGE_DIR.glob("current_iter_*.jpg"):
@@ -38,18 +37,15 @@ def get_latest_live_image():
     if not parsed_img:
         return None, None
 
-    # step 번호가 아니라 "최근 갱신 시각" 기준으로 최신 프레임 선택
     parsed_img.sort(key=lambda item: (item[0], item[1]))
     _, latest_step, latest_path = parsed_img[-1]
     return latest_step, latest_path
 
-
 @st.cache_data(show_spinner=False)
 def run_ui_inference_cached(image_path: str, image_mtime_ns: int):
-    _ = image_mtime_ns  # cache key for updated files
+    _ = image_mtime_ns 
     results = ui_detector(image_path, verbose=False)
     return results[0].plot()
-
 
 def initialize_live_state():
     st.session_state.setdefault("live_active", False)
@@ -66,103 +62,37 @@ st.markdown("""
     <style>
     .main { background-color: #0e1117; }
     [data-testid="stAppViewContainer"] > .main .block-container {
-        max-width: 100% !important;
-        padding-top: 0.6rem !important;
-        padding-right: 0.9rem !important;
-        padding-left: 0.9rem !important;
-        padding-bottom: 0.75rem !important;
+        max-width: 100% !important; padding-top: 0.6rem !important;
+        padding-right: 0.9rem !important; padding-left: 0.9rem !important; padding-bottom: 0.75rem !important;
     }
-    section[data-testid="stSidebar"] {
-        width: 248px !important;
-        min-width: 248px !important;
+    section[data-testid="stSidebar"] { width: 248px !important; min-width: 248px !important; }
+    section[data-testid="stSidebar"] > div { width: 248px !important; min-width: 248px !important; }
+    [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stMarkdown p,
+    [data-testid="stSidebar"] .stCaption, [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stRadio label, [data-testid="stSidebar"] .stSubheader,
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3, [data-testid="stSidebar"] span { color: #111111 !important; }
+    [data-testid="stSidebar"] .stButton > button[kind="primary"] { color: #ffffff !important; }
+    [data-testid="stSidebar"] .stButton > button[kind="primary"] span { color: #ffffff !important; }
+    [data-testid="stSidebar"] .stButton > button:not([kind="primary"]) { color: #111111 !important; }
+    [data-testid="stSidebar"] .stButton>button { margin-top: 0.1rem !important; margin-bottom: 0.1rem !important; }
+    [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] p,
+    [data-testid="stCaptionContainer"], .status-card, .metric-card {
+        white-space: normal !important; overflow: visible !important;
+        text-overflow: clip !important; overflow-wrap: anywhere !important; word-break: break-word !important;
     }
-    section[data-testid="stSidebar"] > div {
-        width: 248px !important;
-        min-width: 248px !important;
-    }
-    [data-testid="stSidebar"] .stMarkdown,
-    [data-testid="stSidebar"] .stMarkdown p,
-    [data-testid="stSidebar"] .stCaption,
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] .stRadio label,
-    [data-testid="stSidebar"] .stSubheader,
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] span {
-        color: #111111 !important;
-    }
-    [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-        color: #ffffff !important;
-    }
-    [data-testid="stSidebar"] .stButton > button[kind="primary"] span {
-        color: #ffffff !important;
-    }
-    [data-testid="stSidebar"] .stButton > button:not([kind="primary"]) {
-        color: #111111 !important;
-    }
-    [data-testid="stSidebar"] .stButton>button {
-        margin-top: 0.1rem !important;
-        margin-bottom: 0.1rem !important;
-    }
-    [data-testid="stMarkdownContainer"],
-    [data-testid="stMarkdownContainer"] p,
-    [data-testid="stCaptionContainer"],
-    .status-card,
-    .metric-card {
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: clip !important;
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
-    }
-    h1, h2, h3, p {
-        margin-top: 0.2rem !important;
-        margin-bottom: 0.42rem !important;
-    }
-    .status-card { 
-        padding: 14px; border-radius: 12px; background-color: #1f2937; 
-        border: 1px solid #374151; margin-bottom: 10px;
-    }
-    .metric-card {
-        padding: 14px;
-        border-radius: 12px;
-        background-color: #111827;
-        border: 1px solid #374151;
-        margin-bottom: 10px;
-    }
-    .metric-title {
-        font-size: 1.1rem;
-        opacity: 0.95;
-        margin-bottom: 6px;
-        color: #ffffff !important;
-    }
-    .metric-score {
-        font-size: 2.4rem;
-        font-weight: 700;
-        line-height: 1.1;
-        margin-bottom: 6px;
-    }
-    .metric-status {
-        font-size: 1rem;
-        color: #ffffff !important;
-    }
-    .status-card h2,
-    .status-card p {
-        color: #ffffff !important;
-    }
+    h1, h2, h3, p { margin-top: 0.2rem !important; margin-bottom: 0.42rem !important; }
+    .status-card { padding: 14px; border-radius: 12px; background-color: #1f2937; border: 1px solid #374151; margin-bottom: 10px; }
+    .metric-card { padding: 14px; border-radius: 12px; background-color: #111827; border: 1px solid #374151; margin-bottom: 10px; }
+    .metric-title { font-size: 1.1rem; opacity: 0.95; margin-bottom: 6px; color: #ffffff !important; }
+    .metric-score { font-size: 2.4rem; font-weight: 700; line-height: 1.1; margin-bottom: 6px; }
+    .metric-status { font-size: 1rem; color: #ffffff !important; }
+    .status-card h2, .status-card p { color: #ffffff !important; }
     .stMetric { background-color: #111827; padding: 12px; border-radius: 10px; border: 1px solid #374151; }
-    .stButton>button {
-        width: 100%;
-        border-radius: 8px;
-        font-weight: bold;
-        height: 2.55em;
-    }
+    .stButton>button { width: 100%; border-radius: 8px; font-weight: bold; height: 2.55em; }
     @media (max-width: 1200px) {
-        section[data-testid="stSidebar"],
-        section[data-testid="stSidebar"] > div {
-            width: 222px !important;
-            min-width: 222px !important;
+        section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div {
+            width: 222px !important; min-width: 222px !important;
         }
     }
     </style>
@@ -172,88 +102,61 @@ def load_json(step):
     try:
         primary = DATA_DIR / f"dashboard_step_{step}.json"
         candidates = []
-        if primary.exists():
-            candidates.append(primary)
-        candidates.extend(
-            sorted(
-                DATA_DIR.glob(f"dashboard_step_{step}*.json"),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            )
-        )
+        if primary.exists(): candidates.append(primary)
+        candidates.extend(sorted(DATA_DIR.glob(f"dashboard_step_{step}*.json"), key=lambda p: p.stat().st_mtime, reverse=True))
         seen = set()
         ordered_candidates = []
         for path in candidates:
-            if str(path) in seen:
-                continue
+            if str(path) in seen: continue
             seen.add(str(path))
             ordered_candidates.append(path)
-
         for path in ordered_candidates:
             with open(path, "r", encoding="utf-8-sig") as f:
                 return json.load(f)
         return None
-    except:
-        return None
-
+    except: return None
 
 def _to_float(value, default=0.0):
-    try:
-        return float(value)
+    try: return float(value)
     except Exception:
         try:
             text = str(value).replace("[", "").replace("]", "").replace("'", "").replace('"', "").strip()
             return float(text)
-        except Exception:
-            return float(default)
-
+        except Exception: return float(default)
 
 def normalize_panel_2_xai(panel_2_xai):
-    if not isinstance(panel_2_xai, list):
-        return []
-
+    if not isinstance(panel_2_xai, list): return []
     rows = []
     for item in panel_2_xai:
-        if not isinstance(item, dict):
-            continue
+        if not isinstance(item, dict): continue
         name = str(item.get("name", "")).strip()
-        if not name:
-            continue
+        if not name: continue
         rows.append({"feature": name, "importance": _to_float(item.get("importance", 0.0), default=0.0)})
-
     rows.sort(key=lambda x: x["importance"], reverse=True)
     return rows
 
-
 def compact_text(text, max_chars=320, max_lines=6):
     text = str(text or "").strip()
-    if not text:
-        return ""
+    if not text: return ""
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     compact = "\n".join(lines) if lines else text
     return compact
 
-
 def extract_step(stem: str, prefix: str) -> int | None:
     match = re.search(rf"{re.escape(prefix)}_(\d+)", stem)
-    if not match:
-        return None
-    try:
-        return int(match.group(1))
-    except ValueError:
-        return None
+    if not match: return None
+    try: return int(match.group(1))
+    except ValueError: return None
 
 # 2. 사이드바 시스템 제어
 st.sidebar.title("시스템 제어 센터")
-
 st.sidebar.subheader("엔진 제어")
 if 'backend_thread' not in st.session_state:
     st.session_state.backend_thread = None
 
 if st.sidebar.button("검증 파이프라인 가동", type="primary"):
     if st.session_state.backend_thread is None or not st.session_state.backend_thread.is_alive():
-        # main.py의 run_dynamic_pipeline 호출
-        thread = threading.Thread(target=main.run_dynamic_pipeline, daemon=True)
+        thread = threading.Thread(target=main2.run_dynamic_pipeline, daemon=True)
         thread.start()
         st.session_state.backend_thread = thread
         st.sidebar.success("엔진이 백그라운드에서 가동되었습니다!")
@@ -303,12 +206,7 @@ if mode == "실시간 모니터링 (Live)":
 
         if current_render_image_key != st.session_state.live_rendered_image_key:
             if last_frame is not None and last_step is not None:
-                live_image_slot.image(
-                    last_frame,
-                    channels="RGB",
-                    use_container_width=True,
-                    caption=f"Iteration {last_step}: [Real-time Target Detection Active]",
-                )
+                live_image_slot.image(last_frame, channels="RGB", use_container_width=True, caption=f"Iteration {last_step}: [Real-time Target Detection Active]")
             else:
                 live_image_slot.info("표시 가능한 실시간 프레임이 아직 없습니다.")
             st.session_state.live_rendered_image_key = current_render_image_key
@@ -327,16 +225,19 @@ if mode == "실시간 모니터링 (Live)":
 
         if isinstance(last_data, dict) and last_step is not None:
             score = float(last_data["panel_1_visual"]["map50_score"])
-            color = "#ff4b4b" if score < 0.85 else "#28a745"
-            status_text = "탐지 위험 (Safety Line 붕괴)" if score < 0.85 else "정상 (PASSED)"
+            # 💡 [핵심 수정] 하드코딩 0.85 제거, JSON의 동적 Safety Line 적용
+            safety_line = float(last_data.get("safety_line", 0.70)) 
+            color = "#ff4b4b" if score < safety_line else "#28a745"
+            status_text = "탐지 위험 (Safety Line 붕괴)" if score < safety_line else "정상 (PASSED)"
             status_key = (last_step, round(score, 6), status_text)
+            
             if status_key != st.session_state.live_rendered_status_key:
                 live_status_slot.markdown(
                     f"""
                     <div class='status-card' style='border-left: 10px solid {color};'>
                         <h2 style='margin:0; color:{color};'>최종 성능값: {score:.4f}</h2>
                         <p style='margin:0; font-size:1.1em;'>상태: <b>{status_text}</b>
-                        | Step: {last_step}/5</p>
+                        | Step: {last_step}/5 | <span style='font-size:0.9em; color:#9ca3af;'>기준선: {safety_line:.4f}</span></p>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -381,11 +282,10 @@ if mode == "실시간 모니터링 (Live)":
 
     render_live_monitor()
 
-# 4. 메인 화면 - 히스토리 분석 (여기에 방어 로직이 집중됨)
+# 4. 메인 화면 - 히스토리 분석
 else:
     st.header("검증 히스토리 정밀 분석")
     
-    # 🔍 방어 로직: 파일 목록을 먼저 가져옴
     json_files = list(DATA_DIR.glob("dashboard_step_*.json"))
     steps = sorted(
         {
@@ -396,17 +296,14 @@ else:
         }
     )
     
-    # [방어 로직 시작] steps 리스트가 비어있으면 슬라이더를 아예 안 그림
     if not steps:
         st.error("🚨 분석할 데이터가 존재하지 않습니다.")
         st.info("사이드바의 '검증 파이프라인 가동' 버튼을 눌러 먼저 데이터를 생성해주세요.")
         
-        # 샘플 이미지가 있다면 보여주기 (없으면 생략 가능)
         if (IMAGE_DIR / "step_1.jpg").exists():
             st.image(Image.open(IMAGE_DIR / "step_1.jpg"), caption="원본 베이스라인 이미지", use_container_width=True)
             
     else:
-        # select_slider는 옵션이 1개일 때(min=max) RangeError가 날 수 있어 분기 처리
         if len(steps) == 1:
             sel = steps[0]
             st.info(f"현재 선택 가능한 검증 단계가 1개(Step {sel})라 자동 선택했습니다.")
@@ -416,7 +313,8 @@ else:
         
         if d:
             score = float(d["panel_1_visual"]["map50_score"])
-            threshold = 0.85
+            # 💡 [핵심 수정] 하드코딩 0.85 제거, JSON의 동적 Safety Line 적용
+            threshold = float(d.get("safety_line", 0.70)) 
             delta = score - threshold
             is_pass = score >= threshold
             color = "#22c55e" if is_pass else "#ef4444"
@@ -452,11 +350,13 @@ else:
                 if history_data:
                     df_hist = pd.DataFrame(history_data)
                     fig = px.line(df_hist, x="Step", y="mAP", markers=True, title="성능 하락 타임라인 (mAP50)")
+                    
+                    # 💡 [핵심 수정] 빨간 점선 동적 설정
                     fig.add_hline(
-                        y=0.85,
+                        y=threshold,
                         line_dash="dash",
                         line_color="red",
-                        annotation_text="Safety Line (85%)",
+                        annotation_text=f"Safety Line ({threshold:.4f})",
                         annotation_font_color="#ffffff",
                     )
                     fig.update_layout(
@@ -478,7 +378,7 @@ else:
                     <div class='metric-card' style='border-left: 10px solid {color};'>
                         <div class='metric-title'>mAP50 Score</div>
                         <div class='metric-score' style='color:{color};'>{score:.4f}</div>
-                        <div class='metric-status' style='color:{color};'>{status_text} (기준선 0.85 대비 {delta:+.4f})</div>
+                        <div class='metric-status' style='color:{color};'>{status_text} (기준선 {threshold:.4f} 대비 {delta:+.4f})</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -546,4 +446,3 @@ else:
                     if xai_rows:
                         st.markdown("**XAI (SHAP) 원본 테이블**")
                         st.dataframe(pd.DataFrame(xai_rows), use_container_width=True, hide_index=True)
-
