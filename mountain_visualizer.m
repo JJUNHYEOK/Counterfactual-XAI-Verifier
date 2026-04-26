@@ -353,8 +353,9 @@ surf(ax, bx, by, bz, ...
 end
 
 function img = render_camera_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
-% Renders a synthetic camera image: sky, ground, projected tree silhouettes,
-% then applies fog/illumination/noise. Returns HxWx3 in [0,1].
+% Renders a synthetic camera image: sky, mountain skyline (from base
+% workspace TERRAIN_*), projected tree silhouettes, then applies
+% fog/illumination/noise. Returns HxWx3 in [0,1].
 
 W = img_size(1); H = img_size(2);
 fx = cam_intrin(1); fy = cam_intrin(2);
@@ -363,34 +364,37 @@ pitch = cam_intrin(5) * pi/180;
 sp = sin(pitch); cp = cos(pitch);
 
 % --- Sky / ground gradient (horizon depends on pitch) ---
-v_horizon = cy + fy * tan(pitch);
+% Camera pitched DOWN by 'pitch' rad: horizon moves UP in image
+% (smaller v). Far horizontal points project to v = cy - fy*tan(pitch).
+v_horizon = cy - fy * tan(pitch);
 v_horizon = max(8, min(H-8, v_horizon));
 
 img = zeros(H, W, 3);
 vv = (1:H).';
 
-% Sky band
 sky_idx = 1:floor(v_horizon);
 if ~isempty(sky_idx)
     a = vv(sky_idx) ./ max(1, v_horizon);
     img(sky_idx, :, 1) = repmat(0.55 + 0.30*a, 1, W);
     img(sky_idx, :, 2) = repmat(0.70 + 0.20*a, 1, W);
-    img(sky_idx, :, 3) = repmat(0.85 + 0.10*a, 1, W);
+    img(sky_idx, :, 3) = repmat(0.88 + 0.08*a, 1, W);
 end
 
-% Ground band
 gnd_idx = ceil(v_horizon):H;
 if ~isempty(gnd_idx)
     a = (vv(gnd_idx) - v_horizon) ./ max(1, H - v_horizon);
-    img(gnd_idx, :, 1) = repmat(0.30 - 0.15*a, 1, W);
-    img(gnd_idx, :, 2) = repmat(0.50 - 0.25*a, 1, W);
-    img(gnd_idx, :, 3) = repmat(0.22 - 0.10*a, 1, W);
+    img(gnd_idx, :, 1) = repmat(0.32 - 0.18*a, 1, W);
+    img(gnd_idx, :, 2) = repmat(0.46 - 0.22*a, 1, W);
+    img(gnd_idx, :, 3) = repmat(0.20 - 0.10*a, 1, W);
 end
+
+% --- Mountain skyline (project terrain points, splat with depth fade) ---
+img = paint_terrain(img, uav, fx, fy, cx, cy, sp, cp, W, H);
 
 % --- Project + render trees, painter's algorithm (back to front) ---
 N = size(obs_xyz, 1);
 depth = nan(N, 1);
-proj  = zeros(N, 4);   % bbox per tree; rows of zeros mean "skip"
+proj  = zeros(N, 4);
 
 for k = 1:N
     [bbox, dval] = project_cylinder(uav, obs_xyz(k,:), obs_rh(k,1), obs_rh(k,2), ...
@@ -405,13 +409,102 @@ for k = order(:).'
     if isnan(depth(k)), continue; end
     bbox = proj(k, :);
     if all(bbox == 0), continue; end
-    img = paint_tree(img, bbox, depth(k));
+    img = paint_tree(img, bbox, depth(k), k);
 end
 
 % --- Weather effects ---
 img = apply_weather(img, fog, illum, noise);
 
 img = max(0, min(1, img));
+end
+
+function img = paint_terrain(img, uav, fx, fy, cx, cy, sp, cp, W, H)
+% Projects subsampled terrain grid points into the camera image and splats
+% each point with size matching its world cell footprint. Painter's
+% algorithm (back-to-front) gives a smooth mountain skyline with
+% atmospheric fade.
+
+persistent Xs Ys Zs gridSpacing
+if isempty(Xs) || isempty(gridSpacing)
+    try
+        Xg = evalin("base", "TERRAIN_X");
+        Yg = evalin("base", "TERRAIN_Y");
+        Zg = evalin("base", "TERRAIN_Z");
+    catch
+        return;
+    end
+    ds = 1;   % use full resolution (terrain grid already coarse)
+    Xs = Xg(1:ds:end, 1:ds:end); Xs = Xs(:);
+    Ys = Yg(1:ds:end, 1:ds:end); Ys = Ys(:);
+    Zs = Zg(1:ds:end, 1:ds:end); Zs = Zs(:);
+    % World spacing between adjacent samples (assumes uniform grid).
+    if size(Xg,2) >= 2
+        gridSpacing = abs(Xg(1,2) - Xg(1,1)) * ds;
+    else
+        gridSpacing = 2.0 * ds;
+    end
+end
+
+dx = Xs - uav(1);
+dy = Ys - uav(2);
+dz = Zs - uav(3);
+
+cz = dx*cp - dz*sp;
+valid = cz > 1.0;
+if ~any(valid), return; end
+
+dx_v = dx(valid); dy_v = dy(valid); dz_v = dz(valid);
+cz_v = cz(valid);
+cam_x = dy_v;
+cam_y = -dx_v*sp - dz_v*cp;
+
+u = fx * cam_x ./ cz_v + cx;
+v = fy * cam_y ./ cz_v + cy;
+
+inFOV = u >= -50 & u <= W+50 & v >= -50 & v <= H+50;
+u = u(inFOV); v = v(inFOV); cz_v = cz_v(inFOV);
+Zs_v = Zs(valid); Zs_v = Zs_v(inFOV);
+if isempty(u), return; end
+
+[~, ord] = sort(cz_v, "descend");
+u = u(ord); v = v(ord); cz_v = cz_v(ord); Zs_v = Zs_v(ord);
+
+sky_col = [0.78 0.84 0.92];
+ui = round(u); vi = round(v);
+
+% Splat half-size matches projected world cell, with floor of 1 px
+splatRadius = max(1, ceil(0.55 * gridSpacing * fx ./ cz_v));
+splatRadius = min(splatRadius, 35);
+
+% Pre-compute terrain max for color elevation banding
+zMax = max(Zs);
+
+for k = 1:length(ui)
+    cz_k = cz_v(k);
+    fade = max(0.20, min(1, 1 - cz_k/140));
+
+    % Elevation banding: low = green, mid = brown, high = grey/white
+    h_norm = max(0, min(1, Zs_v(k) / max(1, zMax)));
+    if h_norm < 0.45
+        baseCol = [0.22 0.45 0.18];               % grass
+    elseif h_norm < 0.75
+        a = (h_norm - 0.45) / 0.30;
+        baseCol = [0.22 0.45 0.18] * (1-a) + [0.55 0.45 0.30] * a;   % grass -> rocky
+    else
+        a = (h_norm - 0.75) / 0.25;
+        baseCol = [0.55 0.45 0.30] * (1-a) + [0.85 0.85 0.88] * a;   % rocky -> snow
+    end
+    earth = baseCol * fade + sky_col * (1 - fade);
+
+    rad = splatRadius(k);
+    u0 = max(1, ui(k) - rad); u1_b = min(W, ui(k) + rad);
+    v0 = max(1, vi(k) - rad); v1_b = min(H, vi(k) + rad);
+    if u1_b < u0 || v1_b < v0, continue; end
+
+    img(v0:v1_b, u0:u1_b, 1) = earth(1);
+    img(v0:v1_b, u0:u1_b, 2) = earth(2);
+    img(v0:v1_b, u0:u1_b, 3) = earth(3);
+end
 end
 
 function [bbox, depth] = project_cylinder(uav, base, r, h, cx, cy, fx, fy, sp, cp)
@@ -442,51 +535,87 @@ bbox = [u_l, v_t, u_r - u_l, v_b - v_t];
 depth = cz_avg;
 end
 
-function img = paint_tree(img, bbox, depth)
+function img = paint_tree(img, bbox, depth, treeId)
+% Renders a more realistic tree: ellipse crown with directional shading,
+% per-tree color variation, atmospheric fade, tapered trunk.
 [H, W, ~] = size(img);
 
 u1 = max(1, floor(bbox(1)));
 u2 = min(W, ceil(bbox(1) + bbox(3)));
 v1 = max(1, floor(bbox(2)));
 v2 = min(H, ceil(bbox(2) + bbox(4)));
-if u2 < u1 || v2 < v1, return; end
+if u2 <= u1 || v2 <= v1, return; end
 
 bw = u2 - u1 + 1;
 bh = v2 - v1 + 1;
+if bw < 2 || bh < 4, return; end
 
-% Distance shading: darker when closer (more saturated detail near).
-shade = 0.7 + 0.3 * min(1, 25 / max(depth, 5));   % 0.7 .. 1.0
+% --- Per-tree color variation (deterministic from id) ---
+hueShift = 0.85 + 0.30 * mod(treeId * 0.6180339, 1);   % 0.85..1.15
+crownBase = [0.12, 0.42, 0.16] .* hueShift;
+trunkBase = [0.38, 0.22, 0.10] .* (0.95 + 0.10*mod(treeId*0.37, 1));
 
-% Crown: top ~70% of bbox
-trunkBand = max(2, round(bh * 0.30));
-crownEnd  = v2 - trunkBand;
-crownStart = v1;
+% --- Atmospheric perspective: blend toward sky with depth ---
+sky = [0.78, 0.84, 0.92];
+fade = max(0.30, min(1, 1 - depth/110));
+crownColor = crownBase * fade + sky * (1 - fade);
+trunkColor = trunkBase * fade + sky * (1 - fade);
 
-if crownEnd >= crownStart
-    % Slight oval taper: darken edges, lighten center
-    crownColor = [0.10 0.45 0.15] * shade;
-    img(crownStart:crownEnd, u1:u2, 1) = crownColor(1);
-    img(crownStart:crownEnd, u1:u2, 2) = crownColor(2);
-    img(crownStart:crownEnd, u1:u2, 3) = crownColor(3);
+% --- Layout: crown 75% top, trunk 25% bottom ---
+crownH = max(2, round(bh * 0.75));
+crownEnd = v1 + crownH - 1;
+trunkV1 = crownEnd + 1;
 
-    % Add lighter highlight on left ~30%
-    hiW = max(1, round(bw * 0.30));
-    hiU2 = min(u2, u1 + hiW - 1);
-    img(crownStart:crownEnd, u1:hiU2, 1) = 0.18 * shade;
-    img(crownStart:crownEnd, u1:hiU2, 2) = 0.55 * shade;
-    img(crownStart:crownEnd, u1:hiU2, 3) = 0.20 * shade;
-end
+% --- Crown: ellipse with directional shading ---
+[uu, vv] = meshgrid(u1:u2, v1:crownEnd);
+cx_b = (u1 + u2) / 2;
+cy_b = (v1 + crownEnd) / 2;
+rx = max(1, bw / 2 - 0.3);
+ry = max(1, crownH / 2 - 0.3);
 
-% Trunk: narrower brown rectangle in the bottom
-trunkW = max(1, round(bw * 0.32));
-trunkU1 = max(u1, round((u1 + u2)/2 - trunkW/2));
-trunkU2 = min(u2, trunkU1 + trunkW - 1);
-trunkV1 = max(v1, crownEnd + 1);
-if trunkV1 <= v2 && trunkU2 >= trunkU1
-    trunkColor = [0.42 0.24 0.10] * shade;
-    img(trunkV1:v2, trunkU1:trunkU2, 1) = trunkColor(1);
-    img(trunkV1:v2, trunkU1:trunkU2, 2) = trunkColor(2);
-    img(trunkV1:v2, trunkU1:trunkU2, 3) = trunkColor(3);
+nx = (uu - cx_b) / rx;
+ny = (vv - cy_b) / ry;
+mask = (nx.^2 + ny.^2) <= 1;
+
+% Shading: lighter top-left (sun from upper-left), darker bottom-right
+shade = 0.78 + 0.32 * (-nx*0.55 - ny*0.65);
+shade = max(0.55, min(1.20, shade));
+
+% Subtle leaf-cluster texture: low-amplitude noise tied to position
+texture = 0.92 + 0.16 * sin(3.1*uu + treeId).*cos(2.7*vv + treeId*1.3);
+shade = shade .* texture;
+
+R_slice = squeeze(img(v1:crownEnd, u1:u2, 1));
+G_slice = squeeze(img(v1:crownEnd, u1:u2, 2));
+B_slice = squeeze(img(v1:crownEnd, u1:u2, 3));
+
+R_slice(mask) = crownColor(1) * shade(mask);
+G_slice(mask) = crownColor(2) * shade(mask);
+B_slice(mask) = crownColor(3) * shade(mask);
+
+img(v1:crownEnd, u1:u2, 1) = R_slice;
+img(v1:crownEnd, u1:u2, 2) = G_slice;
+img(v1:crownEnd, u1:u2, 3) = B_slice;
+
+% --- Trunk: tapered, with vertical light gradient ---
+if trunkV1 <= v2
+    trunkW_top    = max(1, round(bw * 0.20));
+    trunkW_bottom = max(1, round(bw * 0.28));
+
+    for vv_t = trunkV1:v2
+        a = (vv_t - trunkV1) / max(1, v2 - trunkV1);
+        wThis = round(trunkW_top * (1 - a) + trunkW_bottom * a);
+        ucenter = round(cx_b);
+        uL = max(u1, ucenter - floor(wThis/2));
+        uR = min(u2, uL + wThis - 1);
+        if uR < uL, continue; end
+
+        % Vertical shading: top brighter, bottom darker (ground shadow)
+        vShade = 1.05 - 0.40 * a;
+        img(vv_t, uL:uR, 1) = trunkColor(1) * vShade;
+        img(vv_t, uL:uR, 2) = trunkColor(2) * vShade;
+        img(vv_t, uL:uR, 3) = trunkColor(3) * vShade;
+    end
 end
 end
 
@@ -518,13 +647,12 @@ end
 
 function img = make_camera_background(w, h, pitch_rad, fy, cy)
 % Sky/ground gradient with horizon position consistent with the camera pitch.
-% For a camera pitched down by pitch_rad, the horizon (world Z=0 plane far away)
-% projects to v_horizon = cy + fy * tan(pitch_rad).
+% Camera pitched down: horizon at v = cy - fy * tan(pitch_rad).
 if nargin < 3, pitch_rad = 0; end
 if nargin < 4, fy = h*1.0; end
 if nargin < 5, cy = h*0.5; end
 
-v_horizon = cy + fy * tan(pitch_rad);
+v_horizon = cy - fy * tan(pitch_rad);
 v_horizon = max(8, min(h-8, v_horizon));
 
 img = zeros(h, w, 3);

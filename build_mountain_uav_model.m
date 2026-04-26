@@ -191,7 +191,7 @@ assignin("base", "UAV_V_VEC",  [3.0, 0.0, 0.0]);   % m/s along +X
 
 % --- Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ---
 % Pitch tilts the camera down so trees on the mountainside fall in the FOV.
-assignin("base", "CAM_INTRIN", [600, 600, 320, 180, 25]);
+assignin("base", "CAM_INTRIN", [600, 600, 320, 180, 15]);
 assignin("base", "IMG_SIZE",   [640, 360]);
 
 end
