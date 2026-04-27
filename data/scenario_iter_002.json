@@ -1,0 +1,28 @@
+{
+  "scenario_id": "scenario_iter_002",
+  "target_hypothesis": "Bisection step: direction=WORSEN, step_factor=0.500, prev=FAIL, now=PASS",
+  "environment_parameters": {
+    "fog_density_percent": 9,
+    "illumination_lux": 6800,
+    "camera_noise_level": 0.05
+  },
+  "llm_reasoning": "Boundary search: keep moving in the same direction while the verdict is unchanged; halve the step when the boundary is crossed.",
+  "x_loop_state": {
+    "direction": 1,
+    "step_factor": 0.5,
+    "last_passed": true,
+    "history": {
+      "env": {
+        "fog_density_percent": 0,
+        "illumination_lux": 8000,
+        "camera_noise_level": 0
+      },
+      "passed": true,
+      "violated_count": 0,
+      "map50": 1,
+      "min_clearance": 2.5340064941374725,
+      "worst_run": 0
+    }
+  },
+  "x_source": "fallback:user_requested"
+}

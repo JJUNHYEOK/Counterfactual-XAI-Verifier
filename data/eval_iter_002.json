@@ -1,15 +1,15 @@
 {
-  "iter": 1,
+  "iter": 2,
   "geometric": {
     "req1": {
       "id": "REQ-1",
       "name": "Detection performance (mAP50)",
       "threshold": 0.85,
-      "value": 0.71359223300970875,
+      "value": 0.68932038834951459,
       "passed": false,
-      "tp": 735,
+      "tp": 710,
       "fp": 0,
-      "fn": 295,
+      "fn": 320,
       "total_gt": 1030
     },
     "req2": {
@@ -34,9 +34,9 @@
     "frames": 301,
     "obstacles": 5,
     "scenario_factors": {
-      "fog_density_percent": 0,
-      "illumination_lux": 8000,
-      "camera_noise_level": 0
+      "fog_density_percent": 9,
+      "illumination_lux": 6800,
+      "camera_noise_level": 0.05
     }
   },
   "image_based": {
@@ -73,9 +73,9 @@
     "frames": 38,
     "obstacles": 5,
     "scenario_factors": {
-      "fog_density_percent": 0,
-      "illumination_lux": 8000,
-      "camera_noise_level": 0
+      "fog_density_percent": 9,
+      "illumination_lux": 6800,
+      "camera_noise_level": 0.05
     },
     "note": "image-based, stride=8 (M=38 / 301 frames)"
   }

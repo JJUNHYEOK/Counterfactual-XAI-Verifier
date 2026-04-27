@@ -1,5 +1,5 @@
 {
-  "scene_id": "iter_007",
+  "scene_id": "iter_005",
   "task": "uav_object_detection_mountain",
   "goal": "Find minimal environment changes to satisfy all three requirements (REQ-1 mAP50, REQ-2 clearance, REQ-3 continuity).",
   "perception": {
@@ -11,16 +11,16 @@
     "detections": []
   },
   "scenario": {
-    "scenario_id": "scenario_iter_007",
+    "scenario_id": "scenario_iter_005",
     "environment_parameters": {
-      "fog_density_percent": 16.875,
-      "illumination_lux": 5864.1544575195321,
-      "camera_noise_level": 0.09375
+      "fog_density_percent": 15.75,
+      "illumination_lux": 5980.4937500000005,
+      "camera_noise_level": 0.087500000000000008
     },
     "x_loop_state": {
-      "direction": -1,
-      "step_factor": 0.0625,
-      "last_passed": false,
+      "direction": 1,
+      "step_factor": 0.125,
+      "last_passed": true,
       "history": [
         "env",
         "passed",
@@ -63,30 +63,6 @@
           "map50": 0.97692307692307689,
           "min_clearance": 2.5340064941374725,
           "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 15.75,
-            "illumination_lux": 5980.4937500000005,
-            "camera_noise_level": 0.087500000000000008
-          },
-          "passed": true,
-          "violated_count": 0,
-          "map50": 0.87692307692307692,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 18,
-            "illumination_lux": 5756.2252343750006,
-            "camera_noise_level": 0.1
-          },
-          "passed": false,
-          "violated_count": 1,
-          "map50": 0.8,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
         }
       ]
     }
@@ -97,7 +73,7 @@
       "name": "Detection performance (mAP50)",
       "metric": "map50",
       "threshold": 0.85,
-      "value": 0.86153846153846159,
+      "value": 0.87692307692307692,
       "passed": true
     },
     {
@@ -120,11 +96,11 @@
   "current_requirement": {
     "metric": "map50",
     "threshold": 0.85,
-    "value": 0.86153846153846159,
+    "value": 0.87692307692307692,
     "requirement_violated": false
   },
   "performance_signals": {
-    "map50": 0.86153846153846159,
+    "map50": 0.87692307692307692,
     "min_clearance_m": 2.5340064941374725,
     "max_consecutive_misses": 0,
     "violated_count": 0,
@@ -147,7 +123,7 @@
         "importance": 0.33
       }
     ],
-    "attention_summary": "REQ-1=0.862 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=16.9 illum=5864 noise=0.09"
+    "attention_summary": "REQ-1=0.877 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=15.8 illum=5980 noise=0.09"
   },
   "scenario_constraints": {
     "allow_weather_change": true,
@@ -197,9 +173,9 @@
   "sim_result": {
     "frames": 38,
     "obstacles": 5,
-    "tp": 112,
+    "tp": 114,
     "fp": 0,
-    "fn": 18,
+    "fn": 16,
     "total_gt": 130,
     "min_clearance": 2.5340064941374725,
     "worst_run": 0

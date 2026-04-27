@@ -1,0 +1,103 @@
+{
+  "iterations": [
+    {
+      "iter": 1,
+      "fog": 0,
+      "illum": 8000,
+      "noise": 0,
+      "map50_geom": 0.71359223300970875,
+      "map50_image": 1,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": true,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": true
+    },
+    {
+      "iter": 2,
+      "fog": 9,
+      "illum": 6800,
+      "noise": 0.05,
+      "map50_geom": 0.68932038834951459,
+      "map50_image": 1,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": true,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": true
+    },
+    {
+      "iter": 3,
+      "fog": 18,
+      "illum": 5780,
+      "noise": 0.1,
+      "map50_geom": 0.66019417475728148,
+      "map50_image": 0.823076923076923,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": false,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": false
+    },
+    {
+      "iter": 4,
+      "fog": 13.5,
+      "illum": 6213.5,
+      "noise": 0.075000000000000011,
+      "map50_geom": 0.67572815533980579,
+      "map50_image": 0.97692307692307689,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": true,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": true
+    },
+    {
+      "iter": 5,
+      "fog": 15.75,
+      "illum": 5980.4937500000005,
+      "noise": 0.087500000000000008,
+      "map50_geom": 0.66796116504854364,
+      "map50_image": 0.87692307692307692,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": true,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": true
+    },
+    {
+      "iter": 6,
+      "fog": 18,
+      "illum": 5756.2252343750006,
+      "noise": 0.1,
+      "map50_geom": 0.66019417475728148,
+      "map50_image": 0.8,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": false,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": false
+    },
+    {
+      "iter": 7,
+      "fog": 16.875,
+      "illum": 5864.1544575195321,
+      "noise": 0.09375,
+      "map50_geom": 0.6640776699029125,
+      "map50_image": 0.86153846153846159,
+      "min_clear": 2.5340064941374725,
+      "worst_run": 0,
+      "req1_pass": true,
+      "req2_pass": true,
+      "req3_pass": true,
+      "all_passed": true
+    }
+  ],
+  "count": 7
+}
