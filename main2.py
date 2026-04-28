@@ -281,7 +281,7 @@
 #                 "baseline_map50": float(base_map), 
 #                 "safety_line": float(safety_line), 
 #                 "panel_1_visual": {"map50_score": new_map50, "params": env, "rendered_image": f"current_iter_{step}.jpg"},
-#                 "panel_2_xai": feature_importance,
+#                 "panel_2_xai": panel_2_xai,
 #                 "panel_3_llm": {"hypothesis": scenario.get("target_hypothesis"), "reasoning": scenario.get("llm_reasoning")},
 #                 "panel_4_counterfactual": {
 #                     "summary": cf_summary,
@@ -481,7 +481,7 @@
 #                 "baseline_map50": float(base_map), 
 #                 "safety_line": float(safety_line), 
 #                 "panel_1_visual": {"map50_score": new_map50, "params": env, "rendered_image": f"current_iter_{step}.jpg"},
-#                 "panel_2_xai": feature_importance,
+#                 "panel_2_xai": panel_2_xai,
 #                 "panel_3_llm": {"hypothesis": scenario.get("target_hypothesis"), "reasoning": scenario.get("llm_reasoning")},
 #                 "panel_4_counterfactual": {"summary": "analysing..."},
 #             }, f_out, indent=2, ensure_ascii=False)
@@ -564,6 +564,37 @@ def _normalize_dominant_factors(feature_importance: list[dict]) -> list[dict]:
             }
         )
     return normalized
+
+
+def _panel2_from_kernelshap(cf_output: dict, fallback_rows: list[dict]) -> list[dict]:
+    """Build panel_2_xai from KernelSHAP top_features when available."""
+    if not isinstance(cf_output, dict):
+        return fallback_rows
+
+    top_features = cf_output.get("top_features")
+    if not isinstance(top_features, list):
+        return fallback_rows
+
+    rows: list[dict] = []
+    for row in top_features:
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get("feature", "")).strip()
+        if not name:
+            continue
+        importance = clean_val(
+            row.get(
+                "shap_importance",
+                row.get("attribution_score", 0.0),
+            )
+        )
+        rows.append({"name": name, "importance": float(max(0.0, importance))})
+
+    if not rows:
+        return fallback_rows
+    rows.sort(key=lambda item: item["importance"], reverse=True)
+    return rows
+
 
 def run_dynamic_pipeline():
     s_print("🚀 UAV 객체 탐지 자율 검증 파이프라인 가동 (최종 최적화 버전)")
@@ -666,10 +697,25 @@ def run_dynamic_pipeline():
             },
         }
         try:
-            cf_output, boundary_output = generate_counterfactual_and_boundary(cf_input, mode="map50_proxy", random_seed=42 + step)
-            # 💡 요약 텍스트 추출
-            cf_summary = (cf_output.get("minimal_change_candidates") or [{}])[0].get("summary_explanation", "No explanation available.")
+            cf_output, boundary_output = generate_counterfactual_and_boundary(
+                cf_input,
+                mode="map50_proxy",
+                random_seed=42 + step,
+            )
+            panel_2_xai = _panel2_from_kernelshap(cf_output, feature_importance)
+            dominant_factors = _normalize_dominant_factors(panel_2_xai)
+
+            llm_guidance = str(cf_output.get("llm_guidance", "")).strip()
+            top_candidate_summary = (
+                (cf_output.get("minimal_change_candidates") or [{}])[0].get("summary_explanation", "")
+            )
+            if llm_guidance and top_candidate_summary:
+                cf_summary = f"{llm_guidance}\n\n{top_candidate_summary}"
+            else:
+                cf_summary = llm_guidance or top_candidate_summary or "Counterfactual explanation unavailable."
         except Exception as e:
+            panel_2_xai = feature_importance
+            dominant_factors = _normalize_dominant_factors(feature_importance)
             cf_summary = f"Counterfactual analysis failed: {e}"
 
         # Step 5: 결과 저장 (💡 analysing... 텍스트를 cf_summary 변수로 교체함)
@@ -680,16 +726,13 @@ def run_dynamic_pipeline():
                 "baseline_map50": float(base_map), 
                 "safety_line": float(safety_line), 
                 "panel_1_visual": {"map50_score": new_map50, "params": env, "rendered_image": f"current_iter_{step}.jpg"},
-                "panel_2_xai": feature_importance,
+                "panel_2_xai": panel_2_xai,
                 "panel_3_llm": {"hypothesis": scenario.get("target_hypothesis"), "reasoning": scenario.get("llm_reasoning")},
                 "panel_4_counterfactual": {"summary": cf_summary}, # 💡 복구 완료
             }, f_out, indent=2, ensure_ascii=False)
             
         # [핵심] 조기 종료 및 변수 다변화 피드백 활성화
-        if step >= 3 and new_map50 < safety_line:
-            s_print(f"\n🚨 [목표 달성] Step {step}에서 Safety Line 붕괴 확인. 조기 종료합니다.")
-            break
-            
+        # Always run full 5-step history so dashboard history analysis remains consistent.            
         if step == 1:
             feedback = (
                 f"현재 mAP: {new_map50:.4f}. 다음 Step 2는 Safety Line({safety_line:.4f}) 근처까지 유도하세요. "

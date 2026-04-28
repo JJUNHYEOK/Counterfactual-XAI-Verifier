@@ -1,84 +1,198 @@
 {
-  "scene_id": "iter_001",
+  "scene_id": "iter_004",
   "task": "uav_object_detection",
-  "goal": "Find minimal environment changes to recover requirement satisfaction.",
-  "perception": {
-    "detector": "stub-or-external-detector",
-    "input_resolution": [640, 360],
-    "detections": []
-  },
-  "current_requirement": {
-    "metric": "map50",
-    "threshold": 0.85,
-    "requirement_violated": true
-  },
-  "scenario": {
-    "scenario_id": "scenario_001",
+  "goal": "KernelSHAP-guided counterfactual analysis on direct simulation outcomes.",
+  "result_status": "FAIL",
+  "map50": 0.62,
+  "safety_line": 0.85,
+  "current_scenario": {
+    "scenario_id": "scenario_004",
     "environment_parameters": {
-      "fog_density_percent": 30.0,
-      "illumination_lux": 4000.0,
-      "camera_noise_level": 0.1
-    }
+      "fog_density_percent": 32.0,
+      "illumination_lux": 2500.0,
+      "camera_noise_level": 0.28,
+      "motion_blur_intensity": 6.0,
+      "zoom_blur_intensity": 2.0
+    },
+    "map50": 0.62,
+    "safety_line": 0.85,
+    "result_status": "FAIL"
   },
-  "performance_signals": {
-    "confidence_trend": "decreasing",
-    "miss_rate_trend": "increasing",
-    "risk_score": 0.59,
-    "failure_type": "detection_performance_drop",
-    "map50": 0.4096,
-    "threshold": 0.85
+  "previous_scenario": {
+    "scenario_id": "scenario_003",
+    "environment_parameters": {
+      "fog_density_percent": 24.0,
+      "illumination_lux": 3200.0,
+      "camera_noise_level": 0.19,
+      "motion_blur_intensity": 4.0,
+      "zoom_blur_intensity": 1.0
+    },
+    "map50": 0.86,
+    "safety_line": 0.85,
+    "result_status": "PASS"
   },
-  "xai_signals": {
-    "method": "direct-posthoc",
-    "dominant_factors": [
-      {
-        "name": "fog_density_percent",
-        "importance": 0.45
+  "scenario_history": [
+    {
+      "scene_id": "iter_001",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 10.0,
+          "illumination_lux": 5200.0,
+          "camera_noise_level": 0.05,
+          "motion_blur_intensity": 1.0,
+          "zoom_blur_intensity": 0.0
+        }
       },
-      {
-        "name": "illumination_lux",
-        "importance": 0.35
-      },
-      {
-        "name": "camera_noise_level",
-        "importance": 0.2
+      "performance_signals": {
+        "map50": 0.93,
+        "threshold": 0.85,
+        "status": "PASS"
       }
-    ],
-    "attention_summary": "mAP50=0.4096 at fog=30.0, illumination=4000.0, noise=0.10"
+    },
+    {
+      "scene_id": "iter_002",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 18.0,
+          "illumination_lux": 4300.0,
+          "camera_noise_level": 0.12,
+          "motion_blur_intensity": 2.0,
+          "zoom_blur_intensity": 0.5
+        }
+      },
+      "performance_signals": {
+        "map50": 0.89,
+        "threshold": 0.85,
+        "status": "PASS"
+      }
+    },
+    {
+      "scene_id": "iter_003",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 24.0,
+          "illumination_lux": 3200.0,
+          "camera_noise_level": 0.19,
+          "motion_blur_intensity": 4.0,
+          "zoom_blur_intensity": 1.0
+        }
+      },
+      "performance_signals": {
+        "map50": 0.86,
+        "threshold": 0.85,
+        "status": "PASS"
+      }
+    }
+  ],
+  "performance_signals": {
+    "map50": 0.62,
+    "threshold": 0.85,
+    "status": "FAIL",
+    "risk_score": 0.23,
+    "failure_type": "detection_performance_drop"
+  },
+  "feature_ranges": {
+    "fog_density_percent": [0.0, 100.0],
+    "illumination_lux": [500.0, 20000.0],
+    "camera_noise_level": [0.0, 0.6],
+    "motion_blur_intensity": [0.0, 20.0],
+    "zoom_blur_intensity": [0.0, 10.0]
+  },
+  "search_space": {
+    "weights": {
+      "fog_density_percent": 1.0,
+      "illumination_lux": 0.8,
+      "camera_noise_level": 1.0,
+      "motion_blur_intensity": 0.9,
+      "zoom_blur_intensity": 0.7
+    },
+    "mutable_parameters": [
+      "fog_density_percent",
+      "illumination_lux",
+      "camera_noise_level",
+      "motion_blur_intensity",
+      "zoom_blur_intensity"
+    ]
   },
   "scenario_constraints": {
     "allow_weather_change": true,
     "allow_lighting_change": true,
     "allow_obstacle_density_change": true
   },
-  "sim_result": {
-    "avg_confidence": 0.817,
-    "risk_score": 0.553
-  },
-  "search_space": {
-    "bounds": {
-      "fog_density_percent": [0.0, 100.0],
-      "illumination_lux": [500.0, 20000.0],
-      "camera_noise_level": [0.0, 0.6]
+  "counterfactual_replay_results": [
+    {
+      "feature": "fog_density_percent",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 18.0,
+          "illumination_lux": 2500.0,
+          "camera_noise_level": 0.28,
+          "motion_blur_intensity": 6.0,
+          "zoom_blur_intensity": 2.0
+        }
+      },
+      "performance_signals": {
+        "map50": 0.74,
+        "threshold": 0.85,
+        "status": "FAIL"
+      }
     },
-    "weights": {
-      "fog_density_percent": 1.0,
-      "illumination_lux": 1.0,
-      "camera_noise_level": 1.0
+    {
+      "feature": "camera_noise_level",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 32.0,
+          "illumination_lux": 2500.0,
+          "camera_noise_level": 0.12,
+          "motion_blur_intensity": 6.0,
+          "zoom_blur_intensity": 2.0
+        }
+      },
+      "performance_signals": {
+        "map50": 0.69,
+        "threshold": 0.85,
+        "status": "FAIL"
+      }
     },
-    "mutable_parameters": [
-      "fog_density_percent",
-      "illumination_lux",
-      "camera_noise_level"
-    ]
+    {
+      "feature": "motion_blur_intensity",
+      "scenario": {
+        "environment_parameters": {
+          "fog_density_percent": 32.0,
+          "illumination_lux": 2500.0,
+          "camera_noise_level": 0.28,
+          "motion_blur_intensity": 2.0,
+          "zoom_blur_intensity": 2.0
+        }
+      },
+      "performance_signals": {
+        "map50": 0.66,
+        "threshold": 0.85,
+        "status": "FAIL"
+      }
+    }
+  ],
+  "xai_signals": {
+    "method": "previous_xai_prior",
+    "dominant_factors": [
+      {
+        "name": "fog_density_percent",
+        "importance": 0.42
+      },
+      {
+        "name": "camera_noise_level",
+        "importance": 0.33
+      },
+      {
+        "name": "motion_blur_intensity",
+        "importance": 0.25
+      }
+    ],
+    "attention_summary": "Prior evidence from previous XAI iterations"
   },
   "counterfactual_request": {
     "target_status": "PASS",
-    "evaluator": "map50_proxy",
-    "guidance_blend": {
-      "xai": 0.4,
-      "shap_global": 0.3,
-      "shap_local": 0.3
-    }
-  }
+    "evaluator": "kernelshap"
+  },
+  "shap_target_metric": "map50"
 }

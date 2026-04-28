@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from pathlib import Path
 import re
+import importlib
 from PIL import Image
 import plotly.express as px
 import threading 
@@ -142,6 +143,11 @@ def compact_text(text, max_chars=320, max_lines=6):
     compact = "\n".join(lines) if lines else text
     return compact
 
+
+def escape_markdown_tilde(text: str) -> str:
+    """Avoid accidental strikethrough rendering from range text like 20~30%."""
+    return str(text or "").replace("~", r"\~")
+
 def extract_step(stem: str, prefix: str) -> int | None:
     match = re.search(rf"{re.escape(prefix)}_(\d+)", stem)
     if not match: return None
@@ -156,6 +162,7 @@ if 'backend_thread' not in st.session_state:
 
 if st.sidebar.button("검증 파이프라인 가동", type="primary"):
     if st.session_state.backend_thread is None or not st.session_state.backend_thread.is_alive():
+        importlib.reload(main2)
         thread = threading.Thread(target=main2.run_dynamic_pipeline, daemon=True)
         thread.start()
         st.session_state.backend_thread = thread
@@ -388,13 +395,13 @@ else:
                 with tab_summary:
                     st.markdown("**🧠 LLM 추론 요약**")
                     if llm_reasoning_short:
-                        st.info(llm_reasoning_short)
+                        st.info(escape_markdown_tilde(llm_reasoning_short))
                     else:
                         st.caption("LLM 추론 문장이 없습니다.")
 
                     st.markdown("**🧭 Counterfactual 요약**")
                     if cf_summary_short:
-                        st.info(cf_summary_short)
+                        st.info(escape_markdown_tilde(cf_summary_short))
                     else:
                         st.caption("Counterfactual 요약이 없습니다.")
 
@@ -433,13 +440,13 @@ else:
                 with tab_detail:
                     st.markdown("**LLM 추론 원문**")
                     if llm_reasoning:
-                        st.success(llm_reasoning)
+                        st.success(escape_markdown_tilde(llm_reasoning))
                     else:
                         st.caption("LLM 추론 원문이 없습니다.")
 
                     st.markdown("**Counterfactual 경계 탐색 원문**")
                     if cf_summary_full:
-                        st.info(cf_summary_full)
+                        st.info(escape_markdown_tilde(cf_summary_full))
                     else:
                         st.caption("Counterfactual 원문 요약이 없습니다.")
 

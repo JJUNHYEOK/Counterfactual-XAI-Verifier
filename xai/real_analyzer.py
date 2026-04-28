@@ -1,85 +1,149 @@
+import os
+from typing import Any
+
 import numpy as np
-import xgboost as xgb
-import shap
-import os  # <--- 경로 처리를 위해 추가
 from ultralytics import YOLO
 
-def absolute_cleaner(val):
+
+def absolute_cleaner(val: Any) -> float:
     try:
-        s = str(val).replace('[', '').replace(']', '').replace("'", "").replace('"', '').strip()
+        s = str(val).replace("[", "").replace("]", "").replace("'", "").replace('"', "").strip()
         return float(s)
-    except:
+    except Exception:
         return 0.0
 
-class RealXAIAnalyzer:
-    def __init__(self):
-        # 모델 로드 (최초 실행 시 다운로드될 수 있음)
-        self.yolo_model = YOLO("yolo11x.pt")
-        self.history_X = [[0.0, 5000.0, 0.0, 0.0, 0.0], [100.0, 100.0, 1.0, 20.0, 10.0]]
-        self.history_y = [0.95, 0.10]
 
-    def analyze(self, image_path: str, scenario_data: dict):
-        # 1. YOLO 객체 탐지 수행
-        results = self.yolo_model(image_path, verbose=False)
-        
-        # ---------------------------------------------------------
-        # [신규 추가] 바운딩 박스 이미지 저장 로직
-        # ---------------------------------------------------------
-        # [수정된 바운딩 박스 이미지 저장 로직] 대시보드 실시간 출력용
+def _is_harmful_when_increasing(feature_name: str) -> bool:
+    lowered = feature_name.lower()
+    tokens = (
+        "fog",
+        "noise",
+        "blur",
+        "wind",
+        "delay",
+        "obstacle",
+        "density",
+        "rain",
+        "snow",
+    )
+    return any(token in lowered for token in tokens)
+
+
+def _feature_scale(feature_name: str, value: float) -> float:
+    lowered = feature_name.lower()
+    if "percent" in lowered:
+        return 100.0
+    if "lux" in lowered:
+        return 10000.0
+    if "noise" in lowered or "density" in lowered:
+        return 1.0
+    if "blur" in lowered:
+        return 20.0
+    if "wind" in lowered:
+        return 20.0
+    if "delay" in lowered:
+        return 10.0
+    return max(abs(value), 1.0)
+
+
+class RealXAIAnalyzer:
+    """Simulation-grounded analyzer using observed run history only.
+
+    This class does not train surrogate models and does not compute SHAP values.
+    """
+
+    def __init__(self):
+        self.yolo_model = YOLO("yolo11x.pt")
+        self.history: list[dict[str, Any]] = []
+
+    def _extract_environment(self, scenario_data: dict[str, Any]) -> dict[str, float]:
+        if not isinstance(scenario_data, dict):
+            return {}
+
+        env = scenario_data.get("environment_parameters")
+        if not isinstance(env, dict):
+            env = scenario_data.get("current_environment")
+        if not isinstance(env, dict):
+            env = {}
+
+        out: dict[str, float] = {}
+        for key, value in env.items():
+            out[str(key)] = absolute_cleaner(value)
+        return out
+
+    def _save_annotated_image(self, image_path: str, results) -> None:
         try:
             base_name = os.path.basename(image_path)
-            
-            # 💡 [버그 수정] 원본 파일을 덮어쓰지 않도록 예외 처리
-            if "current" in base_name:
-                annotated_name = base_name.replace("current", "annotated")
-            else:
-                annotated_name = f"annotated_{base_name}" # 예: annotated_step_1.jpg
-                
+            annotated_name = base_name.replace("current", "annotated") if "current" in base_name else f"annotated_{base_name}"
             save_dir = os.path.dirname(image_path)
             annotated_path = os.path.join(save_dir, annotated_name)
-            results[0].save(filename=annotated_path) 
-        except Exception as e:
-            print(f"⚠️ 이미지 저장 실패: {e}")
-        # ---------------------------------------------------------
+            results[0].save(filename=annotated_path)
+        except Exception as exc:
+            print(f"[XAI] Annotated image save failed: {exc}")
 
-        # 2. 성능 지표(mAP50 대용) 계산
+    def _build_feature_importance(self, current_env: dict[str, float], current_map50: float) -> list[dict[str, float]]:
+        rows: list[dict[str, float]] = []
+
+        if self.history:
+            prev = self.history[-1]
+            prev_env = prev.get("env", {}) if isinstance(prev.get("env"), dict) else {}
+            prev_map50 = float(prev.get("map50", current_map50))
+            map_drop = max(0.0, prev_map50 - current_map50)
+
+            feature_names = sorted(set(prev_env) | set(current_env))
+            for feature in feature_names:
+                prev_val = float(prev_env.get(feature, 0.0))
+                curr_val = float(current_env.get(feature, prev_val))
+                delta = curr_val - prev_val
+                if abs(delta) <= 1e-12:
+                    continue
+
+                scale = _feature_scale(feature, curr_val)
+                delta_norm = abs(delta) / max(scale, 1e-9)
+
+                if _is_harmful_when_increasing(feature):
+                    alignment = 1.5 if delta > 0.0 else 0.7
+                else:
+                    alignment = 1.0
+
+                score = delta_norm * (1.0 + 5.0 * map_drop) * alignment
+                rows.append({"name": feature, "score": score})
+
+        if not rows:
+            for feature, value in current_env.items():
+                scale = _feature_scale(feature, value)
+                severity = abs(value) / max(scale, 1e-9)
+                rows.append({"name": feature, "score": severity})
+
+        if not rows:
+            return [{"name": "no_environment_signal", "importance": 1.0}]
+
+        total = sum(max(row["score"], 0.0) for row in rows)
+        if total <= 1e-12:
+            importance = 1.0 / len(rows)
+            normalized = [{"name": row["name"], "importance": importance} for row in rows]
+        else:
+            normalized = [
+                {
+                    "name": row["name"],
+                    "importance": max(row["score"], 0.0) / total,
+                }
+                for row in rows
+            ]
+
+        normalized.sort(key=lambda row: row["importance"], reverse=True)
+        return [{"name": row["name"], "importance": float(round(row["importance"], 6))} for row in normalized[:8]]
+
+    def analyze(self, image_path: str, scenario_data: dict[str, Any]):
+        results = self.yolo_model(image_path, verbose=False)
+        self._save_annotated_image(image_path, results)
+
         boxes = results[0].boxes
         current_map50 = float(np.mean(boxes.conf.cpu().numpy())) if len(boxes) > 0 else 0.10
 
-        # 3. 환경 파라미터 파싱
-        env = scenario_data.get("environment_parameters", {})
-        
-        # 기존 클리너 사용
-        fog = absolute_cleaner(env.get("fog_density_percent", 0.0))
-        lux = absolute_cleaner(env.get("illumination_lux", 5000.0))
-        noise = absolute_cleaner(env.get("camera_noise_level", 0.0))
-        m_blur = absolute_cleaner(env.get("motion_blur_intensity", 0.0))
-        z_blur = absolute_cleaner(env.get("zoom_blur_intensity", 0.0))
-        
-        current_X = [fog, lux, noise, m_blur, z_blur]
-        self.history_X.append(current_X)
-        self.history_y.append(current_map50)
+        current_env = self._extract_environment(scenario_data)
+        feature_importance = self._build_feature_importance(current_env=current_env, current_map50=current_map50)
 
-        # 4. XGBoost & SHAP 분석
-        try:
-            X_arr = np.array(self.history_X, dtype=np.float64)
-            y_arr = np.array(self.history_y, dtype=np.float64)
-            
-            model = xgb.XGBRegressor(n_estimators=30).fit(X_arr, y_arr)
-            explainer = shap.TreeExplainer(model)
-            shap_v = np.abs(explainer.shap_values(X_arr)[-1])
-            
-            total = np.sum(shap_v) + 1e-9
-            feature_importance = [
-                {"name": "fog", "importance": float(shap_v[0]/total)},
-                {"name": "low_light", "importance": float(shap_v[1]/total)},
-                {"name": "noise", "importance": float(shap_v[2]/total)},
-                {"name": "motion_blur", "importance": float(shap_v[3]/total)},
-                {"name": "zoom_blur", "importance": float(shap_v[4]/total)}
-            ]
-            feature_importance.sort(key=lambda x: x["importance"], reverse=True)
-        except Exception as e:
-            print(f"⚠️ SHAP 분석 에러: {e}")
-            feature_importance = [{"name": "error_fallback", "importance": 1.0}]
-            
+        self.history.append({"env": current_env, "map50": current_map50})
+
         return current_map50, feature_importance

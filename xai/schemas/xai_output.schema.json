@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://counterfactual-xai-verifier/schemas/xai_output.schema.json",
+  "title": "SimulationGroundedKernelSHAPOutput",
+  "type": "object",
+  "required": [
+    "method",
+    "result_status",
+    "risk_level",
+    "top_features",
+    "boundary_focus_features",
+    "llm_guidance"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "const": "simulation_grounded_kernelshap"
+    },
+    "result_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "safe",
+        "degrading",
+        "near_boundary",
+        "failed"
+      ]
+    },
+    "top_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "feature",
+          "shap_value",
+          "shap_importance",
+          "direction",
+          "reason"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string"
+          },
+          "shap_value": {
+            "type": "number"
+          },
+          "shap_importance": {
+            "type": "number"
+          },
+          "attribution_score": {
+            "type": "number"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "increase",
+              "decrease",
+              "adjust_near_boundary",
+              "keep"
+            ]
+          },
+          "observed_effect": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "boundary_focus_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "llm_guidance": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "base_case": {
+      "type": "object"
+    },
+    "minimal_change_candidates": {
+      "type": "array"
+    },
+    "nearest_boundary_candidates": {
+      "type": "array"
+    },
+    "guidance": {
+      "type": "object"
+    }
+  }
+}
