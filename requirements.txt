@@ -2,7 +2,12 @@
 streamlit>=1.30.0
 ultralytics>=8.1.0
 openai>=1.10.0
+anthropic>=0.40.0
 python-dotenv>=1.0.0
+
+# --- DSPy 적대적 시나리오 생성 파이프라인 ---
+dspy>=2.5.0                  # DSPy 2.x (Signature, ChainOfThought, BootstrapFewShot, MIPROv2)
+# matlabengine>=24.1         # MATLAB Engine API (선택): MATLAB R2024a+ 설치 시 활성화
 
 # --- 데이터 분석 및 시각화 ---
 numpy>=1.24.3
