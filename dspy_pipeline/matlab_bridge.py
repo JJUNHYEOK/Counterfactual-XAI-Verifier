@@ -137,6 +137,10 @@ class MatlabSimulinkBridge:
             print("[MatlabBridge] Building mountain_uav_model.slx …")
             self._eng.eval("build_mountain_uav_model(false)", nargout=0)
         else:
+            # Populate ALL workspace vars that Scenario_Params Constant blocks need.
+            # load_system alone does not call setup_base_workspace, so C_CAM etc.
+            # would be undefined and sim() would fail with "Value 설정이 유효하지 않습니다".
+            self._eng.eval("init_uav_workspace()", nargout=0)
             self._eng.eval(
                 "if ~bdIsLoaded('mountain_uav_model');"
                 " load_system('mountain_uav_model'); end",
@@ -182,9 +186,12 @@ class MatlabSimulinkBridge:
         if eng is None:
             raise RuntimeError("MATLAB Engine not started. Call bridge.start() first.")
 
-        eng.workspace["FOG_DENSITY_PERCENT"] = float(env["fog_density_percent"])
-        eng.workspace["ILLUMINATION_LUX"]    = float(env["illumination_lux"])
-        eng.workspace["CAMERA_NOISE_LEVEL"]  = float(env["camera_noise_level"])
+        # init_uav_workspace sets ALL nine Constant-block variables; the env
+        # params are the only ones that change across iterations.
+        fog   = float(env["fog_density_percent"])
+        illum = float(env["illumination_lux"])
+        noise = float(env["camera_noise_level"])
+        eng.eval(f"init_uav_workspace({fog}, {illum}, {noise})", nargout=0)
 
         eng.eval("simOut = sim('mountain_uav_model');", nargout=0)
         eng.eval("evalResult = requirements_eval(simOut);", nargout=0)
@@ -205,11 +212,14 @@ class MatlabSimulinkBridge:
 
     def _run_subprocess(self, env: dict[str, float]) -> SimulationResult:
         """Call `matlab -batch` and parse JSON from stdout."""
+        fog   = env['fog_density_percent']
+        illum = env['illumination_lux']
+        noise = env['camera_noise_level']
+        # init_uav_workspace sets all nine Scenario_Params Constant-block vars.
+        # Without it, C_CAM/C_OBS_XYZ etc. are undefined → "Value 유효하지 않음".
         script = (
             f"cd('{self.model_dir}');\n"
-            f"assignin('base','FOG_DENSITY_PERCENT',{env['fog_density_percent']});\n"
-            f"assignin('base','ILLUMINATION_LUX',{env['illumination_lux']});\n"
-            f"assignin('base','CAMERA_NOISE_LEVEL',{env['camera_noise_level']});\n"
+            f"init_uav_workspace({fog}, {illum}, {noise});\n"
             "if ~bdIsLoaded('mountain_uav_model'); load_system('mountain_uav_model'); end\n"
             "simOut = sim('mountain_uav_model');\n"
             "er = requirements_eval(simOut);\n"
