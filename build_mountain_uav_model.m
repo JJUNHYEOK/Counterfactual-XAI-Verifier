@@ -242,13 +242,20 @@ specs = {
 
 for i = 1:size(specs,1)
     y = 30 + (i-1)*45;
-    add_block("simulink/Commonly Used Blocks/Constant", sys + "/" + specs{i,1});
-    set_param(sys + "/" + specs{i,1}, ...
-        "Value", specs{i,2}, ...
-        "Position", [30 y 100 y+25]);
+    blk = char(sys + "/" + specs{i,1});
+    add_block("simulink/Commonly Used Blocks/Constant", blk);
+    % Value must be a char array (not a string object) so Simulink stores
+    % it as a workspace-variable reference, not a literal string token.
+    % Passing a MATLAB string ("…") to set_param Value can cause
+    % "parameter Value is invalid" at compile time on some releases.
+    set_param(blk, ...
+        "Value",            char(specs{i,2}), ...
+        "SampleTime",       "inf", ...
+        "OutDataTypeStr",   "double", ...
+        "Position",         [30 y 100 y+25]);
 
-    add_block("simulink/Ports & Subsystems/Out1", sys + "/" + specs{i,3});
-    set_param(sys + "/" + specs{i,3}, "Position", [220 y 250 y+20]);
+    add_block("simulink/Ports & Subsystems/Out1", char(sys + "/" + specs{i,3}));
+    set_param(char(sys + "/" + specs{i,3}), "Position", [220 y 250 y+20]);
 
     safe_add_line(sys, specs{i,1} + "/1", specs{i,3} + "/1");
 end

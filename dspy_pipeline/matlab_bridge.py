@@ -132,20 +132,17 @@ class MatlabSimulinkBridge:
         self._eng = matlab.engine.start_matlab()
         self._eng.cd(str(self.model_dir), nargout=0)
 
-        slx = self.model_dir / "mountain_uav_model.slx"
-        if not slx.exists():
-            print("[MatlabBridge] Building mountain_uav_model.slx …")
-            self._eng.eval("build_mountain_uav_model(false)", nargout=0)
-        else:
-            # Populate ALL workspace vars that Scenario_Params Constant blocks need.
-            # load_system alone does not call setup_base_workspace, so C_CAM etc.
-            # would be undefined and sim() would fail with "Value 설정이 유효하지 않습니다".
-            self._eng.eval("init_uav_workspace()", nargout=0)
-            self._eng.eval(
-                "if ~bdIsLoaded('mountain_uav_model');"
-                " load_system('mountain_uav_model'); end",
-                nargout=0,
-            )
+        slx  = self.model_dir / "mountain_uav_model.slx"
+        slxc = self.model_dir / "mountain_uav_model.slxc"
+        # Always rebuild so that:
+        #   (a) setup_base_workspace() sets ALL nine Constant-block workspace vars
+        #   (b) set_param Value is written as char (not MATLAB string), avoiding
+        #       the "C_CAM parameter Value is invalid" compile error in older .slx.
+        # The rebuild is a one-time cost at engine start (~5–10 s).
+        print("[MatlabBridge] Rebuilding mountain_uav_model.slx (ensures valid block config) …")
+        if slxc.exists():
+            slxc.unlink()          # remove stale compiled cache before rebuild
+        self._eng.eval("build_mountain_uav_model(false)", nargout=0)
         print("[MatlabBridge] MATLAB Engine ready.")
 
     # ── Main API ─────────────────────────────────────────────────────────
@@ -215,10 +212,15 @@ class MatlabSimulinkBridge:
         fog   = env['fog_density_percent']
         illum = env['illumination_lux']
         noise = env['camera_noise_level']
-        # init_uav_workspace sets all nine Scenario_Params Constant-block vars.
-        # Without it, C_CAM/C_OBS_XYZ etc. are undefined → "Value 유효하지 않음".
+        # build_mountain_uav_model(false) calls setup_base_workspace() which sets
+        # ALL nine Constant-block vars, then rebuilds the .slx with correct char
+        # Value parameters.  We only rebuild when the .slx is missing; if it
+        # already exists (built by engine-mode startup or a prior subprocess run)
+        # we skip the rebuild and just call init_uav_workspace to update env params.
+        slx_flag = "1" if (self.model_dir / "mountain_uav_model.slx").exists() else "0"
         script = (
             f"cd('{self.model_dir}');\n"
+            f"if ~{slx_flag}; build_mountain_uav_model(false); end\n"
             f"init_uav_workspace({fog}, {illum}, {noise});\n"
             "if ~bdIsLoaded('mountain_uav_model'); load_system('mountain_uav_model'); end\n"
             "simOut = sim('mountain_uav_model');\n"
