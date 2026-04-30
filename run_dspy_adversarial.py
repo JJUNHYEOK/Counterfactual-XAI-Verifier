@@ -118,12 +118,34 @@ def _infer_dominant_factors(
     ]
 
 
-def _build_xai_signals(sim_result, env_params: dict[str, float]) -> dict:
-    return {
-        "method":           "multi-req-posthoc",
-        "dominant_factors": _infer_dominant_factors(sim_result, env_params),
+def _build_xai_signals(
+    sim_result,
+    env_params: dict[str, float],
+    shap_payload: dict | None = None,
+) -> dict:
+    """Bundle XAI signals for the LLM.
+
+    If a SHAP payload is supplied (XGBoost+SHAP from accumulated runs),
+    its global importance ranking *replaces* the heuristic dominant_factors —
+    SHAP values reflect the actual measured response surface, while the
+    heuristic is just a hand-coded prior. The full SHAP payload is also
+    nested under `shap_signals` so the prompt can show signed local values.
+    """
+    if shap_payload and shap_payload.get("global_feature_importance"):
+        dominant = [
+            {"name": d["name"], "importance": d["importance"], "direction": d.get("direction")}
+            for d in shap_payload["global_feature_importance"]
+        ]
+        method = "xgboost_shap"
+    else:
+        dominant = _infer_dominant_factors(sim_result, env_params)
+        method = "heuristic_prior"
+
+    out = {
+        "method":           method,
+        "dominant_factors": dominant,
         "attention_summary": (
-            f"REQ-1={sim_result.map50:.3f}(th=0.85)  "
+            f"REQ-1={sim_result.map50:.3f}(th=0.50)  "
             f"REQ-2={sim_result.min_clearance:.2f}m(th=2.0m)  "
             f"REQ-3={sim_result.worst_run}fr(th=3)  "
             f"fog={env_params.get('fog_density_percent',0):.1f}%  "
@@ -131,6 +153,24 @@ def _build_xai_signals(sim_result, env_params: dict[str, float]) -> dict:
             f"noise={env_params.get('camera_noise_level',0):.2f}"
         ),
     }
+    if shap_payload:
+        out["shap_signals"] = shap_payload
+    return out
+
+
+def _bisect_between(env_a: dict[str, float], env_b: dict[str, float]) -> dict[str, float]:
+    """Midpoint of two environments — used to narrow PASS/FAIL boundary."""
+    keys = set(env_a) | set(env_b)
+    return {
+        k: round((float(env_a.get(k, 0.0)) + float(env_b.get(k, 0.0))) / 2.0, 4)
+        for k in keys
+    }
+
+
+def _segment_width(env_a: dict[str, float], env_b: dict[str, float]) -> dict[str, float]:
+    """Per-parameter |env_a - env_b| absolute width (for boundary tightness logging)."""
+    keys = set(env_a) | set(env_b)
+    return {k: round(abs(float(env_a.get(k, 0.0)) - float(env_b.get(k, 0.0))), 4) for k in keys}
 
 
 def _build_perf_signals(sim_result) -> dict:
@@ -272,16 +312,27 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
                 "camera_noise_level":  0.0,
             },
         }
-        seed_path.write_text(json.dumps(seed, indent=2))
+        seed_path.write_text(json.dumps(seed, indent=2), encoding="utf-8")
 
     with open(seed_path, encoding="utf-8") as f:
         current_scenario = json.load(f)
 
-    # ── 6. Adversarial iteration loop ────────────────────────────────────
-    print(f"\n[Loop] Starting adversarial loop  iterations={args.iterations}\n")
+    # ── 6. Boundary-search loop ──────────────────────────────────────────
+    # Phase 1 (no FAIL on record): LLM with SHAP-guided counterfactual to
+    #         push the env from a PASS toward FAIL.
+    # Phase 2 (have both PASS and FAIL): bisect between the most-recent PASS
+    #         and most-recent FAIL to localise the boundary surface.
+    print(f"\n[Loop] Starting boundary-search loop  iterations={args.iterations}\n")
     history: list[dict] = []
+    last_pass_env: dict[str, float] | None = None
+    last_fail_env: dict[str, float] | None = None
+    boundary_log: list[dict] = []
 
-    from dspy_pipeline.metric import get_bridge
+    from dspy_pipeline.metric    import get_bridge
+    from dspy_pipeline.shap_analyzer import compute_shap_signals, is_available as shap_available
+
+    if not shap_available():
+        print("[SHAP] xgboost/shap not installed — falling back to heuristic XAI.")
 
     for step in range(1, args.iterations + 1):
         print(f"{'='*60}")
@@ -308,89 +359,156 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
             f"[{status}]  ({elapsed:.2f}s)"
         )
 
+        # Update boundary anchors
+        if result.all_passed:
+            last_pass_env = dict(env_params)
+        else:
+            last_fail_env = dict(env_params)
+
         # Save simulation artifact
         eval_artifact = {
             "step": step, "env_params": env_params,
             **result.to_dict(), "sim_mode": args.sim_mode,
         }
         (data_dir / f"dspy_eval_iter_{step:03d}.json").write_text(
-            json.dumps(eval_artifact, indent=2)
+            json.dumps(eval_artifact, indent=2), encoding="utf-8"
         )
 
-        # Append to history (used to build iteration_history input)
+        # Append to history (used by SHAP and prompt)
         history.append({
-            "step":           step,
-            "env":            env_params,
-            "map50":          result.map50,
-            "all_passed":     result.all_passed,
-            "violated_count": result.violated_count,
+            "step":                step,
+            "env":                 env_params,
+            "fog_density_percent": env_params.get("fog_density_percent", 0),
+            "illumination_lux":    env_params.get("illumination_lux", 8000),
+            "camera_noise_level":  env_params.get("camera_noise_level", 0),
+            "map50":               result.map50,
+            "all_passed":          result.all_passed,
+            "violated_count":      result.violated_count,
         })
 
         if step == args.iterations:
             break                    # no need to generate a "next" scenario
 
-        # Build DSPy inputs from current simulation feedback
-        xai_signals  = _build_xai_signals(result, env_params)
-        perf_signals = _build_perf_signals(result)
-        iter_history = [
-            {
-                "iter":                   h["step"],
-                "fog_density_percent":    h["env"].get("fog_density_percent", 0),
-                "illumination_lux":       h["env"].get("illumination_lux", 8000),
-                "camera_noise_level":     h["env"].get("camera_noise_level", 0),
-                "map50":                  round(h["map50"], 4),
-                "all_passed":             h["all_passed"],
-                "violated_count":         h["violated_count"],
-            }
-            for h in history[-5:]
-        ]
+        # ── SHAP from accumulated samples ────────────────────────────────
+        shap_signals = compute_shap_signals(history, env_params)
+        shap_payload = shap_signals.to_payload() if shap_signals else None
+        if shap_payload:
+            top = shap_payload["global_feature_importance"][0]
+            print(f"  [SHAP] n={shap_payload['n_samples']}  "
+                  f"top={top['name']} (imp={top['importance']:.2f}, {top['direction']})  "
+                  f"R²={shap_payload.get('model_r2')}")
 
-        # Generate next adversarial scenario via DSPy
-        print(f"  [DSPy] Generating next scenario …")
-        try:
-            prediction = generator(
-                iteration_history  = json.dumps(iter_history,  ensure_ascii=False),
-                xai_analysis       = json.dumps(xai_signals,   ensure_ascii=False),
-                current_performance= json.dumps(perf_signals,  ensure_ascii=False),
+        # ── Decide next scenario ─────────────────────────────────────────
+        have_boundary = (last_pass_env is not None) and (last_fail_env is not None)
+
+        if have_boundary:
+            # Phase 2 — bisect between last PASS and last FAIL
+            next_env   = _bisect_between(last_pass_env, last_fail_env)
+            width      = _segment_width(last_pass_env, last_fail_env)
+            mode       = "bisect"
+            hypothesis = (
+                f"마지막 PASS와 FAIL의 중간점에서 경계 위치를 좁힙니다 "
+                f"(segment width: {width})."
             )
-            next_env   = prediction.environment_parameters
-            hypothesis = prediction.target_hypothesis
-            analysis   = prediction.analysis or prediction.reasoning
-
-            print(
-                f"  [DSPy] Next: fog={next_env.get('fog_density_percent',0):.1f}%  "
-                f"illum={next_env.get('illumination_lux',0):.0f}lx  "
-                f"noise={next_env.get('camera_noise_level',0):.3f}"
+            analysis = (
+                "📊 현재 상황: PASS↔FAIL 경계 구간을 확보. bisection으로 폭을 절반씩 좁힙니다.\n"
+                f"  PASS anchor: {last_pass_env}\n"
+                f"  FAIL anchor: {last_fail_env}\n"
+                f"  midpoint:    {next_env}\n"
+                "🎯 경계 탐색 전략: 매 iteration마다 segment width가 1/2로 줄어듭니다."
             )
-            print(f"  [DSPy] Hypothesis: {hypothesis}")
-
-        except Exception as exc:
-            print(f"  [DSPy] Error ({exc}). Using rule-based fallback.")
-            next_env   = _rule_mutation(env_params, result.all_passed)
-            hypothesis = "Rule-based fallback mutation"
-            analysis   = ""
+            boundary_log.append({
+                "step":       step + 1,
+                "pass_env":   last_pass_env,
+                "fail_env":   last_fail_env,
+                "midpoint":   next_env,
+                "width":      width,
+            })
+            print(f"  [Bisect] PASS↔FAIL width={width} → midpoint {next_env}")
+        else:
+            # Phase 1 — LLM exploration with SHAP guidance
+            xai_signals  = _build_xai_signals(result, env_params, shap_payload)
+            perf_signals = _build_perf_signals(result)
+            iter_history = [
+                {
+                    "iter":                h["step"],
+                    "fog_density_percent": h["fog_density_percent"],
+                    "illumination_lux":    h["illumination_lux"],
+                    "camera_noise_level":  h["camera_noise_level"],
+                    "map50":               round(h["map50"], 4),
+                    "all_passed":          h["all_passed"],
+                    "violated_count":      h["violated_count"],
+                }
+                for h in history[-5:]
+            ]
+            print(f"  [DSPy] Generating counterfactual (SHAP-guided)…")
+            try:
+                prediction = generator(
+                    iteration_history  = json.dumps(iter_history, ensure_ascii=False),
+                    xai_analysis       = json.dumps(xai_signals,  ensure_ascii=False),
+                    current_performance= json.dumps(perf_signals, ensure_ascii=False),
+                )
+                next_env   = prediction.environment_parameters
+                hypothesis = prediction.target_hypothesis
+                analysis   = prediction.analysis or prediction.reasoning
+                mode       = "llm_explore"
+                print(
+                    f"  [DSPy] Next: fog={next_env.get('fog_density_percent',0):.1f}%  "
+                    f"illum={next_env.get('illumination_lux',0):.0f}lx  "
+                    f"noise={next_env.get('camera_noise_level',0):.3f}"
+                )
+                print(f"  [DSPy] Hypothesis: {hypothesis}")
+            except Exception as exc:
+                print(f"  [DSPy] Error ({exc}). Using rule-based fallback.")
+                next_env   = _rule_mutation(env_params, result.all_passed)
+                hypothesis = "Rule-based fallback mutation"
+                analysis   = ""
+                mode       = "rule_fallback"
 
         current_scenario = {
             "scenario_id":            f"scenario_dspy_step_{step+1:03d}",
             "environment_parameters": next_env,
             "target_hypothesis":      hypothesis,
             "dspy_analysis":          analysis,
+            "decision_mode":          mode,
+            "shap_signals":           shap_payload,
         }
         scen_path = data_dir / f"dspy_scenario_iter_{step+1:03d}.json"
-        scen_path.write_text(json.dumps(current_scenario, indent=2, ensure_ascii=False))
+        scen_path.write_text(
+            json.dumps(current_scenario, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
 
     # ── 7. Summary ───────────────────────────────────────────────────────
     _print_summary(history)
 
+    if boundary_log:
+        last = boundary_log[-1]
+        print(
+            f"\n[Boundary] Final segment width = {last['width']}\n"
+            f"           PASS anchor: {last['pass_env']}\n"
+            f"           FAIL anchor: {last['fail_env']}"
+        )
+    else:
+        print("\n[Boundary] No PASS↔FAIL transition observed — try more iterations "
+              "or relax the seed.")
+
     summary = {
-        "total_steps":  len(history),
-        "failures":     sum(1 for h in history if not h["all_passed"]),
-        "optimizer":    args.optimizer,
-        "sim_mode":     args.sim_mode,
-        "history":      history,
+        "total_steps":   len(history),
+        "passes":        sum(1 for h in history if h["all_passed"]),
+        "failures":      sum(1 for h in history if not h["all_passed"]),
+        "optimizer":     args.optimizer,
+        "sim_mode":      args.sim_mode,
+        "history":       history,
+        "boundary_log":  boundary_log,
+        "final_pass_env": last_pass_env,
+        "final_fail_env": last_fail_env,
     }
     summary_path = data_dir / "dspy_loop_summary.json"
-    summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+    summary_path.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
     print(f"\n[Done] Summary saved → {summary_path}")
 
     return history

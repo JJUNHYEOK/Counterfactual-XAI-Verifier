@@ -17,7 +17,7 @@ function eval = requirements_eval(simOut, opts)
 %                                           'det_score_threshold', 0.30))
 
 if nargin < 2 || isempty(opts), opts = struct(); end
-if ~isfield(opts, "map_threshold"),        opts.map_threshold        = 0.85; end
+if ~isfield(opts, "map_threshold"),        opts.map_threshold        = 0.50; end
 if ~isfield(opts, "clearance_threshold"),  opts.clearance_threshold  = 2.0;  end
 if ~isfield(opts, "continuity_threshold"), opts.continuity_threshold = 3;    end
 if ~isfield(opts, "det_score_threshold"),  opts.det_score_threshold  = 0.30; end

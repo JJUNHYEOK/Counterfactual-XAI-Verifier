@@ -109,6 +109,16 @@ class MatlabSimulinkBridge:
     def stop(self) -> None:
         if self._eng is not None:
             try:
+                # Disable FastRestart before closing so the model can be
+                # cleanly saved or reloaded later.
+                self._eng.eval(
+                    "if bdIsLoaded('mountain_uav_model'); "
+                    "set_param('mountain_uav_model', 'FastRestart', 'off'); end",
+                    nargout=0,
+                )
+            except Exception:
+                pass
+            try:
                 self._eng.quit()
             except Exception:
                 pass
@@ -128,21 +138,48 @@ class MatlabSimulinkBridge:
                 "Install it with: pip install matlabengine\n"
                 "(MATLAB R2023b+ must also be installed on this machine.)"
             )
+        # Launch MATLAB with the desktop visible so the user can watch the
+        # Simulink simulation window once the model is loaded.
         print("[MatlabBridge] Starting MATLAB Engine … (15–30 s first call)")
-        self._eng = matlab.engine.start_matlab()
+        self._eng = matlab.engine.start_matlab("-desktop")
         self._eng.cd(str(self.model_dir), nargout=0)
 
         slx  = self.model_dir / "mountain_uav_model.slx"
         slxc = self.model_dir / "mountain_uav_model.slxc"
-        # Always rebuild so that:
-        #   (a) setup_base_workspace() sets ALL nine Constant-block workspace vars
-        #   (b) set_param Value is written as char (not MATLAB string), avoiding
-        #       the "C_CAM parameter Value is invalid" compile error in older .slx.
-        # The rebuild is a one-time cost at engine start (~5–10 s).
-        print("[MatlabBridge] Rebuilding mountain_uav_model.slx (ensures valid block config) …")
-        if slxc.exists():
-            slxc.unlink()          # remove stale compiled cache before rebuild
-        self._eng.eval("build_mountain_uav_model(false)", nargout=0)
+
+        if not slx.exists():
+            # No model yet — build it once. This is what produces the
+            # "block installation" screen the user was seeing every run.
+            print("[MatlabBridge] mountain_uav_model.slx not found — "
+                  "building it once via build_mountain_uav_model(false) …")
+            if slxc.exists():
+                slxc.unlink()      # remove stale compiled cache before rebuild
+            self._eng.eval("build_mountain_uav_model(false)", nargout=0)
+            print("[MatlabBridge] Build complete.")
+        else:
+            print(f"[MatlabBridge] Reusing existing {slx.name} (skipping rebuild).")
+
+        # Load and open the model so the Simulink simulation window is visible
+        # for every subsequent sim() call.
+        self._eng.eval(
+            "if ~bdIsLoaded('mountain_uav_model'); load_system('mountain_uav_model'); end",
+            nargout=0,
+        )
+        self._eng.eval("open_system('mountain_uav_model')", nargout=0)
+
+        # FastRestart: compile the model once, then reuse the compiled state
+        # across all subsequent sim() calls. Without this, every iteration
+        # rebuilds the diagram and the editor flashes/refreshes; with it,
+        # only the Scope traces update in place. Workspace variables read
+        # by the Constant blocks (FOG_DENSITY_PERCENT, …) are re-evaluated
+        # at each model initialization, so init_uav_workspace() before each
+        # sim() still propagates the new env params.
+        try:
+            self._eng.eval("set_param('mountain_uav_model', 'FastRestart', 'on');", nargout=0)
+            print("[MatlabBridge] FastRestart enabled — Scope will refresh in place.")
+        except Exception as exc:
+            print(f"[MatlabBridge] FastRestart not enabled ({exc}); will recompile per sim.")
+
         print("[MatlabBridge] MATLAB Engine ready.")
 
     # ── Main API ─────────────────────────────────────────────────────────
@@ -192,6 +229,25 @@ class MatlabSimulinkBridge:
 
         eng.eval("simOut = sim('mountain_uav_model');", nargout=0)
         eng.eval("evalResult = requirements_eval(simOut);", nargout=0)
+
+        # Render the dual-panel scene (left: 3D mountain + UAV, right: camera
+        # image with GT/det bboxes). Close the previous viz figure first so
+        # only one window exists across iterations. Errors here are non-fatal
+        # — the simulation result is still returned.
+        try:
+            eng.eval(
+                "vf = findobj('Type','figure','Name','Mountain UAV Test'); "
+                "if ~isempty(vf), close(vf); end",
+                nargout=0,
+            )
+            eng.eval(
+                "mountain_visualizer(simOut, struct("
+                "'visible', true, 'animate', true, "
+                "'frameStride', 4, 'pauseSeconds', 0.02));",
+                nargout=0,
+            )
+        except Exception as exc:
+            print(f"[MatlabBridge] Visualizer skipped: {exc}")
 
         all_passed     = bool(eng.eval("evalResult.all_passed",        nargout=1))
         map50          = float(eng.eval("evalResult.req1.value",        nargout=1))
