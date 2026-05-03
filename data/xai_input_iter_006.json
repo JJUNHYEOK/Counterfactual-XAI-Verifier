@@ -1,5 +1,5 @@
 {
-  "scene_id": "iter_007",
+  "scene_id": "iter_006",
   "task": "uav_object_detection_mountain",
   "goal": "Find minimal environment changes to satisfy all three requirements (REQ-1 mAP50, REQ-2 clearance, REQ-3 continuity).",
   "perception": {
@@ -11,16 +11,16 @@
     "detections": []
   },
   "scenario": {
-    "scenario_id": "scenario_iter_007",
+    "scenario_id": "scenario_iter_006",
     "environment_parameters": {
-      "fog_density_percent": 16.875,
-      "illumination_lux": 5864.1544575195321,
-      "camera_noise_level": 0.09375
+      "fog_density_percent": 18,
+      "illumination_lux": 5756.2252343750006,
+      "camera_noise_level": 0.1
     },
     "x_loop_state": {
-      "direction": -1,
-      "step_factor": 0.0625,
-      "last_passed": false,
+      "direction": 1,
+      "step_factor": 0.125,
+      "last_passed": true,
       "history": [
         "env",
         "passed",
@@ -75,18 +75,6 @@
           "map50": 0.87692307692307692,
           "min_clearance": 2.5340064941374725,
           "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 18,
-            "illumination_lux": 5756.2252343750006,
-            "camera_noise_level": 0.1
-          },
-          "passed": false,
-          "violated_count": 1,
-          "map50": 0.8,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
         }
       ]
     }
@@ -97,8 +85,8 @@
       "name": "Detection performance (mAP50)",
       "metric": "map50",
       "threshold": 0.85,
-      "value": 0.86153846153846159,
-      "passed": true
+      "value": 0.8,
+      "passed": false
     },
     {
       "id": "REQ-2",
@@ -120,34 +108,34 @@
   "current_requirement": {
     "metric": "map50",
     "threshold": 0.85,
-    "value": 0.86153846153846159,
-    "requirement_violated": false
+    "value": 0.8,
+    "requirement_violated": true
   },
   "performance_signals": {
-    "map50": 0.86153846153846159,
+    "map50": 0.8,
     "min_clearance_m": 2.5340064941374725,
     "max_consecutive_misses": 0,
-    "violated_count": 0,
-    "worst_requirement": "none",
-    "failure_type": "nominal"
+    "violated_count": 1,
+    "worst_requirement": "REQ-1",
+    "failure_type": "violated:REQ-1"
   },
   "xai_signals": {
     "method": "multi-req-posthoc",
     "dominant_factors": [
       {
         "name": "fog_density_percent",
-        "importance": 0.34
+        "importance": 0.868
       },
       {
         "name": "illumination_lux",
-        "importance": 0.33
+        "importance": 0
       },
       {
         "name": "camera_noise_level",
-        "importance": 0.33
+        "importance": 0.132
       }
     ],
-    "attention_summary": "REQ-1=0.862 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=16.9 illum=5864 noise=0.09"
+    "attention_summary": "REQ-1=0.800 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=18.0 illum=5756 noise=0.10"
   },
   "scenario_constraints": {
     "allow_weather_change": true,
@@ -181,7 +169,7 @@
     ]
   },
   "counterfactual_request": {
-    "target_status": "FAIL",
+    "target_status": "PASS",
     "target_requirements": [
       "REQ-1",
       "REQ-2",
@@ -197,9 +185,9 @@
   "sim_result": {
     "frames": 38,
     "obstacles": 5,
-    "tp": 112,
+    "tp": 104,
     "fp": 0,
-    "fn": 18,
+    "fn": 26,
     "total_gt": 130,
     "min_clearance": 2.5340064941374725,
     "worst_run": 0

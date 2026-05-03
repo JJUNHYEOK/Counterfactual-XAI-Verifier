@@ -1,5 +1,5 @@
 {
-  "scene_id": "iter_007",
+  "scene_id": "iter_002",
   "task": "uav_object_detection_mountain",
   "goal": "Find minimal environment changes to satisfy all three requirements (REQ-1 mAP50, REQ-2 clearance, REQ-3 continuity).",
   "perception": {
@@ -11,84 +11,28 @@
     "detections": []
   },
   "scenario": {
-    "scenario_id": "scenario_iter_007",
+    "scenario_id": "scenario_iter_002",
     "environment_parameters": {
-      "fog_density_percent": 16.875,
-      "illumination_lux": 5864.1544575195321,
-      "camera_noise_level": 0.09375
+      "fog_density_percent": 9,
+      "illumination_lux": 6800,
+      "camera_noise_level": 0.05
     },
     "x_loop_state": {
-      "direction": -1,
-      "step_factor": 0.0625,
-      "last_passed": false,
-      "history": [
-        "env",
-        "passed",
-        "violated_count",
-        "map50",
-        "min_clearance",
-        "worst_run",
-        {
-          "env": {
-            "fog_density_percent": 9,
-            "illumination_lux": 6800,
-            "camera_noise_level": 0.05
-          },
-          "passed": true,
-          "violated_count": 0,
-          "map50": 1,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
+      "direction": 1,
+      "step_factor": 0.5,
+      "last_passed": true,
+      "history": {
+        "env": {
+          "fog_density_percent": 0,
+          "illumination_lux": 8000,
+          "camera_noise_level": 0
         },
-        {
-          "env": {
-            "fog_density_percent": 18,
-            "illumination_lux": 5780,
-            "camera_noise_level": 0.1
-          },
-          "passed": false,
-          "violated_count": 1,
-          "map50": 0.823076923076923,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 13.5,
-            "illumination_lux": 6213.5,
-            "camera_noise_level": 0.075000000000000011
-          },
-          "passed": true,
-          "violated_count": 0,
-          "map50": 0.97692307692307689,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 15.75,
-            "illumination_lux": 5980.4937500000005,
-            "camera_noise_level": 0.087500000000000008
-          },
-          "passed": true,
-          "violated_count": 0,
-          "map50": 0.87692307692307692,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
-        },
-        {
-          "env": {
-            "fog_density_percent": 18,
-            "illumination_lux": 5756.2252343750006,
-            "camera_noise_level": 0.1
-          },
-          "passed": false,
-          "violated_count": 1,
-          "map50": 0.8,
-          "min_clearance": 2.5340064941374725,
-          "worst_run": 0
-        }
-      ]
+        "passed": true,
+        "violated_count": 0,
+        "map50": 1,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      }
     }
   },
   "requirements": [
@@ -97,7 +41,7 @@
       "name": "Detection performance (mAP50)",
       "metric": "map50",
       "threshold": 0.85,
-      "value": 0.86153846153846159,
+      "value": 1,
       "passed": true
     },
     {
@@ -120,11 +64,11 @@
   "current_requirement": {
     "metric": "map50",
     "threshold": 0.85,
-    "value": 0.86153846153846159,
+    "value": 1,
     "requirement_violated": false
   },
   "performance_signals": {
-    "map50": 0.86153846153846159,
+    "map50": 1,
     "min_clearance_m": 2.5340064941374725,
     "max_consecutive_misses": 0,
     "violated_count": 0,
@@ -147,7 +91,7 @@
         "importance": 0.33
       }
     ],
-    "attention_summary": "REQ-1=0.862 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=16.9 illum=5864 noise=0.09"
+    "attention_summary": "REQ-1=1.000 (th=0.85), REQ-2=2.53m (th=2.00m), REQ-3=0 frames (th=3) at fog=9.0 illum=6800 noise=0.05"
   },
   "scenario_constraints": {
     "allow_weather_change": true,
@@ -197,9 +141,9 @@
   "sim_result": {
     "frames": 38,
     "obstacles": 5,
-    "tp": 112,
+    "tp": 130,
     "fp": 0,
-    "fn": 18,
+    "fn": 0,
     "total_gt": 130,
     "min_clearance": 2.5340064941374725,
     "worst_run": 0

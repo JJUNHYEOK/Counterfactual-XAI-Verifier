@@ -1,15 +1,15 @@
 {
-  "iter": 1,
+  "iter": 5,
   "geometric": {
     "req1": {
       "id": "REQ-1",
       "name": "Detection performance (mAP50)",
       "threshold": 0.85,
-      "value": 0.71359223300970875,
+      "value": 0.66796116504854364,
       "passed": false,
-      "tp": 735,
+      "tp": 688,
       "fp": 0,
-      "fn": 295,
+      "fn": 342,
       "total_gt": 1030
     },
     "req2": {
@@ -34,9 +34,9 @@
     "frames": 301,
     "obstacles": 5,
     "scenario_factors": {
-      "fog_density_percent": 0,
-      "illumination_lux": 8000,
-      "camera_noise_level": 0
+      "fog_density_percent": 15.75,
+      "illumination_lux": 5980.4937500000005,
+      "camera_noise_level": 0.087500000000000008
     }
   },
   "image_based": {
@@ -44,11 +44,11 @@
       "id": "REQ-1",
       "name": "Detection performance (mAP50)",
       "threshold": 0.85,
-      "value": 1,
+      "value": 0.87692307692307692,
       "passed": true,
-      "tp": 130,
+      "tp": 114,
       "fp": 0,
-      "fn": 0,
+      "fn": 16,
       "total_gt": 130
     },
     "req2": {
@@ -73,9 +73,9 @@
     "frames": 38,
     "obstacles": 5,
     "scenario_factors": {
-      "fog_density_percent": 0,
-      "illumination_lux": 8000,
-      "camera_noise_level": 0
+      "fog_density_percent": 15.75,
+      "illumination_lux": 5980.4937500000005,
+      "camera_noise_level": 0.087500000000000008
     },
     "note": "image-based, stride=8 (M=38 / 301 frames)"
   }

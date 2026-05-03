@@ -1,0 +1,224 @@
+{
+  "schema_version": "xai_counterfactual_v1",
+  "scene_id": "iter_004",
+  "search_mode": "kernelshap_direct_simulation",
+  "search_method": "simulation_grounded_kernelshap",
+  "source_status": "FAIL",
+  "target_status": "PASS",
+  "threshold_condition": "PASS if map50 >= safety_line, FAIL if map50 < safety_line",
+  "mutable_parameters": [
+    "fog_density_percent",
+    "illumination_lux",
+    "camera_noise_level",
+    "motion_blur_intensity",
+    "zoom_blur_intensity"
+  ],
+  "guidance": {
+    "guidance_sources": [
+      "scenario_history",
+      "observed_results_fallback",
+      "kernelshap"
+    ],
+    "guidance_weights": {
+      "scenario_history": 0.3333,
+      "observed_results_fallback": 0.3333,
+      "kernelshap": 0.3333
+    },
+    "analysis_context": {
+      "history_size": 5,
+      "used_previous_pass": true,
+      "kernelshap_target": "map50",
+      "kernelshap_expected_value": 0.825,
+      "kernelshap_error": null,
+      "map_drop_from_previous": 0.24,
+      "margin_drop_from_previous": 0.24
+    }
+  },
+  "base_case": {
+    "current_environment": {
+      "fog_density_percent": 32.0,
+      "illumination_lux": 2500.0,
+      "camera_noise_level": 0.28,
+      "motion_blur_intensity": 6.0,
+      "zoom_blur_intensity": 2.0
+    },
+    "predicted_status": "FAIL",
+    "decision_margin": 0.22999999999999998,
+    "distance_to_boundary": 0.22999999999999998,
+    "map50": 0.62,
+    "safety_line": 0.85,
+    "safety_margin": -0.22999999999999998
+  },
+  "minimal_change_candidates": [
+    {
+      "candidate_id": "cf_01",
+      "predicted_status": "FAIL",
+      "decision_margin": 0.18923597999999997,
+      "distance_to_boundary": 0.18923597999999997,
+      "distance_l1_normalized": 0.051910049999999985,
+      "changed_parameters": [
+        {
+          "parameter": "camera_noise_level",
+          "from": 0.28,
+          "to": 0.24885397000000004,
+          "delta": -0.03114602999999999,
+          "normalized_l1": 0.051910049999999985
+        }
+      ],
+      "parameter_changes": [
+        {
+          "parameter": "camera_noise_level",
+          "from": 0.28,
+          "to": 0.24885397000000004,
+          "delta": -0.03114602999999999,
+          "normalized_l1": 0.051910049999999985
+        }
+      ],
+      "counterfactual_environment": {
+        "fog_density_percent": 32.0,
+        "illumination_lux": 2500.0,
+        "camera_noise_level": 0.24885397000000004,
+        "motion_blur_intensity": 6.0,
+        "zoom_blur_intensity": 2.0
+      },
+      "summary_explanation": "map50 기준 KernelSHAP 값 -0.07094를 바탕으로 camera_noise_level을(를) 'decrease' 방향으로 조정하는 것이 유효합니다. camera_noise_level 값이 이전 실행 0.1900에서 현재 0.2800로 변했습니다.",
+      "attribution_score": 0.346067,
+      "direction": "decrease",
+      "shap_value": -0.070944,
+      "shap_importance": 0.346067,
+      "observed_effect": "camera_noise_level 값이 이전 실행 0.1900에서 현재 0.2800로 변했습니다."
+    },
+    {
+      "candidate_id": "cf_02",
+      "predicted_status": "FAIL",
+      "decision_margin": 0.19733363999999998,
+      "distance_to_boundary": 0.19733363999999998,
+      "distance_l1_normalized": 0.0316659,
+      "changed_parameters": [
+        {
+          "parameter": "fog_density_percent",
+          "from": 32.0,
+          "to": 28.83341,
+          "delta": -3.1665899999999993,
+          "normalized_l1": 0.0316659
+        }
+      ],
+      "parameter_changes": [
+        {
+          "parameter": "fog_density_percent",
+          "from": 32.0,
+          "to": 28.83341,
+          "delta": -3.1665899999999993,
+          "normalized_l1": 0.0316659
+        }
+      ],
+      "counterfactual_environment": {
+        "fog_density_percent": 28.83341,
+        "illumination_lux": 2500.0,
+        "camera_noise_level": 0.28,
+        "motion_blur_intensity": 6.0,
+        "zoom_blur_intensity": 2.0
+      },
+      "summary_explanation": "map50 기준 KernelSHAP 값 -0.04328를 바탕으로 fog_density_percent을(를) 'decrease' 방향으로 조정하는 것이 유효합니다. fog_density_percent 값이 이전 실행 24.0000에서 현재 32.0000로 변했습니다.",
+      "attribution_score": 0.211106,
+      "direction": "decrease",
+      "shap_value": -0.043277,
+      "shap_importance": 0.211106,
+      "observed_effect": "fog_density_percent 값이 이전 실행 24.0000에서 현재 32.0000로 변했습니다."
+    },
+    {
+      "candidate_id": "cf_03",
+      "predicted_status": "FAIL",
+      "decision_margin": 0.19808093999999998,
+      "distance_to_boundary": 0.19808093999999998,
+      "distance_l1_normalized": 0.029797649999999988,
+      "changed_parameters": [
+        {
+          "parameter": "zoom_blur_intensity",
+          "from": 2.0,
+          "to": 1.7020235000000001,
+          "delta": -0.29797649999999987,
+          "normalized_l1": 0.029797649999999988
+        }
+      ],
+      "parameter_changes": [
+        {
+          "parameter": "zoom_blur_intensity",
+          "from": 2.0,
+          "to": 1.7020235000000001,
+          "delta": -0.29797649999999987,
+          "normalized_l1": 0.029797649999999988
+        }
+      ],
+      "counterfactual_environment": {
+        "fog_density_percent": 32.0,
+        "illumination_lux": 2500.0,
+        "camera_noise_level": 0.28,
+        "motion_blur_intensity": 6.0,
+        "zoom_blur_intensity": 1.7020235000000001
+      },
+      "summary_explanation": "map50 기준 KernelSHAP 값 -0.04072를 바탕으로 zoom_blur_intensity을(를) 'decrease' 방향으로 조정하는 것이 유효합니다. zoom_blur_intensity 값이 이전 실행 1.0000에서 현재 2.0000로 변했습니다.",
+      "attribution_score": 0.198651,
+      "direction": "decrease",
+      "shap_value": -0.040723,
+      "shap_importance": 0.198651,
+      "observed_effect": "zoom_blur_intensity 값이 이전 실행 1.0000에서 현재 2.0000로 변했습니다."
+    }
+  ],
+  "method": "simulation_grounded_kernelshap",
+  "result_status": "FAIL",
+  "risk_level": "failed",
+  "top_features": [
+    {
+      "feature": "camera_noise_level",
+      "shap_value": -0.070944,
+      "shap_importance": 0.346067,
+      "attribution_score": 0.346067,
+      "direction": "decrease",
+      "observed_effect": "camera_noise_level 값이 이전 실행 0.1900에서 현재 0.2800로 변했습니다.",
+      "reason": "map50 기준 KernelSHAP 값 -0.07094를 바탕으로 camera_noise_level을(를) 'decrease' 방향으로 조정하는 것이 유효합니다."
+    },
+    {
+      "feature": "fog_density_percent",
+      "shap_value": -0.043277,
+      "shap_importance": 0.211106,
+      "attribution_score": 0.211106,
+      "direction": "decrease",
+      "observed_effect": "fog_density_percent 값이 이전 실행 24.0000에서 현재 32.0000로 변했습니다.",
+      "reason": "map50 기준 KernelSHAP 값 -0.04328를 바탕으로 fog_density_percent을(를) 'decrease' 방향으로 조정하는 것이 유효합니다."
+    },
+    {
+      "feature": "zoom_blur_intensity",
+      "shap_value": -0.040723,
+      "shap_importance": 0.198651,
+      "attribution_score": 0.198651,
+      "direction": "decrease",
+      "observed_effect": "zoom_blur_intensity 값이 이전 실행 1.0000에서 현재 2.0000로 변했습니다.",
+      "reason": "map50 기준 KernelSHAP 값 -0.04072를 바탕으로 zoom_blur_intensity을(를) 'decrease' 방향으로 조정하는 것이 유효합니다."
+    },
+    {
+      "feature": "motion_blur_intensity",
+      "shap_value": -0.032963,
+      "shap_importance": 0.160796,
+      "attribution_score": 0.160796,
+      "direction": "decrease",
+      "observed_effect": "motion_blur_intensity 값이 이전 실행 4.0000에서 현재 6.0000로 변했습니다.",
+      "reason": "map50 기준 KernelSHAP 값 -0.03296를 바탕으로 motion_blur_intensity을(를) 'decrease' 방향으로 조정하는 것이 유효합니다."
+    },
+    {
+      "feature": "illumination_lux",
+      "shap_value": -0.017093,
+      "shap_importance": 0.08338,
+      "attribution_score": 0.08338,
+      "direction": "increase",
+      "observed_effect": "illumination_lux 값이 이전 실행 3200.0000에서 현재 2500.0000로 변했습니다.",
+      "reason": "map50 기준 KernelSHAP 값 -0.01709를 바탕으로 illumination_lux을(를) 'increase' 방향으로 조정하는 것이 유효합니다."
+    }
+  ],
+  "boundary_focus_features": [
+    "camera_noise_level",
+    "fog_density_percent",
+    "zoom_blur_intensity"
+  ],
+  "llm_guidance": "현재 실행은 FAIL입니다. 경계 탐색은 camera_noise_level (decrease), fog_density_percent (decrease), zoom_blur_intensity (decrease) 중심으로 수행하고(최근 PASS 기준: iter_003), 한 번에 한 변수씩 조정하세요."
+}

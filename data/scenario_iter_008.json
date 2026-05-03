@@ -1,0 +1,96 @@
+{
+  "scenario_id": "scenario_iter_008",
+  "target_hypothesis": "Bisection step: direction=WORSEN, step_factor=0.031, prev=FAIL, now=PASS",
+  "environment_parameters": {
+    "fog_density_percent": 17.4375,
+    "illumination_lux": 5809.178009480286,
+    "camera_noise_level": 0.096875
+  },
+  "llm_reasoning": "Boundary search: keep moving in the same direction while the verdict is unchanged; halve the step when the boundary is crossed.",
+  "_loop_state": {
+    "direction": 1,
+    "step_factor": 0.03125,
+    "last_passed": true,
+    "history": [
+      "env",
+      "passed",
+      "violated_count",
+      "map50",
+      "min_clearance",
+      "worst_run",
+      {
+        "env": {
+          "fog_density_percent": 9,
+          "illumination_lux": 6800,
+          "camera_noise_level": 0.05
+        },
+        "passed": true,
+        "violated_count": 0,
+        "map50": 1,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 18,
+          "illumination_lux": 5780,
+          "camera_noise_level": 0.1
+        },
+        "passed": false,
+        "violated_count": 1,
+        "map50": 0.823076923076923,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 13.5,
+          "illumination_lux": 6213.5,
+          "camera_noise_level": 0.07500000000000001
+        },
+        "passed": true,
+        "violated_count": 0,
+        "map50": 0.9769230769230769,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 15.75,
+          "illumination_lux": 5980.493750000001,
+          "camera_noise_level": 0.08750000000000001
+        },
+        "passed": true,
+        "violated_count": 0,
+        "map50": 0.8769230769230769,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 18,
+          "illumination_lux": 5756.225234375001,
+          "camera_noise_level": 0.1
+        },
+        "passed": false,
+        "violated_count": 1,
+        "map50": 0.8,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 16.875,
+          "illumination_lux": 5864.154457519532,
+          "camera_noise_level": 0.09375
+        },
+        "passed": true,
+        "violated_count": 0,
+        "map50": 0.8615384615384616,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0.0
+      }
+    ]
+  },
+  "_source": "fallback:user_requested"
+}

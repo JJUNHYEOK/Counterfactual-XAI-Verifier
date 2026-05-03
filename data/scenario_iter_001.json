@@ -1,10 +1,16 @@
 {
-  "scenario_id": "scenario_001",
-  "target_hypothesis": "Weather-driven counterfactual scenario to discover a UAV detection edge case with mAP50 below 0.85",
+  "scenario_id": "scenario_001_seed_pass",
+  "target_hypothesis": "Known-good baseline scenario; loop should narrow toward the failure boundary.",
   "environment_parameters": {
-    "fog_density_percent": 30.0,
-    "illumination_lux": 4000.0,
-    "camera_noise_level": 0.1
+    "fog_density_percent": 0,
+    "illumination_lux": 8000,
+    "camera_noise_level": 0
   },
-  "llm_reasoning": "Initial seed scenario for weather degradation search."
+  "llm_reasoning": "Seed scenario chosen at the easy end of the parameter space so the bisection search has a known PASS anchor.",
+  "x_loop_state": {
+    "direction": 1,
+    "step_factor": 1,
+    "last_passed": [],
+    "history": []
+  }
 }

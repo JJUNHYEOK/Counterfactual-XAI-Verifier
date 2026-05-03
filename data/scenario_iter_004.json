@@ -1,0 +1,48 @@
+{
+  "scenario_id": "scenario_iter_004",
+  "target_hypothesis": "Bisection step: direction=RECOVER, step_factor=0.250, prev=PASS, now=FAIL",
+  "environment_parameters": {
+    "fog_density_percent": 13.5,
+    "illumination_lux": 6213.5,
+    "camera_noise_level": 0.075000000000000011
+  },
+  "llm_reasoning": "Boundary search: keep moving in the same direction while the verdict is unchanged; halve the step when the boundary is crossed.",
+  "x_loop_state": {
+    "direction": -1,
+    "step_factor": 0.25,
+    "last_passed": false,
+    "history": [
+      "env",
+      "passed",
+      "violated_count",
+      "map50",
+      "min_clearance",
+      "worst_run",
+      {
+        "env": {
+          "fog_density_percent": 9,
+          "illumination_lux": 6800,
+          "camera_noise_level": 0.05
+        },
+        "passed": true,
+        "violated_count": 0,
+        "map50": 1,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      },
+      {
+        "env": {
+          "fog_density_percent": 18,
+          "illumination_lux": 5780,
+          "camera_noise_level": 0.1
+        },
+        "passed": false,
+        "violated_count": 1,
+        "map50": 0.823076923076923,
+        "min_clearance": 2.5340064941374725,
+        "worst_run": 0
+      }
+    ]
+  },
+  "x_source": "fallback:user_requested"
+}
