@@ -87,6 +87,8 @@ XAI는 XGBoost와 같은 예측 모델을 사용하지 않고, 실제 Simulink �
 }
 ```
 
+`llm_guidance`는 `top_features`의 `shap_importance`(정량 기여도)와 `direction`을 사람이 읽기 쉬운 문장으로 요약한 LLM용 지침입니다.
+
 호환성 유지 필드:
 
 - `schema_version`

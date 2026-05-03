@@ -722,18 +722,40 @@ def _guidance(status: str, risk_level: str, top_features: list[dict[str, Any]], 
             return "현재 실행은 PASS입니다. 경계 근처 이력을 추가 수집해 KernelSHAP 가이던스를 안정화하세요."
         return "현재 실행은 FAIL입니다. 단일 변수 경계 탐색을 추가 수행해 KernelSHAP 기여도를 재계산하세요."
 
-    focus = ", ".join(f"{row['feature']} ({row['direction']})" for row in top_features[:3])
+    ranked: list[tuple[str, str, float]] = []
+    for row in top_features[:3]:
+        feature = str(row.get("feature", "")).strip()
+        if not feature:
+            continue
+        direction = str(row.get("direction", "adjust_near_boundary")).strip() or "adjust_near_boundary"
+        importance_pct = max(0.0, _f(row.get("shap_importance"), 0.0)) * 100.0
+        ranked.append((feature, direction, importance_pct))
+
+    if not ranked:
+        if status == PASS_STATUS:
+            return "현재 실행은 PASS입니다. 경계 근처 이력을 추가 수집해 KernelSHAP 가이던스를 안정화하세요."
+        return "현재 실행은 FAIL입니다. 단일 변수 경계 탐색을 추가 수행해 KernelSHAP 기여도를 재계산하세요."
+
+    clauses: list[str] = []
+    for idx, (feature, direction, importance_pct) in enumerate(ranked):
+        rank_label = "가장 중요한 변수" if idx == 0 else ("다음으로 중요한 변수" if idx == 1 else "중요 변수")
+        clauses.append(
+            f"{feature}는 기여도 {importance_pct:.0f}%로 {rank_label}이므로 {direction} 방향으로 조정"
+        )
+    if len(clauses) == 1:
+        feature_guidance = f"{clauses[0]}하세요."
+    else:
+        feature_guidance = f"{', '.join(clauses[:-1])}하고, {clauses[-1]}하세요."
+
     if status == PASS_STATUS:
         prefix = "현재 실행은 PASS이며 안전합니다." if risk_level == "safe" else (
             "현재 실행은 PASS지만 성능 저하가 관찰됩니다." if risk_level == "degrading" else "현재 실행은 PASS지만 경계에 가깝습니다."
         )
-        return (
-            f"{prefix} 다음 반사실 시나리오 생성에서는 {focus}를 중심으로 점진적으로 가혹도를 높이되 현실성을 유지하세요."
-        )
+        return f"{prefix} 다음 반사실 시나리오 생성에서는 {feature_guidance}"
 
     base = f"최근 PASS 기준: {previous_pass.run_id}" if previous_pass else "PASS 기준 시나리오 없음"
     return (
-        f"현재 실행은 FAIL입니다. 경계 탐색은 {focus} 중심으로 수행하고({base}), 한 번에 한 변수씩 조정하세요."
+        f"현재 실행은 FAIL입니다. 경계 탐색은 한 번에 한 변수씩 조정하고({base}), {feature_guidance}"
     )
 
 
