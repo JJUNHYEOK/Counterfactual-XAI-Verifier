@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
-from simulator import Simulator
+import numpy as np
+import shap
 
 
-FAIL_STATUS = "FAIL"
 PASS_STATUS = "PASS"
+FAIL_STATUS = "FAIL"
+METHOD_NAME = "simulation_grounded_kernelshap"
 
 
 @dataclass(frozen=True)
@@ -20,14 +21,33 @@ class ParameterSpec:
     mutable: bool
 
     def span(self) -> float:
-        span = self.upper - self.lower
-        return span if span > 1e-9 else 1e-9
+        return max(self.upper - self.lower, 1e-9)
 
     def clamp(self, value: float) -> float:
         return min(self.upper, max(self.lower, value))
 
 
-def _safe_float(value: Any, default: float = 0.0) -> float:
+@dataclass
+class RunPoint:
+    run_id: str
+    env: dict[str, float]
+    map50: float | None
+    safety_line: float | None
+    status: str
+
+    def safety_margin(self) -> float | None:
+        if self.map50 is None or self.safety_line is None:
+            return None
+        return float(self.map50 - self.safety_line)
+
+    def decision_margin(self) -> float:
+        margin = self.safety_margin()
+        if margin is not None:
+            return float(-margin)
+        return 0.01 if self.status == FAIL_STATUS else -0.01
+
+
+def _f(value: Any, default: float = 0.0) -> float:
     try:
         if isinstance(value, bool):
             return default
@@ -36,46 +56,132 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
+def _fo(value: Any) -> float | None:
+    try:
+        if value is None or isinstance(value, bool):
+            return None
+        parsed = float(value)
+        return None if parsed != parsed else parsed
+    except (TypeError, ValueError):
+        return None
+
+
+def _read(node: Any, *path: str) -> Any:
+    cur = node
+    for key in path:
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(key)
+    return cur
+
+
 def _normalize_name(name: str) -> str:
-    return "".join(ch for ch in name.lower() if ch.isalnum())
+    return "".join(ch for ch in str(name).lower() if ch.isalnum())
 
 
-def extract_environment_parameters(payload: dict[str, Any]) -> dict[str, float]:
-    candidates: list[dict[str, Any]] = []
+def _status(value: Any) -> str | None:
+    text = str(value or "").strip().upper()
+    if text in {PASS_STATUS, "SUCCESS", "SAFE", "OK"}:
+        return PASS_STATUS
+    if text in {FAIL_STATUS, "FAILED", "FAILURE", "UNSAFE", "ERROR", "VIOLATED"}:
+        return FAIL_STATUS
+    return None
 
-    current_environment = payload.get("current_environment")
-    if isinstance(current_environment, dict):
-        candidates.append(current_environment)
 
-    scenario = payload.get("scenario")
-    if isinstance(scenario, dict):
-        scenario_environment = scenario.get("environment_parameters")
-        if isinstance(scenario_environment, dict):
-            candidates.append(scenario_environment)
+def _extract_environment(node: Any) -> dict[str, float]:
+    out: dict[str, float] = {}
+    if not isinstance(node, dict):
+        return out
 
-    direct_environment = payload.get("environment_parameters")
-    if isinstance(direct_environment, dict):
-        candidates.append(direct_environment)
+    candidates = (
+        node.get("current_environment"),
+        _read(node, "scenario", "environment_parameters"),
+        _read(node, "current_scenario", "environment_parameters"),
+        node.get("environment_parameters"),
+        node.get("current_scenario"),
+    )
+    for cand in candidates:
+        if not isinstance(cand, dict):
+            continue
+        for key, value in cand.items():
+            fv = _fo(value)
+            if fv is not None:
+                out[str(key)] = float(fv)
+    return out
 
-    result: dict[str, float] = {}
-    for mapping in candidates:
-        for key, value in mapping.items():
-            if isinstance(value, bool):
-                continue
-            if isinstance(value, (int, float)):
-                result[key] = float(value)
-                continue
-            if isinstance(value, str):
-                parsed = _safe_float(value, float("nan"))
-                if parsed == parsed:  # NaN check
-                    result[key] = float(parsed)
 
-    if not result:
-        raise ValueError(
-            "환경 파라미터를 찾지 못했습니다. "
-            "current_environment 또는 scenario.environment_parameters를 제공해 주세요."
-        )
-    return result
+def _extract_map50(node: dict[str, Any]) -> float | None:
+    for v in (
+        node.get("map50"),
+        _read(node, "performance_signals", "map50"),
+        _read(node, "sim_result", "map50"),
+        _read(node, "eval_result", "map50"),
+        _read(node, "metrics", "map50"),
+        _read(node, "result", "map50"),
+    ):
+        fv = _fo(v)
+        if fv is not None:
+            return fv
+    return None
+
+
+def _extract_safety_line(node: dict[str, Any], fallback: float | None = None) -> float | None:
+    for v in (
+        node.get("safety_line"),
+        node.get("threshold"),
+        _read(node, "current_requirement", "threshold"),
+        _read(node, "performance_signals", "threshold"),
+        _read(node, "sim_result", "threshold"),
+        _read(node, "eval_result", "requirement_threshold"),
+        fallback,
+    ):
+        fv = _fo(v)
+        if fv is not None:
+            return fv
+    return None
+
+
+def _extract_status(node: dict[str, Any], map50: float | None, safety_line: float | None) -> str:
+    req = node.get("current_requirement") if isinstance(node.get("current_requirement"), dict) else {}
+    if isinstance(req.get("requirement_violated"), bool):
+        return FAIL_STATUS if bool(req.get("requirement_violated")) else PASS_STATUS
+
+    for v in (
+        node.get("result_status"),
+        node.get("status"),
+        _read(node, "performance_signals", "status"),
+        _read(node, "sim_result", "status"),
+    ):
+        s = _status(v)
+        if s:
+            return s
+
+    if map50 is not None and safety_line is not None:
+        return FAIL_STATUS if map50 < safety_line else PASS_STATUS
+
+    failure_type = str(_read(node, "performance_signals", "failure_type") or "").strip().lower()
+    return PASS_STATUS if failure_type in {"", "none", "normal_operation", "safe", "nominal"} else FAIL_STATUS
+
+
+def _run_from_node(node: dict[str, Any], idx: int, fallback_safety_line: float | None) -> RunPoint | None:
+    env = _extract_environment(node)
+    if not env:
+        return None
+    map50 = _extract_map50(node)
+    safety_line = _extract_safety_line(node, fallback_safety_line)
+    status = _extract_status(node, map50, safety_line)
+    run_id = str(
+        node.get("scene_id")
+        or node.get("scenario_id")
+        or _read(node, "scenario", "scenario_id")
+        or _read(node, "current_scenario", "scenario_id")
+        or f"history_{idx:03d}"
+    )
+    return RunPoint(run_id=run_id, env=env, map50=map50, safety_line=safety_line, status=status)
+
+
+def _same_env(a: dict[str, float], b: dict[str, float], tol: float = 1e-9) -> bool:
+    return set(a) == set(b) and all(abs(a[k] - b[k]) <= tol for k in a)
 
 
 def _default_bounds(name: str, value: float) -> tuple[float, float]:
@@ -84,822 +190,638 @@ def _default_bounds(name: str, value: float) -> tuple[float, float]:
         return 0.0, 100.0
     if "lux" in lowered:
         return 0.0, 20000.0
+    if any(token in lowered for token in ("noise", "density")):
+        return 0.0, 1.0
     if "wind" in lowered:
         return 0.0, 30.0
-    if "delay" in lowered and "ms" in lowered:
-        return 0.0, 1000.0
     if "delay" in lowered:
         return 0.0, 20.0
-    if "noise" in lowered or "obstacle_density" in lowered:
-        return 0.0, 1.0
-    if 0.0 <= value <= 1.0:
-        return 0.0, 1.0
-
-    spread = max(abs(value) * 0.75, 1.0)
-    lower = value - spread
-    upper = value + spread
-    if value >= 0.0 and lower < 0.0:
-        lower = 0.0
-    return lower, upper
+    span = max(abs(value) * 0.75, 1.0)
+    lo = value - span
+    hi = value + span
+    if value >= 0 and lo < 0:
+        lo = 0.0
+    return lo, hi
 
 
-def _is_weather_param(name: str) -> bool:
+def _is_weather(name: str) -> bool:
+    l = name.lower()
+    return any(t in l for t in ("wind", "fog", "rain", "snow", "weather"))
+
+
+def _is_light(name: str) -> bool:
+    l = name.lower()
+    return any(t in l for t in ("illumination", "light", "brightness", "lux", "low_light"))
+
+
+def _is_obstacle(name: str) -> bool:
+    l = name.lower()
+    return any(t in l for t in ("obstacle", "density"))
+
+
+def _is_harmful_when_increasing(name: str) -> bool:
     lowered = name.lower()
-    tokens = ("wind", "fog", "rain", "snow", "weather")
+    tokens = ("fog", "noise", "blur", "wind", "delay", "obstacle", "density", "rain", "snow")
     return any(token in lowered for token in tokens)
 
 
-def _is_lighting_param(name: str) -> bool:
-    lowered = name.lower()
-    tokens = ("illumination", "light", "brightness")
-    return any(token in lowered for token in tokens)
+def _resolve_feature_ranges(payload: dict[str, Any]) -> dict[str, Any]:
+    if isinstance(payload.get("feature_ranges"), dict):
+        return payload["feature_ranges"]
+    search_space = payload.get("search_space") if isinstance(payload.get("search_space"), dict) else {}
+    bounds = search_space.get("bounds") if isinstance(search_space.get("bounds"), dict) else {}
+    return bounds
 
 
-def _is_obstacle_param(name: str) -> bool:
-    lowered = name.lower()
-    tokens = ("obstacle", "density")
-    return any(token in lowered for token in tokens)
+def extract_environment_parameters(payload: dict[str, Any]) -> dict[str, float]:
+    current_node = payload.get("current_scenario") if isinstance(payload.get("current_scenario"), dict) else payload
+    env = _extract_environment(current_node)
+    if env:
+        return env
+    env = _extract_environment(payload)
+    if env:
+        return env
+    history = payload.get("scenario_history")
+    if isinstance(history, list) and history:
+        env = _extract_environment(history[-1])
+        if env:
+            return env
+    raise ValueError("Environment parameters are missing.")
 
 
-def _apply_scenario_constraints(
-    specs: list[ParameterSpec],
-    payload: dict[str, Any],
-) -> list[ParameterSpec]:
-    constraints = payload.get("scenario_constraints")
-    if not isinstance(constraints, dict):
-        return specs
+def build_parameter_specs(payload: dict[str, Any], env: dict[str, float]) -> list[ParameterSpec]:
+    feature_ranges = _resolve_feature_ranges(payload)
+    search_space = payload.get("search_space") if isinstance(payload.get("search_space"), dict) else {}
+    weights = search_space.get("weights") if isinstance(search_space.get("weights"), dict) else {}
+    mutable = search_space.get("mutable_parameters")
+    mutable_set = set(map(str, mutable)) if isinstance(mutable, list) else None
 
-    weather_allowed = bool(constraints.get("allow_weather_change", True))
-    lighting_allowed = bool(constraints.get("allow_lighting_change", True))
-    obstacle_allowed = bool(constraints.get("allow_obstacle_density_change", True))
-
-    updated: list[ParameterSpec] = []
-    for spec in specs:
-        mutable = spec.mutable
-        if not weather_allowed and _is_weather_param(spec.name):
-            mutable = False
-        if not lighting_allowed and _is_lighting_param(spec.name):
-            mutable = False
-        if not obstacle_allowed and _is_obstacle_param(spec.name):
-            mutable = False
-        updated.append(
-            ParameterSpec(
-                name=spec.name,
-                lower=spec.lower,
-                upper=spec.upper,
-                weight=spec.weight,
-                mutable=mutable,
-            )
-        )
-    return updated
-
-
-def build_parameter_specs(
-    payload: dict[str, Any],
-    base_environment: dict[str, float],
-) -> list[ParameterSpec]:
-    search_space = payload.get("search_space")
-    search_space = search_space if isinstance(search_space, dict) else {}
-
-    bounds_config = search_space.get("bounds")
-    bounds_config = bounds_config if isinstance(bounds_config, dict) else {}
-
-    weights_config = search_space.get("weights")
-    weights_config = weights_config if isinstance(weights_config, dict) else {}
-
-    mutable_parameters = search_space.get("mutable_parameters")
-    if isinstance(mutable_parameters, list):
-        mutable_set = {str(item) for item in mutable_parameters}
-    else:
-        mutable_set = None
+    constraints = payload.get("scenario_constraints") if isinstance(payload.get("scenario_constraints"), dict) else {}
+    allow_weather = bool(constraints.get("allow_weather_change", True))
+    allow_light = bool(constraints.get("allow_lighting_change", True))
+    allow_obstacle = bool(constraints.get("allow_obstacle_density_change", True))
 
     specs: list[ParameterSpec] = []
-    for name, value in base_environment.items():
-        configured_bounds = bounds_config.get(name)
-        if isinstance(configured_bounds, list) and len(configured_bounds) == 2:
-            lower = _safe_float(configured_bounds[0], value)
-            upper = _safe_float(configured_bounds[1], value)
-            if upper < lower:
-                lower, upper = upper, lower
-            if abs(upper - lower) < 1e-9:
-                upper = lower + 1.0
+    for name, value in env.items():
+        cfg = feature_ranges.get(name)
+        if isinstance(cfg, dict):
+            lo = _f(cfg.get("min"), value)
+            hi = _f(cfg.get("max"), value)
+        elif isinstance(cfg, list) and len(cfg) == 2:
+            lo = _f(cfg[0], value)
+            hi = _f(cfg[1], value)
         else:
-            lower, upper = _default_bounds(name, value)
+            lo, hi = _default_bounds(name, value)
 
-        weight = max(1e-6, _safe_float(weights_config.get(name), 1.0))
-        mutable = True if mutable_set is None else name in mutable_set
+        if hi < lo:
+            lo, hi = hi, lo
+        if abs(hi - lo) < 1e-9:
+            hi = lo + 1.0
+
+        is_mutable = True if mutable_set is None else name in mutable_set
+        if not allow_weather and _is_weather(name):
+            is_mutable = False
+        if not allow_light and _is_light(name):
+            is_mutable = False
+        if not allow_obstacle and _is_obstacle(name):
+            is_mutable = False
+
         specs.append(
             ParameterSpec(
                 name=name,
-                lower=lower,
-                upper=upper,
-                weight=weight,
-                mutable=mutable,
+                lower=float(lo),
+                upper=float(hi),
+                weight=max(1e-6, _f(weights.get(name), 1.0)),
+                mutable=is_mutable,
             )
         )
-
-    return _apply_scenario_constraints(specs, payload)
-
-
-class BaseEvaluator:
-    mode_name = "base"
-
-    def evaluate(self, params: dict[str, float]) -> dict[str, Any]:
-        raise NotImplementedError
-
-    def target_hint(self, target_status: str, param_name: str, base_value: float) -> float:
-        return 0.0
+    return specs
 
 
-class SimDummyEvaluator(BaseEvaluator):
-    mode_name = "sim_dummy"
+def _collect_history_runs(payload: dict[str, Any], current_run: RunPoint) -> list[RunPoint]:
+    nodes: list[dict[str, Any]] = []
 
-    def __init__(self, scene_id: str):
-        self._scene_id = scene_id
-        self._simulator = Simulator(sleep_seconds=0.0)
+    previous = payload.get("previous_scenario")
+    if isinstance(previous, dict):
+        nodes.append(previous)
 
-    def evaluate(self, params: dict[str, float]) -> dict[str, Any]:
-        sim_input = {"scenario_id": self._scene_id}
-        sim_input.update(params)
-        sim_result = self._simulator.run_sim_dummy(sim_input)
+    for key in ("scenario_history", "history", "execution_history", "run_history"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            nodes.extend([row for row in value if isinstance(row, dict)])
+            if value:
+                break
 
-        min_distance = _safe_float(sim_result.get("min_distance"), 0.0)
-        margin = 1.0 - min_distance
+    runs = [run for idx, node in enumerate(nodes) if (run := _run_from_node(node, idx, current_run.safety_line)) is not None]
+    if not runs:
+        return [current_run]
 
-        status_text = str(sim_result.get("status", "")).upper()
-        predicted_fail = status_text == FAIL_STATUS or margin > 0.0
-        if predicted_fail and margin <= 0.0:
-            margin = 0.01
-        if (not predicted_fail) and margin >= 0.0:
-            margin = -0.01
-
-        predicted_status = FAIL_STATUS if predicted_fail else PASS_STATUS
-        return {
-            "predicted_status": predicted_status,
-            "decision_margin": float(margin),
-            "threshold_condition": (
-                "decision_margin > 0 이면 FAIL, "
-                "decision_margin <= 0 이면 PASS "
-                "(decision_margin = 1.0 - min_distance)"
-            ),
-            "raw_sim_result": sim_result,
-        }
-
-    def target_hint(self, target_status: str, param_name: str, base_value: float) -> float:
-        lowered = param_name.lower()
-        harmful_when_increasing = (
-            "wind" in lowered
-            or "delay" in lowered
-            or "obstacle" in lowered
-            or "fog" in lowered
-            or "noise" in lowered
-        )
-        if not harmful_when_increasing:
-            return 0.0
-        return -1.0 if target_status == PASS_STATUS else 1.0
+    last = runs[-1]
+    if last.run_id == current_run.run_id or _same_env(last.env, current_run.env):
+        runs[-1] = current_run
+    else:
+        runs.append(current_run)
+    return runs
 
 
-class Map50ProxyEvaluator(BaseEvaluator):
-    mode_name = "map50_proxy"
+def _find_previous_pass(runs: list[RunPoint], current_index: int) -> RunPoint | None:
+    for i in range(current_index - 1, -1, -1):
+        if runs[i].status == PASS_STATUS:
+            return runs[i]
+    return None
 
+
+def _match_feature_name(name: str, names: list[str]) -> str | None:
+    needle = _normalize_name(name)
+    table = {_normalize_name(item): item for item in names}
+    if needle in table:
+        return table[needle]
+
+    aliases = {
+        "fog": "fog_density_percent",
+        "noise": "camera_noise_level",
+        "lowlight": "illumination_lux",
+        "motionblur": "motion_blur_intensity",
+        "zoomblur": "zoom_blur_intensity",
+    }
+    if needle in aliases and _normalize_name(aliases[needle]) in table:
+        return table[_normalize_name(aliases[needle])]
+
+    for normalized, original in table.items():
+        if needle and (needle in normalized or normalized in needle):
+            return original
+    return None
+
+
+class SimulationResultFunction:
     def __init__(
         self,
         payload: dict[str, Any],
         specs: list[ParameterSpec],
-        base_environment: dict[str, float],
+        runs: list[RunPoint],
+        current_run: RunPoint,
+        simulink_callable: Callable[..., Any] | None = None,
     ):
         self._payload = payload
         self._specs = specs
-        self._base_environment = base_environment
+        self._feature_names = [spec.name for spec in specs]
+        self._span = {spec.name: spec.span() for spec in specs}
+        self._callable = simulink_callable or self._resolve_callable(payload)
+        self.source = "simulink_callable" if self._callable is not None else "observed_results_fallback"
 
-        perf = payload.get("performance_signals")
-        perf = perf if isinstance(perf, dict) else {}
-        eval_result = payload.get("eval_result")
-        eval_result = eval_result if isinstance(eval_result, dict) else {}
-        req = payload.get("current_requirement")
-        req = req if isinstance(req, dict) else {}
-
-        self._threshold = _safe_float(
-            perf.get("threshold", eval_result.get("requirement_threshold", req.get("threshold", 0.85))),
-            0.85,
-        )
-        self._base_map50 = _safe_float(
-            perf.get("map50", eval_result.get("map50", self._threshold - 0.05)),
-            self._threshold - 0.05,
-        )
-        self._base_margin = self._threshold - self._base_map50
-        self._guidance_weights = self._resolve_guidance_weights()
-        self._guidance_sources: list[str] = []
-        self._factor_effects = self._build_factor_effects()
-
-    def _resolve_guidance_weights(self) -> dict[str, float]:
-        request = self._payload.get("counterfactual_request")
-        request = request if isinstance(request, dict) else {}
-        blend = request.get("guidance_blend")
-        blend = blend if isinstance(blend, dict) else {}
-
-        xai_weight = max(0.0, _safe_float(blend.get("xai"), 0.4))
-        shap_global_weight = max(0.0, _safe_float(blend.get("shap_global"), 0.3))
-        shap_local_weight = max(0.0, _safe_float(blend.get("shap_local"), 0.3))
-
-        total = xai_weight + shap_global_weight + shap_local_weight
-        if total <= 1e-12:
-            return {"xai": 1.0, "shap_global": 0.0, "shap_local": 0.0}
-        return {
-            "xai": xai_weight / total,
-            "shap_global": shap_global_weight / total,
-            "shap_local": shap_local_weight / total,
-        }
-
-    def _build_factor_effects(self) -> dict[str, float]:
-        def direction_to_sign(direction: Any) -> float | None:
-            if not isinstance(direction, str):
-                return None
-            lowered = direction.strip().lower()
-            if lowered in {"increase_failure", "increase", "positive", "up"}:
-                return 1.0
-            if lowered in {"decrease_failure", "decrease", "negative", "down"}:
-                return -1.0
-            return None
-
-        def add_effect(
-            effects: dict[str, float],
-            spec_names: list[str],
-            factor_name: str,
-            magnitude: float,
-            source_weight: float,
-            direction_hint: float | None = None,
-            fallback_sign_from_name: bool = True,
-        ) -> bool:
-            if not factor_name or magnitude <= 0.0 or source_weight <= 0.0:
-                return False
-            matched = _match_parameter_name(factor_name, spec_names)
-            if not matched:
-                return False
-            if direction_hint is None and fallback_sign_from_name:
-                direction_hint = _infer_effect_sign(matched, self._base_environment.get(matched, 0.0))
-            if direction_hint is None:
-                direction_hint = 1.0
-            effects[matched] = effects.get(matched, 0.0) + (source_weight * direction_hint * magnitude)
-            return True
-
-        xai_signals = self._payload.get("xai_signals")
-        xai_signals = xai_signals if isinstance(xai_signals, dict) else {}
-        dominant_factors = xai_signals.get("dominant_factors")
-        dominant_factors = dominant_factors if isinstance(dominant_factors, list) else []
-
-        shap_signals = self._payload.get("shap_signals")
-        shap_signals = shap_signals if isinstance(shap_signals, dict) else {}
-        shap_global = shap_signals.get("global_feature_importance")
-        shap_global = shap_global if isinstance(shap_global, list) else []
-        shap_local = shap_signals.get("local_feature_contributions")
-        shap_local = shap_local if isinstance(shap_local, list) else []
-
-        spec_names = [spec.name for spec in self._specs]
-        effects: dict[str, float] = {}
-
-        xai_added = False
-        for factor in dominant_factors:
-            if not isinstance(factor, dict):
+        self._observed_points: list[tuple[dict[str, float], float]] = []
+        for run in runs:
+            if run.map50 is None:
                 continue
-            factor_name = str(factor.get("name", "")).strip()
-            if not factor_name:
+            self._observed_points.append((dict(run.env), float(run.map50)))
+        if current_run.map50 is not None:
+            self._observed_points.append((dict(current_run.env), float(current_run.map50)))
+
+        for key in ("counterfactual_replay_results", "counterfactual_replays", "counterfactual_results", "counterfactual_replay_history"):
+            value = payload.get(key)
+            if not isinstance(value, list):
                 continue
-            importance = abs(_safe_float(factor.get("importance"), 0.0))
-            direction_hint = direction_to_sign(factor.get("direction"))
-            xai_added = add_effect(
-                effects=effects,
-                spec_names=spec_names,
-                factor_name=factor_name,
-                magnitude=importance,
-                source_weight=self._guidance_weights["xai"],
-                direction_hint=direction_hint,
-            ) or xai_added
-        if xai_added:
-            self._guidance_sources.append("xai_signals.dominant_factors")
+            for row in value:
+                if not isinstance(row, dict):
+                    continue
+                env = _extract_environment(row)
+                map50 = _extract_map50(row)
+                if env and map50 is not None:
+                    self._observed_points.append((env, float(map50)))
 
-        shap_global_added = False
-        for factor in shap_global:
-            if not isinstance(factor, dict):
-                continue
-            factor_name = str(factor.get("name", factor.get("feature", ""))).strip()
-            importance = abs(
-                _safe_float(
-                    factor.get("importance", factor.get("mean_abs_shap", factor.get("abs_contribution_score", 0.0))),
-                    0.0,
-                )
-            )
-            direction_hint = direction_to_sign(factor.get("direction"))
-            shap_global_added = add_effect(
-                effects=effects,
-                spec_names=spec_names,
-                factor_name=factor_name,
-                magnitude=importance,
-                source_weight=self._guidance_weights["shap_global"],
-                direction_hint=direction_hint,
-            ) or shap_global_added
-        if shap_global_added:
-            self._guidance_sources.append("shap_signals.global_feature_importance")
-
-        shap_local_added = False
-        for factor in shap_local:
-            if not isinstance(factor, dict):
-                continue
-            factor_name = str(factor.get("name", factor.get("feature", ""))).strip()
-            signed_score = _safe_float(
-                factor.get("contribution_score", factor.get("shap_value", factor.get("importance", 0.0))),
-                0.0,
-            )
-            magnitude = abs(
-                _safe_float(
-                    factor.get("abs_contribution_score", abs(signed_score)),
-                    abs(signed_score),
-                )
-            )
-            direction_hint = direction_to_sign(factor.get("direction"))
-            if direction_hint is None and abs(signed_score) > 1e-12:
-                direction_hint = 1.0 if signed_score > 0.0 else -1.0
-            shap_local_added = add_effect(
-                effects=effects,
-                spec_names=spec_names,
-                factor_name=factor_name,
-                magnitude=magnitude,
-                source_weight=self._guidance_weights["shap_local"],
-                direction_hint=direction_hint,
-            ) or shap_local_added
-        if shap_local_added:
-            self._guidance_sources.append("shap_signals.local_feature_contributions")
-
-        if not effects:
-            self._guidance_sources.append("fallback_uniform_effects")
-            for spec in self._specs:
-                sign = _infer_effect_sign(spec.name, self._base_environment.get(spec.name, 0.0))
-                effects[spec.name] = sign * (1.0 / max(1, len(self._specs)))
-            return effects
-
-        norm = sum(abs(value) for value in effects.values())
-        if norm <= 1e-12:
-            return effects
-        return {name: value / norm for name, value in effects.items()}
-
-    def evaluate(self, params: dict[str, float]) -> dict[str, Any]:
-        margin = self._base_margin
-        contributions: dict[str, float] = {}
-
-        for spec in self._specs:
-            name = spec.name
-            delta_norm = (params[name] - self._base_environment[name]) / spec.span()
-            effect = self._factor_effects.get(name, 0.0)
-            contribution = effect * delta_norm
-            contributions[name] = contribution
-            margin += contribution
-
-        predicted_status = FAIL_STATUS if margin > 0.0 else PASS_STATUS
-        map50_proxy = self._threshold - margin
-        return {
-            "predicted_status": predicted_status,
-            "decision_margin": float(margin),
-            "threshold_condition": (
-                "decision_margin = threshold - map50_proxy. "
-                "decision_margin > 0 이면 FAIL, decision_margin <= 0 이면 PASS"
-            ),
-            "raw_proxy_result": {
-                "map50_proxy": float(map50_proxy),
-                "threshold": float(self._threshold),
-                "base_map50": float(self._base_map50),
-                "factor_effects": self._factor_effects,
-                "factor_contributions": contributions,
-                "guidance_weights": self._guidance_weights,
-                "guidance_sources": self._guidance_sources,
-            },
-        }
-
-    def target_hint(self, target_status: str, param_name: str, base_value: float) -> float:
-        effect = self._factor_effects.get(param_name, 0.0)
-        if abs(effect) <= 1e-12:
-            return 0.0
-        if target_status == PASS_STATUS:
-            return -1.0 if effect > 0.0 else 1.0
-        return 1.0 if effect > 0.0 else -1.0
-
-
-def _match_parameter_name(factor_name: str, parameter_names: list[str]) -> str | None:
-    normalized_factor = _normalize_name(factor_name)
-    if not normalized_factor:
+    def _resolve_callable(self, payload: dict[str, Any]) -> Callable[..., Any] | None:
+        for key in (
+            "simulink_callable",
+            "simulation_callable",
+            "simulink_result_callable",
+            "sim_result_callable",
+            "simulink_result_function",
+        ):
+            value = payload.get(key)
+            if callable(value):
+                return value
         return None
 
-    normalized_params = {name: _normalize_name(name) for name in parameter_names}
-    for name, normalized_param in normalized_params.items():
-        if normalized_factor in normalized_param or normalized_param in normalized_factor:
-            return name
+    def _extract_map50_from_result(self, result: Any) -> float | None:
+        if isinstance(result, (int, float)) and not isinstance(result, bool):
+            return float(result)
+        if not isinstance(result, dict):
+            return None
+        return _extract_map50(result)
 
-    synonym_map = {
-        "fogdensity": ("fogdensitypercent", "fog"),
-        "lowlight": ("illuminationlux", "illumination", "light", "brightness"),
-        "illumination": ("illuminationlux", "light"),
-        "camera": ("cameranoise", "cameranoiselevel"),
-        "noise": ("cameranoise", "cameranoiselevel", "noiselevel"),
-        "motionblur": ("motionblur", "motionblurintensity"),
-        "zoomblur": ("zoomblur", "zoomblurintensity"),
-        "wind": ("windspeed", "windspeedmps"),
-        "delay": ("delay", "communicationdelayms"),
-        "obstacle": ("obstacledensity",),
-    }
-    for name, normalized_param in normalized_params.items():
-        for keyword, candidates in synonym_map.items():
-            if keyword in normalized_factor and any(token in normalized_param for token in candidates):
-                return name
-    return None
+    def _invoke_callable(self, env: dict[str, float]) -> float | None:
+        if self._callable is None:
+            return None
+
+        fn = self._callable
+        result = None
+        errors: list[Exception] = []
+
+        try:
+            result = fn(env)
+        except Exception as exc:
+            errors.append(exc)
+
+        if result is None:
+            try:
+                vector = [float(env[name]) for name in self._feature_names]
+                result = fn(vector)
+            except Exception as exc:
+                errors.append(exc)
+
+        if result is None:
+            try:
+                vector = [float(env[name]) for name in self._feature_names]
+                result = fn(*vector)
+            except Exception as exc:
+                errors.append(exc)
+
+        map50 = self._extract_map50_from_result(result)
+        if map50 is None and errors:
+            return None
+        return map50
+
+    def _distance(self, a: dict[str, float], b: dict[str, float]) -> float:
+        accum = 0.0
+        for name in self._feature_names:
+            da = float(a.get(name, 0.0))
+            db = float(b.get(name, 0.0))
+            accum += ((da - db) / self._span[name]) ** 2
+        return float(np.sqrt(accum))
+
+    def _fallback_from_observed(self, env: dict[str, float]) -> float | None:
+        if not self._observed_points:
+            return None
+
+        for ref_env, map50 in self._observed_points:
+            if self._distance(ref_env, env) <= 1e-9:
+                return float(map50)
+
+        scored: list[tuple[float, float]] = []
+        for ref_env, map50 in self._observed_points:
+            dist = self._distance(ref_env, env)
+            scored.append((dist, float(map50)))
+        scored.sort(key=lambda item: item[0])
+
+        k = min(5, len(scored))
+        nearest = scored[:k]
+        weighted_sum = 0.0
+        total_weight = 0.0
+        for dist, map50 in nearest:
+            weight = 1.0 / (dist + 1e-6)
+            weighted_sum += weight * map50
+            total_weight += weight
+
+        if total_weight <= 1e-12:
+            return float(nearest[0][1])
+        return float(weighted_sum / total_weight)
+
+    def evaluate_map50(self, env: dict[str, float]) -> float:
+        map50 = self._invoke_callable(env)
+        if map50 is None:
+            map50 = self._fallback_from_observed(env)
+        if map50 is None:
+            raise ValueError("Unable to evaluate simulation result function for KernelSHAP.")
+        return float(map50)
+
+    def predict_batch(
+        self,
+        x_matrix: np.ndarray,
+        target_metric: str,
+        safety_line: float | None,
+    ) -> np.ndarray:
+        x_arr = np.asarray(x_matrix, dtype=float)
+        if x_arr.ndim == 1:
+            x_arr = x_arr.reshape(1, -1)
+
+        outputs: list[float] = []
+        for row in x_arr:
+            env = {name: float(row[idx]) for idx, name in enumerate(self._feature_names)}
+            map50 = self.evaluate_map50(env)
+            if target_metric == "safety_margin" and safety_line is not None:
+                outputs.append(float(map50 - safety_line))
+            else:
+                outputs.append(float(map50))
+        return np.asarray(outputs, dtype=float)
 
 
-def _infer_effect_sign(parameter_name: str, current_value: float) -> float:
-    lowered = parameter_name.lower()
-    if any(token in lowered for token in ("fog", "noise", "wind", "delay", "obstacle", "rain", "snow")):
-        return 1.0
-    if any(token in lowered for token in ("illumination", "light", "brightness")):
-        return -1.0 if current_value < 5000.0 else 1.0
-    return 1.0
-
-
-def _select_evaluator(
-    payload: dict[str, Any],
+def _build_background_matrix(
     specs: list[ParameterSpec],
-    base_environment: dict[str, float],
-    mode: str,
-) -> BaseEvaluator:
-    normalized_mode = mode.strip().lower()
-    if normalized_mode == "sim_dummy":
-        return SimDummyEvaluator(scene_id=str(payload.get("scene_id", "cf_scene")))
-    if normalized_mode == "map50_proxy":
-        return Map50ProxyEvaluator(payload=payload, specs=specs, base_environment=base_environment)
+    runs: list[RunPoint],
+    current_run: RunPoint,
+) -> np.ndarray:
+    names = [spec.name for spec in specs]
 
-    sim_related = {"wind_speed", "delay", "obstacle_density"}
-    if sim_related.issubset(set(base_environment.keys())):
-        return SimDummyEvaluator(scene_id=str(payload.get("scene_id", "cf_scene")))
-    return Map50ProxyEvaluator(payload=payload, specs=specs, base_environment=base_environment)
+    rows: list[list[float]] = []
+    seen: set[tuple[float, ...]] = set()
+
+    def push(env: dict[str, float]) -> None:
+        vector = [float(env.get(name, current_run.env.get(name, 0.0))) for name in names]
+        key = tuple(round(v, 9) for v in vector)
+        if key in seen:
+            return
+        seen.add(key)
+        rows.append(vector)
+
+    for run in runs:
+        push(run.env)
+    push(current_run.env)
+
+    if len(rows) < 2:
+        midpoint = [float((spec.lower + spec.upper) / 2.0) for spec in specs]
+        rows.append(midpoint)
+
+    if len(rows) < 3:
+        lower = [float(spec.lower) for spec in specs]
+        upper = [float(spec.upper) for spec in specs]
+        rows.extend([lower, upper])
+
+    return np.asarray(rows, dtype=float)
 
 
-def _project(params: dict[str, float], specs: list[ParameterSpec]) -> dict[str, float]:
-    projected = params.copy()
-    for spec in specs:
-        projected[spec.name] = spec.clamp(projected[spec.name])
-    return projected
-
-
-def _distance_l1_normalized(
-    base_environment: dict[str, float],
-    candidate_environment: dict[str, float],
+def _compute_kernel_shap(
+    sim_fn: SimulationResultFunction,
     specs: list[ParameterSpec],
-) -> float:
-    distance = 0.0
-    for spec in specs:
-        base = base_environment[spec.name]
-        candidate = candidate_environment[spec.name]
-        distance += spec.weight * abs((candidate - base) / spec.span())
-    return float(distance)
+    runs: list[RunPoint],
+    current_run: RunPoint,
+    target_metric: str,
+) -> tuple[dict[str, float], float, str | None]:
+    names = [spec.name for spec in specs]
+    current_vector = np.asarray([float(current_run.env[name]) for name in names], dtype=float)
+    background = _build_background_matrix(specs=specs, runs=runs, current_run=current_run)
 
-
-def _build_start_points(
-    base_environment: dict[str, float],
-    specs: list[ParameterSpec],
-    evaluator: BaseEvaluator,
-    target_status: str,
-    random_seed: int,
-    num_starts: int,
-) -> list[dict[str, float]]:
-    rng = random.Random(random_seed)
-    starts = [base_environment.copy()]
-
-    directed = base_environment.copy()
-    directed_strong = base_environment.copy()
-    directed_full = base_environment.copy()
-    for spec in specs:
-        if not spec.mutable:
-            continue
-        hint = evaluator.target_hint(target_status, spec.name, base_environment[spec.name])
-        if abs(hint) <= 1e-12:
-            continue
-        directed[spec.name] = spec.clamp(base_environment[spec.name] + (0.2 * spec.span() * hint))
-        directed_strong[spec.name] = spec.clamp(base_environment[spec.name] + (0.75 * spec.span() * hint))
-        directed_full[spec.name] = spec.upper if hint > 0.0 else spec.lower
-    if directed != base_environment:
-        starts.append(directed)
-    if directed_strong != base_environment:
-        starts.append(directed_strong)
-    if directed_full != base_environment:
-        starts.append(directed_full)
-
-    # 한 번에 한 파라미터씩 크게 이동한 시드를 추가해 경계 탐색 실패를 줄인다.
-    for spec in specs:
-        if not spec.mutable:
-            continue
-        hint = evaluator.target_hint(target_status, spec.name, base_environment[spec.name])
-        if abs(hint) <= 1e-12:
-            continue
-        single = base_environment.copy()
-        single[spec.name] = spec.upper if hint > 0.0 else spec.lower
-        starts.append(single)
-
-    while len(starts) < num_starts:
-        point = base_environment.copy()
-        for spec in specs:
-            if not spec.mutable:
-                continue
-            jitter = rng.uniform(-0.35, 0.35) * spec.span()
-            point[spec.name] = spec.clamp(base_environment[spec.name] + jitter)
-        starts.append(point)
-    return starts
-
-
-def _optimize_projected(
-    start: dict[str, float],
-    specs: list[ParameterSpec],
-    objective_fn,
-    random_seed: int,
-    num_steps: int = 90,
-    step_size: float = 0.25,
-    finite_diff_ratio: float = 0.03,
-) -> tuple[dict[str, float], float, dict[str, Any]]:
-    rng = random.Random(random_seed)
-    current = _project(start, specs)
-    best = current.copy()
-    best_obj, best_eval = objective_fn(current)
-
-    for step in range(num_steps):
-        grad: dict[str, float] = {}
-        for spec in specs:
-            if not spec.mutable:
-                continue
-            eps = max(spec.span() * finite_diff_ratio, 1e-4)
-            plus = current.copy()
-            minus = current.copy()
-            plus[spec.name] = spec.clamp(current[spec.name] + eps)
-            minus[spec.name] = spec.clamp(current[spec.name] - eps)
-            plus_obj, _ = objective_fn(plus)
-            minus_obj, _ = objective_fn(minus)
-            denom = plus[spec.name] - minus[spec.name]
-            grad[spec.name] = 0.0 if abs(denom) < 1e-12 else (plus_obj - minus_obj) / denom
-
-        lr = step_size * (0.985 ** step)
-        updated = current.copy()
-        for spec in specs:
-            if not spec.mutable:
-                continue
-            noise = 0.0
-            if step > 0 and step % 25 == 0:
-                noise = rng.uniform(-0.01, 0.01) * spec.span()
-            updated[spec.name] = spec.clamp(updated[spec.name] - (lr * grad[spec.name]) + noise)
-
-        current = _project(updated, specs)
-        current_obj, current_eval = objective_fn(current)
-        if current_obj < best_obj:
-            best_obj = current_obj
-            best = current.copy()
-            best_eval = current_eval
-
-    return best, float(best_obj), best_eval
-
-
-def _build_parameter_changes(
-    base_environment: dict[str, float],
-    candidate_environment: dict[str, float],
-    specs: list[ParameterSpec],
-) -> list[dict[str, float | str]]:
-    changes: list[dict[str, float | str]] = []
-    for spec in specs:
-        start = base_environment[spec.name]
-        end = candidate_environment[spec.name]
-        delta = end - start
-        if abs(delta) < 1e-10:
-            continue
-        changes.append(
-            {
-                "name": spec.name,
-                "from": float(start),
-                "to": float(end),
-                "delta": float(delta),
-                "normalized_delta": float(delta / spec.span()),
-            }
+    def predict(x_matrix: np.ndarray) -> np.ndarray:
+        return sim_fn.predict_batch(
+            x_matrix=x_matrix,
+            target_metric=target_metric,
+            safety_line=current_run.safety_line,
         )
-    changes.sort(key=lambda item: abs(_safe_float(item["normalized_delta"])), reverse=True)
-    return changes
 
+    try:
+        explainer = shap.KernelExplainer(predict, background)
+        nsamples = max(40, min(220, 20 + (10 * len(names))))
+        raw_values = explainer.shap_values(current_vector.reshape(1, -1), nsamples=nsamples)
 
-def _build_candidate_summary(
-    source_status: str,
-    target_status: str,
-    predicted_status: str,
-    changes: list[dict[str, float | str]],
-    decision_margin: float,
-) -> str:
-    if not changes:
-        if source_status == target_status:
-            return "기준 시나리오가 이미 목표 상태에 있습니다."
-        return "현재 탐색 설정에서는 추가 변화 없이 목표 상태 전환이 불가능합니다."
-
-    top = changes[0]
-    name = str(top["name"])
-    delta = _safe_float(top["delta"])
-    arrow = "증가" if delta > 0 else "감소"
-    return (
-        f"{name} 값을 {abs(delta):.4g}만큼 {arrow}시키는 변화가 "
-        f"{source_status}->{predicted_status} 결과 변화에 가장 크게 기여했습니다. "
-        f"(목표: {target_status}) "
-        f"(candidate_margin={decision_margin:.4f})"
-    )
-
-
-def _search_counterfactual_candidates(
-    base_environment: dict[str, float],
-    specs: list[ParameterSpec],
-    evaluator: BaseEvaluator,
-    target_status: str,
-    random_seed: int,
-    num_candidates: int,
-) -> list[dict[str, Any]]:
-    starts = _build_start_points(
-        base_environment=base_environment,
-        specs=specs,
-        evaluator=evaluator,
-        target_status=target_status,
-        random_seed=random_seed,
-        num_starts=max(8, num_candidates * 4),
-    )
-
-    penalty = 8.0
-
-    def objective(candidate_env: dict[str, float]) -> tuple[float, dict[str, Any]]:
-        evaluation = evaluator.evaluate(candidate_env)
-        margin = _safe_float(evaluation.get("decision_margin"), 0.0)
-        distance = _distance_l1_normalized(base_environment, candidate_env, specs)
-        if target_status == PASS_STATUS:
-            violation = max(0.0, margin)
+        if isinstance(raw_values, list):
+            arr = np.asarray(raw_values[0], dtype=float)
         else:
-            violation = max(0.0, -margin)
-        value = distance + (penalty * violation) + (0.1 * abs(margin))
-        return float(value), evaluation
+            arr = np.asarray(raw_values, dtype=float)
+        if arr.ndim == 2:
+            arr = arr[0]
 
-    raw_candidates: list[dict[str, Any]] = []
-    for idx, start in enumerate(starts):
-        start_obj, start_eval = objective(start)
-        start_distance = _distance_l1_normalized(base_environment, start, specs)
-        start_status = str(start_eval.get("predicted_status", PASS_STATUS)).upper()
-        raw_candidates.append(
-            {
-                "environment": _project(start, specs),
-                "objective": start_obj,
-                "distance_l1_normalized": start_distance,
-                "evaluation": start_eval,
-                "meets_target": start_status == target_status,
-            }
-        )
+        expected = explainer.expected_value
+        if isinstance(expected, (list, tuple, np.ndarray)):
+            expected_value = float(np.asarray(expected).reshape(-1)[0])
+        else:
+            expected_value = float(expected)
 
-        candidate_env, objective_value, evaluation = _optimize_projected(
-            start=start,
-            specs=specs,
-            objective_fn=objective,
-            random_seed=random_seed + idx + 17,
-        )
-        distance = _distance_l1_normalized(base_environment, candidate_env, specs)
-        predicted_status = str(evaluation.get("predicted_status", PASS_STATUS)).upper()
-        raw_candidates.append(
-            {
-                "environment": candidate_env,
-                "objective": objective_value,
-                "distance_l1_normalized": distance,
-                "evaluation": evaluation,
-                "meets_target": predicted_status == target_status,
-            }
-        )
-
-    dedup: dict[tuple[tuple[str, float], ...], dict[str, Any]] = {}
-    for candidate in raw_candidates:
-        key = tuple(
-            (spec.name, round(candidate["environment"][spec.name], 7))
-            for spec in specs
-        )
-        existing = dedup.get(key)
-        if existing is None or candidate["objective"] < existing["objective"]:
-            dedup[key] = candidate
-
-    ordered = sorted(
-        dedup.values(),
-        key=lambda item: (
-            not item["meets_target"],
-            item["distance_l1_normalized"],
-            abs(_safe_float(item["evaluation"].get("decision_margin"), 0.0)),
-        ),
-    )
-    if ordered:
-        first = ordered[0]
-        if (not first["meets_target"]) and first["distance_l1_normalized"] <= 1e-12 and len(ordered) > 1:
-            ordered = ordered[1:] + [first]
-    return ordered[:num_candidates]
+        shap_values = {name: float(arr[idx]) for idx, name in enumerate(names)}
+        return shap_values, expected_value, None
+    except Exception as exc:
+        fallback = {name: 0.0 for name in names}
+        baseline = current_run.map50 if current_run.map50 is not None else 0.0
+        return fallback, float(baseline), f"KernelSHAP fallback: {exc}"
 
 
-def _search_boundary_candidates(
-    base_environment: dict[str, float],
+def _shap_prior(payload: dict[str, Any], specs: list[ParameterSpec]) -> dict[str, float]:
+    xai_signals = payload.get("xai_signals") if isinstance(payload.get("xai_signals"), dict) else {}
+    rows = xai_signals.get("dominant_factors") if isinstance(xai_signals.get("dominant_factors"), list) else []
+    names = [spec.name for spec in specs]
+
+    out: dict[str, float] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        matched = _match_feature_name(str(row.get("name", "")), names)
+        if not matched:
+            continue
+        imp = abs(_f(row.get("importance"), 0.0))
+        if imp > 0.0:
+            out[matched] = max(out.get(matched, 0.0), imp)
+
+    max_value = max(out.values()) if out else 0.0
+    return {k: v / max_value for k, v in out.items()} if max_value > 1e-12 else {}
+
+
+def _pass_direction(feature: str) -> str:
+    if _is_light(feature):
+        return "decrease"
+    if _is_harmful_when_increasing(feature):
+        return "increase"
+    return "adjust_near_boundary"
+
+
+def _fail_direction(feature: str) -> str:
+    if _is_light(feature):
+        return "increase"
+    if _is_harmful_when_increasing(feature):
+        return "decrease"
+    return "adjust_near_boundary"
+
+
+def _risk_level(current_run: RunPoint, previous_run: RunPoint | None) -> tuple[str, float, float]:
+    map_drop = 0.0
+    margin_drop = 0.0
+    if previous_run and previous_run.map50 is not None and current_run.map50 is not None:
+        map_drop = max(0.0, previous_run.map50 - current_run.map50)
+    prev_margin = previous_run.safety_margin() if previous_run else None
+    cur_margin = current_run.safety_margin()
+    if prev_margin is not None and cur_margin is not None:
+        margin_drop = max(0.0, prev_margin - cur_margin)
+
+    if current_run.status == FAIL_STATUS:
+        return "failed", map_drop, margin_drop
+
+    cur_margin = current_run.safety_margin()
+    if cur_margin is not None and cur_margin <= 0.03:
+        return "near_boundary", map_drop, margin_drop
+    if map_drop > 1e-9 or margin_drop > 1e-9:
+        return "degrading", map_drop, margin_drop
+    return "safe", map_drop, margin_drop
+
+
+def _build_top_features(
     specs: list[ParameterSpec],
-    evaluator: BaseEvaluator,
-    random_seed: int,
-    num_candidates: int,
+    shap_values: dict[str, float],
+    prior: dict[str, float],
+    current_run: RunPoint,
+    status: str,
+    previous_run: RunPoint | None,
+    shap_error: str | None,
+    target_metric: str,
 ) -> list[dict[str, Any]]:
-    starts = _build_start_points(
-        base_environment=base_environment,
-        specs=specs,
-        evaluator=evaluator,
-        target_status=PASS_STATUS,
-        random_seed=random_seed + 300,
-        num_starts=max(10, num_candidates * 5),
-    )
+    abs_sum = sum(abs(v) for v in shap_values.values())
+    if abs_sum <= 1e-12:
+        abs_sum = 1.0
+    low_signal = max((abs(v) for v in shap_values.values()), default=0.0) <= 1e-9
+    prior_sum = sum(max(prior.get(spec.name, 0.0), 0.0) for spec in specs)
 
-    def objective(candidate_env: dict[str, float]) -> tuple[float, dict[str, Any]]:
-        evaluation = evaluator.evaluate(candidate_env)
-        margin = _safe_float(evaluation.get("decision_margin"), 0.0)
-        distance = _distance_l1_normalized(base_environment, candidate_env, specs)
-        return float((5.0 * abs(margin)) + distance), evaluation
+    rows: list[dict[str, Any]] = []
+    for spec in specs:
+        if spec.name not in shap_values:
+            continue
+        value = float(shap_values[spec.name])
+        if low_signal and prior_sum > 1e-12:
+            importance = max(prior.get(spec.name, 0.0), 0.0) / prior_sum
+        else:
+            importance = abs(value) / abs_sum
+            if importance <= 1e-12 and prior.get(spec.name, 0.0) > 0.0:
+                importance = 0.1 * prior[spec.name]
 
-    raw_candidates: list[dict[str, Any]] = []
-    for idx, start in enumerate(starts):
-        candidate_env, objective_value, evaluation = _optimize_projected(
-            start=start,
-            specs=specs,
-            objective_fn=objective,
-            random_seed=random_seed + idx + 401,
-            num_steps=70,
-            step_size=0.22,
-        )
-        distance = _distance_l1_normalized(base_environment, candidate_env, specs)
-        raw_candidates.append(
+        direction = _pass_direction(spec.name) if status == PASS_STATUS else _fail_direction(spec.name)
+
+        if previous_run and spec.name in previous_run.env:
+            observed = (
+                f"{spec.name} 값이 이전 실행 {previous_run.env[spec.name]:.4f}에서 "
+                f"현재 {current_run.env[spec.name]:.4f}로 변했습니다."
+            )
+        else:
+            observed = f"{spec.name}의 현재 값이 성능 변화에 기여하고 있습니다."
+
+        metric_label = "safety_margin" if target_metric == "safety_margin" else "map50"
+        if low_signal and prior_sum > 1e-12:
+            reason = (
+                f"KernelSHAP 신호가 약해 실행 이력 기반 우선순위를 사용했습니다. "
+                f"LLM 반사실 생성 시 {spec.name}을(를) '{direction}' 방향으로 우선 조정하세요."
+            )
+        else:
+            reason = (
+                f"{metric_label} 기준 KernelSHAP 값 {value:+.5f}를 바탕으로 "
+                f"{spec.name}을(를) '{direction}' 방향으로 조정하는 것이 유효합니다."
+            )
+        if shap_error:
+            reason = f"{reason} (참고: {shap_error})"
+
+        rows.append(
             {
-                "environment": candidate_env,
-                "objective": objective_value,
-                "distance_l1_normalized": distance,
-                "evaluation": evaluation,
+                "feature": spec.name,
+                "shap_value": round(value, 6),
+                "shap_importance": round(importance, 6),
+                "attribution_score": round(importance, 6),
+                "direction": direction,
+                "observed_effect": observed,
+                "reason": reason,
             }
         )
 
-    dedup: dict[tuple[tuple[str, float], ...], dict[str, Any]] = {}
-    for candidate in raw_candidates:
-        key = tuple(
-            (spec.name, round(candidate["environment"][spec.name], 7))
-            for spec in specs
+    rows.sort(key=lambda row: row.get("shap_importance", 0.0), reverse=True)
+    return rows[:8]
+
+
+def _boundary_focus(status: str, risk_level: str, top_features: list[dict[str, Any]]) -> list[str]:
+    if status == FAIL_STATUS:
+        return [str(row.get("feature", "")) for row in top_features[:3] if row.get("feature")]
+    if risk_level in {"degrading", "near_boundary"}:
+        return [str(row.get("feature", "")) for row in top_features[:2] if row.get("feature")]
+    return []
+
+
+def _guidance(status: str, risk_level: str, top_features: list[dict[str, Any]], previous_pass: RunPoint | None) -> str:
+    if not top_features:
+        if status == PASS_STATUS:
+            return "현재 실행은 PASS입니다. 경계 근처 이력을 추가 수집해 KernelSHAP 가이던스를 안정화하세요."
+        return "현재 실행은 FAIL입니다. 단일 변수 경계 탐색을 추가 수행해 KernelSHAP 기여도를 재계산하세요."
+
+    focus = ", ".join(f"{row['feature']} ({row['direction']})" for row in top_features[:3])
+    if status == PASS_STATUS:
+        prefix = "현재 실행은 PASS이며 안전합니다." if risk_level == "safe" else (
+            "현재 실행은 PASS지만 성능 저하가 관찰됩니다." if risk_level == "degrading" else "현재 실행은 PASS지만 경계에 가깝습니다."
         )
-        existing = dedup.get(key)
-        if existing is None or candidate["objective"] < existing["objective"]:
-            dedup[key] = candidate
+        return (
+            f"{prefix} 다음 반사실 시나리오 생성에서는 {focus}를 중심으로 점진적으로 가혹도를 높이되 현실성을 유지하세요."
+        )
 
-    ordered = sorted(
-        dedup.values(),
-        key=lambda item: (
-            abs(_safe_float(item["evaluation"].get("decision_margin"), 0.0)),
-            item["distance_l1_normalized"],
-        ),
+    base = f"최근 PASS 기준: {previous_pass.run_id}" if previous_pass else "PASS 기준 시나리오 없음"
+    return (
+        f"현재 실행은 FAIL입니다. 경계 탐색은 {focus} 중심으로 수행하고({base}), 한 번에 한 변수씩 조정하세요."
     )
-    return ordered[:num_candidates]
 
 
-def _format_candidate_payload(
-    candidate_id: str,
-    source_status: str,
-    target_status: str | None,
-    base_environment: dict[str, float],
+def _guidance_sources(runs: list[RunPoint], sim_source: str, shap_error: str | None) -> list[str]:
+    src = ["scenario_history" if len(runs) > 1 else "current_run", sim_source, "kernelshap"]
+    if shap_error:
+        src.append("kernelshap_fallback")
+    return src
+
+
+def _legacy_candidates(
+    top_features: list[dict[str, Any]],
+    current_run: RunPoint,
     specs: list[ParameterSpec],
-    candidate: dict[str, Any],
-) -> dict[str, Any]:
-    evaluation = candidate["evaluation"]
-    predicted_status = str(evaluation.get("predicted_status", PASS_STATUS)).upper()
-    decision_margin = _safe_float(evaluation.get("decision_margin"), 0.0)
-    changes = _build_parameter_changes(base_environment, candidate["environment"], specs)
-    payload = {
-        "candidate_id": candidate_id,
-        "predicted_status": predicted_status,
-        "decision_margin": float(decision_margin),
-        "distance_l1_normalized": float(candidate["distance_l1_normalized"]),
-        "parameter_changes": changes,
-        "counterfactual_environment": candidate["environment"],
-        "summary_explanation": _build_candidate_summary(
-            source_status=source_status,
-            target_status=target_status or predicted_status,
-            predicted_status=predicted_status,
-            changes=changes,
-            decision_margin=decision_margin,
-        ),
-    }
-    raw_sim_result = evaluation.get("raw_sim_result")
-    if isinstance(raw_sim_result, dict):
-        payload["sim_result_preview"] = {
-            "status": raw_sim_result.get("status"),
-            "min_distance": raw_sim_result.get("min_distance"),
-            "message": raw_sim_result.get("message"),
-        }
-    raw_proxy_result = evaluation.get("raw_proxy_result")
-    if isinstance(raw_proxy_result, dict):
-        payload["proxy_result_preview"] = {
-            "map50_proxy": raw_proxy_result.get("map50_proxy"),
-            "threshold": raw_proxy_result.get("threshold"),
-        }
-    return payload
+    limit: int,
+    prefix: str,
+) -> list[dict[str, Any]]:
+    if limit <= 0:
+        return []
+
+    smap = {spec.name: spec for spec in specs}
+    base_margin = current_run.decision_margin()
+    selected = top_features[:limit] if top_features else []
+    if not selected:
+        selected = [
+            {
+                "feature": "no_feature_detected",
+                "shap_importance": 0.0,
+                "direction": "keep",
+                "reason": "유효한 SHAP 신호를 찾지 못했습니다.",
+                "observed_effect": "현재 입력만으로는 설명 가능한 변수를 충분히 추출하지 못했습니다.",
+            }
+        ]
+
+    rows: list[dict[str, Any]] = []
+    for idx, row in enumerate(selected, start=1):
+        feature = str(row.get("feature", ""))
+        direction = str(row.get("direction", "keep"))
+        base_value = float(current_run.env.get(feature, 0.0))
+        env = dict(current_run.env)
+
+        normalized_distance = 0.0
+        candidate_value = base_value
+        spec = smap.get(feature)
+        if spec is not None and feature in current_run.env:
+            step = spec.span() * max(0.02, 0.15 * _f(row.get("shap_importance"), 0.0))
+            if direction == "increase":
+                candidate_value = spec.clamp(base_value + step)
+            elif direction == "decrease":
+                candidate_value = spec.clamp(base_value - step)
+            elif direction == "adjust_near_boundary":
+                candidate_value = spec.clamp(base_value + (0.1 * step if current_run.status == PASS_STATUS else -0.1 * step))
+            env[feature] = float(candidate_value)
+            normalized_distance = abs(candidate_value - base_value) / spec.span()
+
+        swing = 0.02 + 0.06 * max(0.0, min(_f(row.get("shap_importance"), 0.0), 1.0))
+        est_margin = base_margin + swing if current_run.status == PASS_STATUS else base_margin - swing
+        pred = FAIL_STATUS if est_margin > 0.0 else PASS_STATUS
+
+        changes = [
+            {
+                "parameter": feature,
+                "from": float(base_value),
+                "to": float(candidate_value),
+                "delta": float(candidate_value - base_value),
+                "normalized_l1": float(normalized_distance),
+            }
+        ]
+
+        rows.append(
+            {
+                "candidate_id": f"{prefix}_{idx:02d}",
+                "predicted_status": pred,
+                "decision_margin": float(est_margin),
+                "distance_to_boundary": float(abs(est_margin)),
+                "distance_l1_normalized": float(normalized_distance),
+                "changed_parameters": changes,
+                "parameter_changes": changes,
+                "counterfactual_environment": env,
+                "summary_explanation": f"{row.get('reason', '')} {row.get('observed_effect', '')}".strip(),
+                "attribution_score": float(_f(row.get("shap_importance"), 0.0)),
+                "direction": direction,
+                "shap_value": float(_f(row.get("shap_value"), 0.0)),
+                "shap_importance": float(_f(row.get("shap_importance"), 0.0)),
+                "observed_effect": str(row.get("observed_effect", "")),
+            }
+        )
+    return rows
 
 
 def generate_counterfactual_and_boundary(
@@ -909,123 +831,181 @@ def generate_counterfactual_and_boundary(
     num_counterfactuals: int = 3,
     num_boundary_candidates: int = 5,
     random_seed: int = 42,
+    simulink_callable: Callable[..., Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    if num_counterfactuals <= 0:
-        raise ValueError("num_counterfactuals는 1 이상이어야 합니다.")
-    if num_boundary_candidates <= 0:
-        raise ValueError("num_boundary_candidates는 1 이상이어야 합니다.")
+    del mode, random_seed
+    if num_counterfactuals <= 0 or num_boundary_candidates <= 0:
+        raise ValueError("num_counterfactuals and num_boundary_candidates must be >= 1")
 
-    base_environment = extract_environment_parameters(payload)
-    specs = build_parameter_specs(payload, base_environment)
+    current_node = payload.get("current_scenario") if isinstance(payload.get("current_scenario"), dict) else payload
+    current_env = extract_environment_parameters(payload)
+    specs = build_parameter_specs(payload, current_env)
     if not any(spec.mutable for spec in specs):
-        raise ValueError("변경 가능한 파라미터가 없습니다. scenario_constraints/search_space를 확인해 주세요.")
+        raise ValueError("No mutable parameter found. Check scenario_constraints/search_space/feature_ranges.")
 
-    evaluator = _select_evaluator(payload, specs, base_environment, mode=mode)
-    base_eval = evaluator.evaluate(base_environment)
-    source_status = str(base_eval.get("predicted_status", PASS_STATUS)).upper()
-    decision_margin = _safe_float(base_eval.get("decision_margin"), 0.0)
-    raw_proxy = base_eval.get("raw_proxy_result")
-    raw_proxy = raw_proxy if isinstance(raw_proxy, dict) else {}
-    guidance_info = {
-        "guidance_sources": raw_proxy.get("guidance_sources", []),
-        "guidance_weights": raw_proxy.get("guidance_weights", {}),
-    }
+    current_map50 = _extract_map50(current_node)
+    if current_map50 is None:
+        current_map50 = _extract_map50(payload)
 
-    resolved_target = (target_status or "").strip().upper()
-    if resolved_target not in (PASS_STATUS, FAIL_STATUS):
-        resolved_target = PASS_STATUS if source_status == FAIL_STATUS else FAIL_STATUS
+    safety_line = _extract_safety_line(current_node, _extract_safety_line(payload, None))
+    status = _extract_status(current_node if isinstance(current_node, dict) else payload, current_map50, safety_line)
 
-    cf_candidates_raw = _search_counterfactual_candidates(
-        base_environment=base_environment,
-        specs=specs,
-        evaluator=evaluator,
-        target_status=resolved_target,
-        random_seed=random_seed,
-        num_candidates=num_counterfactuals,
-    )
-    boundary_candidates_raw = _search_boundary_candidates(
-        base_environment=base_environment,
-        specs=specs,
-        evaluator=evaluator,
-        random_seed=random_seed,
-        num_candidates=num_boundary_candidates,
+    current_run = RunPoint(
+        run_id=str(payload.get("scene_id") or payload.get("scenario_id") or _read(current_node, "scenario_id") or "current_scene"),
+        env=current_env,
+        map50=current_map50,
+        safety_line=safety_line,
+        status=status,
     )
 
-    cf_candidates = [
-        _format_candidate_payload(
-            candidate_id=f"cf_{idx + 1:02d}",
-            source_status=source_status,
-            target_status=resolved_target,
-            base_environment=base_environment,
-            specs=specs,
-            candidate=candidate,
-        )
-        for idx, candidate in enumerate(cf_candidates_raw)
-    ]
-    boundary_candidates = [
-        _format_candidate_payload(
-            candidate_id=f"bd_{idx + 1:02d}",
-            source_status=source_status,
-            target_status=None,
-            base_environment=base_environment,
-            specs=specs,
-            candidate=candidate,
-        )
-        for idx, candidate in enumerate(boundary_candidates_raw)
-    ]
+    runs = _collect_history_runs(payload, current_run)
+    current_idx = len(runs) - 1
+    previous_run = runs[current_idx - 1] if current_idx > 0 else None
+    previous_pass = _find_previous_pass(runs, current_idx)
 
-    scene_id = str(payload.get("scene_id", payload.get("scenario_id", "cf_scene")))
-    threshold_condition = str(base_eval.get("threshold_condition", "decision_margin 기준"))
+    target_metric = str(payload.get("shap_target_metric", "map50")).strip().lower()
+    if target_metric not in {"map50", "safety_margin"}:
+        target_metric = "map50"
+
+    sim_fn = SimulationResultFunction(
+        payload=payload,
+        specs=specs,
+        runs=runs,
+        current_run=current_run,
+        simulink_callable=simulink_callable,
+    )
+
+    shap_values, expected_value, shap_error = _compute_kernel_shap(
+        sim_fn=sim_fn,
+        specs=specs,
+        runs=runs,
+        current_run=current_run,
+        target_metric=target_metric,
+    )
+
+    prior = _shap_prior(payload, specs)
+    top_features = _build_top_features(
+        specs=specs,
+        shap_values=shap_values,
+        prior=prior,
+        current_run=current_run,
+        status=current_run.status,
+        previous_run=previous_run,
+        shap_error=shap_error,
+        target_metric=target_metric,
+    )
+
+    risk_level, map_drop, margin_drop = _risk_level(current_run, previous_run)
+    boundary_focus = _boundary_focus(current_run.status, risk_level, top_features)
+    llm_guidance = _guidance(current_run.status, risk_level, top_features, previous_pass)
+
+    guidance_sources = _guidance_sources(runs, sim_fn.source, shap_error)
+    guidance_weights = {source: round(1.0 / len(guidance_sources), 4) for source in guidance_sources}
+
+    resolved_target = str(target_status or "").strip().upper()
+    if resolved_target not in {PASS_STATUS, FAIL_STATUS}:
+        resolved_target = PASS_STATUS if current_run.status == FAIL_STATUS else FAIL_STATUS
+
+    counterfactual_candidates = _legacy_candidates(
+        top_features=top_features,
+        current_run=current_run,
+        specs=specs,
+        limit=num_counterfactuals,
+        prefix="cf",
+    )
+    boundary_candidates = _legacy_candidates(
+        top_features=top_features,
+        current_run=current_run,
+        specs=specs,
+        limit=num_boundary_candidates,
+        prefix="bd",
+    )
+
+    decision_margin = current_run.decision_margin()
     mutable_parameters = [spec.name for spec in specs if spec.mutable]
+
+    threshold_condition = "PASS if map50 >= safety_line, FAIL if map50 < safety_line"
+    if current_run.map50 is None or current_run.safety_line is None:
+        threshold_condition = "PASS/FAIL inferred from result_status or requirement_violated"
+
+    analysis_context = {
+        "history_size": len(runs),
+        "used_previous_pass": previous_pass is not None,
+        "kernelshap_target": target_metric,
+        "kernelshap_expected_value": round(expected_value, 6),
+        "kernelshap_error": shap_error,
+        "map_drop_from_previous": round(map_drop, 6),
+        "margin_drop_from_previous": round(margin_drop, 6),
+    }
 
     counterfactual_output = {
         "schema_version": "xai_counterfactual_v1",
-        "scene_id": scene_id,
-        "search_mode": evaluator.mode_name,
-        "search_method": "projected_gradient_multi_start",
-        "source_status": source_status,
+        "scene_id": current_run.run_id,
+        "search_mode": "kernelshap_direct_simulation",
+        "search_method": METHOD_NAME,
+        "source_status": current_run.status,
         "target_status": resolved_target,
         "threshold_condition": threshold_condition,
         "mutable_parameters": mutable_parameters,
-        "guidance": guidance_info,
+        "guidance": {
+            "guidance_sources": guidance_sources,
+            "guidance_weights": guidance_weights,
+            "analysis_context": analysis_context,
+        },
         "base_case": {
-            "current_environment": base_environment,
-            "predicted_status": source_status,
+            "current_environment": current_run.env,
+            "predicted_status": current_run.status,
             "decision_margin": float(decision_margin),
             "distance_to_boundary": float(abs(decision_margin)),
+            "map50": current_run.map50,
+            "safety_line": current_run.safety_line,
+            "safety_margin": current_run.safety_margin(),
         },
-        "minimal_change_candidates": cf_candidates,
+        "minimal_change_candidates": counterfactual_candidates,
+        "method": METHOD_NAME,
+        "result_status": current_run.status,
+        "risk_level": risk_level,
+        "top_features": top_features,
+        "boundary_focus_features": boundary_focus,
+        "llm_guidance": llm_guidance,
     }
 
-    closest_boundary = boundary_candidates[0] if boundary_candidates else None
+    closest = boundary_candidates[0] if boundary_candidates else None
     boundary_output = {
         "schema_version": "xai_boundary_v1",
-        "scene_id": scene_id,
-        "search_mode": evaluator.mode_name,
-        "search_method": "projected_gradient_multi_start",
+        "scene_id": current_run.run_id,
+        "search_mode": "kernelshap_direct_simulation",
+        "search_method": METHOD_NAME,
         "threshold_condition": threshold_condition,
-        "guidance": guidance_info,
+        "guidance": {
+            "guidance_sources": guidance_sources,
+            "guidance_weights": guidance_weights,
+            "analysis_context": analysis_context,
+        },
         "base_case": {
-            "current_environment": base_environment,
-            "predicted_status": source_status,
+            "current_environment": current_run.env,
+            "predicted_status": current_run.status,
             "decision_margin": float(decision_margin),
             "distance_to_boundary": float(abs(decision_margin)),
+            "map50": current_run.map50,
+            "safety_line": current_run.safety_line,
+            "safety_margin": current_run.safety_margin(),
         },
         "nearest_boundary_candidates": boundary_candidates,
         "boundary_analysis": {
             "base_distance_to_boundary": float(abs(decision_margin)),
-            "closest_boundary_distance": (
-                float(closest_boundary["distance_l1_normalized"]) if closest_boundary else None
-            ),
-            "closest_boundary_margin_abs": (
-                float(abs(_safe_float(closest_boundary["decision_margin"], 0.0)))
-                if closest_boundary
-                else None
-            ),
-            "interpretation": (
-                "distance_to_boundary가 작을수록 pass/fail 경계에 가까운 시나리오입니다."
-            ),
+            "closest_boundary_distance": float(closest["distance_l1_normalized"]) if closest else None,
+            "closest_boundary_margin_abs": float(abs(_f(closest["decision_margin"], 0.0))) if closest else None,
+            "interpretation": "KernelSHAP explains the direct simulation result function and highlights boundary-sensitive variables.",
         },
+        "method": METHOD_NAME,
+        "result_status": current_run.status,
+        "risk_level": risk_level,
+        "top_features": top_features,
+        "boundary_focus_features": boundary_focus,
+        "llm_guidance": llm_guidance,
     }
 
     return counterfactual_output, boundary_output
+
+

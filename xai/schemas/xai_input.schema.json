@@ -1,15 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://counterfactual-xai-verifier/schemas/xai_input.schema.json",
-  "title": "XAIInputForLLM",
+  "title": "XAIInputForSimulationGroundedKernelSHAP",
   "type": "object",
   "required": [
     "scene_id",
-    "task",
-    "perception",
-    "performance_signals",
-    "xai_signals",
-    "scenario_constraints"
+    "task"
   ],
   "properties": {
     "scene_id": {
@@ -20,6 +16,34 @@
     },
     "goal": {
       "type": "string"
+    },
+    "current_scenario": {
+      "$ref": "#/$defs/scenario_item"
+    },
+    "previous_scenario": {
+      "$ref": "#/$defs/scenario_item"
+    },
+    "scenario": {
+      "$ref": "#/$defs/scenario_item"
+    },
+    "scenario_history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenario_item"
+      }
+    },
+    "result_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "map50": {
+      "type": "number"
+    },
+    "safety_line": {
+      "type": "number"
     },
     "current_requirement": {
       "type": "object",
@@ -35,74 +59,76 @@
         }
       }
     },
-    "current_environment": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "number"
-      }
-    },
-    "perception": {
-      "type": "object",
-      "required": [
-        "detector",
-        "input_resolution",
-        "detections"
-      ],
-      "properties": {
-        "detector": {
-          "type": "string"
-        },
-        "input_resolution": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "detections": {
-          "type": "array"
-        }
-      }
-    },
     "performance_signals": {
       "type": "object",
-      "required": [
-        "confidence_trend",
-        "miss_rate_trend",
-        "risk_score",
-        "failure_type"
-      ],
       "properties": {
-        "confidence_trend": {
-          "type": "string"
-        },
-        "miss_rate_trend": {
-          "type": "string"
-        },
-        "risk_score": {
-          "type": "number"
-        },
-        "failure_type": {
-          "type": "string"
-        },
         "map50": {
           "type": "number"
         },
         "threshold": {
           "type": "number"
+        },
+        "safety_margin": {
+          "type": "number"
+        },
+        "risk_score": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "failure_type": {
+          "type": "string"
+        }
+      }
+    },
+    "sim_result": {
+      "type": "object"
+    },
+    "feature_ranges": {
+      "$ref": "#/$defs/range_map"
+    },
+    "search_space": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "$ref": "#/$defs/range_map"
+        },
+        "weights": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "mutable_parameters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scenario_constraints": {
+      "type": "object",
+      "properties": {
+        "allow_weather_change": {
+          "type": "boolean"
+        },
+        "allow_lighting_change": {
+          "type": "boolean"
+        },
+        "allow_obstacle_density_change": {
+          "type": "boolean"
         }
       }
     },
     "xai_signals": {
       "type": "object",
-      "required": [
-        "method",
-        "dominant_factors",
-        "attention_summary"
-      ],
       "properties": {
         "method": {
+          "type": "string"
+        },
+        "attention_summary": {
           "type": "string"
         },
         "dominant_factors": {
@@ -122,106 +148,19 @@
               }
             }
           }
-        },
-        "attention_summary": {
-          "type": "string"
         }
       }
     },
-    "shap_signals": {
-      "type": "object",
-      "properties": {
-        "source_schema": {
-          "type": "string"
-        },
-        "selected_failure_case_id": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "global_feature_importance": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "importance": {
-                "type": "number"
-              },
-              "direction": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "local_feature_contributions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "contribution_score": {
-                "type": "number"
-              },
-              "abs_contribution_score": {
-                "type": "number"
-              },
-              "direction": {
-                "type": "string"
-              }
-            }
-          }
-        }
+    "counterfactual_replay_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/replay_item"
       }
     },
-    "scenario_constraints": {
-      "type": "object",
-      "properties": {
-        "allow_weather_change": {
-          "type": "boolean"
-        },
-        "allow_lighting_change": {
-          "type": "boolean"
-        },
-        "allow_obstacle_density_change": {
-          "type": "boolean"
-        }
-      }
-    },
-    "sim_result": {
-      "type": "object"
-    },
-    "search_space": {
-      "type": "object",
-      "properties": {
-        "bounds": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "minItems": 2,
-            "maxItems": 2
-          }
-        },
-        "weights": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number"
-          }
-        },
-        "mutable_parameters": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
+    "counterfactual_replays": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/replay_item"
       }
     },
     "counterfactual_request": {
@@ -237,24 +176,184 @@
         "evaluator": {
           "type": "string",
           "enum": [
-            "sim_dummy",
-            "map50_proxy"
+            "simulation_grounded",
+            "kernelshap",
+            "map50_proxy",
+            "sim_dummy"
           ]
+        }
+      }
+    },
+    "shap_target_metric": {
+      "type": "string",
+      "enum": [
+        "map50",
+        "safety_margin"
+      ]
+    },
+    "simulink_callable_ref": {
+      "type": "string",
+      "description": "Runtime reference key for external Simulink callable injection (non-JSON callable itself is passed in-process)."
+    },
+    "shap_signals": {
+      "type": "object",
+      "description": "Deprecated compatibility field. Ignored by simulation-grounded KernelSHAP."
+    }
+  },
+  "$defs": {
+    "environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "scenario_item": {
+      "type": "object",
+      "properties": {
+        "scene_id": {
+          "type": "string"
         },
-        "guidance_blend": {
+        "scenario_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "result_status": {
+          "type": "string"
+        },
+        "map50": {
+          "type": "number"
+        },
+        "safety_line": {
+          "type": "number"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "current_environment": {
+          "$ref": "#/$defs/environment"
+        },
+        "environment_parameters": {
+          "$ref": "#/$defs/environment"
+        },
+        "scenario": {
           "type": "object",
           "properties": {
-            "xai": {
+            "scenario_id": {
+              "type": "string"
+            },
+            "environment_parameters": {
+              "$ref": "#/$defs/environment"
+            }
+          }
+        },
+        "performance_signals": {
+          "type": "object",
+          "properties": {
+            "map50": {
               "type": "number"
             },
-            "shap_global": {
+            "threshold": {
               "type": "number"
             },
-            "shap_local": {
+            "safety_margin": {
               "type": "number"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        },
+        "current_requirement": {
+          "type": "object",
+          "properties": {
+            "threshold": {
+              "type": "number"
+            },
+            "requirement_violated": {
+              "type": "boolean"
             }
           }
         }
+      }
+    },
+    "replay_item": {
+      "type": "object",
+      "properties": {
+        "feature": {
+          "type": "string"
+        },
+        "reverted_feature": {
+          "type": "string"
+        },
+        "parameter_name": {
+          "type": "string"
+        },
+        "map50": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "scenario": {
+          "type": "object",
+          "properties": {
+            "environment_parameters": {
+              "$ref": "#/$defs/environment"
+            }
+          }
+        },
+        "environment_parameters": {
+          "$ref": "#/$defs/environment"
+        },
+        "performance_signals": {
+          "type": "object",
+          "properties": {
+            "map50": {
+              "type": "number"
+            },
+            "threshold": {
+              "type": "number"
+            },
+            "safety_margin": {
+              "type": "number"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "range_map": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          {
+            "type": "object",
+            "required": [
+              "min",
+              "max"
+            ],
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          }
+        ]
       }
     }
   }

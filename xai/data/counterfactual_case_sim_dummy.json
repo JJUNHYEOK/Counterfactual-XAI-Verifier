@@ -1,25 +1,33 @@
 {
-  "scene_id": "sim_case_001",
+  "scene_id": "sim_case_003",
   "task": "uav_navigation",
-  "goal": "Find minimal parameter shift to recover safe flight status.",
-  "perception": {
-    "detector": "stub",
-    "input_resolution": [640, 360],
-    "detections": []
+  "goal": "Track PASS-side degradation direction from real simulation history.",
+  "scenario": {
+    "scenario_id": "sim_case_003",
+    "environment_parameters": {
+      "wind_speed": 7.4,
+      "delay": 2.1,
+      "obstacle_density": 0.46
+    }
+  },
+  "current_requirement": {
+    "metric": "map50",
+    "threshold": 0.75,
+    "requirement_violated": false
   },
   "performance_signals": {
-    "confidence_trend": "decreasing",
-    "miss_rate_trend": "increasing",
-    "risk_score": 0.81,
-    "failure_type": "near_collision",
-    "threshold": 1.0
+    "map50": 0.81,
+    "threshold": 0.75,
+    "status": "PASS",
+    "risk_score": 0.04,
+    "failure_type": "normal_operation"
   },
   "xai_signals": {
-    "method": "direct-posthoc",
+    "method": "simulation_history_direct",
     "dominant_factors": [
       {
         "name": "wind_speed",
-        "importance": 0.55
+        "importance": 0.5
       },
       {
         "name": "delay",
@@ -27,23 +35,10 @@
       },
       {
         "name": "obstacle_density",
-        "importance": 0.15
+        "importance": 0.2
       }
     ],
-    "attention_summary": "high wind + delay caused mission failure in simulator dummy case."
-  },
-  "current_requirement": {
-    "metric": "min_distance",
-    "threshold": 1.0,
-    "requirement_violated": true
-  },
-  "scenario": {
-    "scenario_id": "sim_case_001",
-    "environment_parameters": {
-      "wind_speed": 9.0,
-      "delay": 4.2,
-      "obstacle_density": 0.7
-    }
+    "attention_summary": "PASS is maintained but margin is decreasing as stress increases."
   },
   "scenario_constraints": {
     "allow_weather_change": true,
@@ -67,8 +62,52 @@
       "obstacle_density"
     ]
   },
+  "scenario_history": [
+    {
+      "scene_id": "sim_case_001",
+      "scenario": {
+        "environment_parameters": {
+          "wind_speed": 5.2,
+          "delay": 1.1,
+          "obstacle_density": 0.30
+        }
+      },
+      "performance_signals": {
+        "map50": 0.90,
+        "threshold": 0.75,
+        "status": "PASS"
+      },
+      "current_requirement": {
+        "threshold": 0.75,
+        "requirement_violated": false
+      }
+    },
+    {
+      "scene_id": "sim_case_002",
+      "scenario": {
+        "environment_parameters": {
+          "wind_speed": 6.3,
+          "delay": 1.6,
+          "obstacle_density": 0.38
+        }
+      },
+      "performance_signals": {
+        "map50": 0.85,
+        "threshold": 0.75,
+        "status": "PASS"
+      },
+      "current_requirement": {
+        "threshold": 0.75,
+        "requirement_violated": false
+      }
+    }
+  ],
   "counterfactual_request": {
-    "target_status": "PASS",
-    "evaluator": "sim_dummy"
+    "target_status": "FAIL",
+    "evaluator": "simulation_grounded",
+    "guidance_blend": {
+      "xai": 0.4,
+      "history": 0.6
+    }
   }
 }

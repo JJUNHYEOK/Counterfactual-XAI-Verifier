@@ -7,7 +7,7 @@ from typing import Any
 
 def load_json(path: str | Path) -> dict[str, Any]:
     target = Path(path)
-    with target.open("r", encoding="utf-8") as file:
+    with target.open("r", encoding="utf-8-sig") as file:
         return json.load(file)
 
 
