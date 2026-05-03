@@ -1,22 +1,15 @@
 # Data Folder (SI <-> XAI <-> LLM)
 
-Input examples for simulation-grounded XAI:
+This folder uses the same file naming style already used in the SI branch.
 
-- `counterfactual_case_input.json` (FAIL case with `scenario_history` + `counterfactual_replay_results`)
-- `counterfactual_case_sim_dummy.json` (PASS case with degradation trend in `scenario_history`)
+Input examples for XAI:
 - `scenario_iter_001.json`
 - `sim_result_iter_001.json`
 - `eval_iter_001.json`
+- `counterfactual_case_input.json` (counterfactual / boundary 탐색용 샘플)
+- `counterfactual_case_sim_dummy.json` (simulator dummy 기반 탐색 샘플)
 
-Output examples from XAI:
+Output example from XAI:
+- `xai_input.json`
 
-- `counterfactual_explanations.json`
-- `boundary_candidates.json`
-- `xai_input.json` (legacy sample)
-
-Recommended optional evidence fields:
-
-- `scenario_history`
-- `counterfactual_replay_results` or `counterfactual_replays`
-
-These fields improve attribution confidence without changing LLM/SI execution code.
+Keep these names for easier merge between `MATLAB/Simulink/SI`, `XAI`, and `LLM`.
