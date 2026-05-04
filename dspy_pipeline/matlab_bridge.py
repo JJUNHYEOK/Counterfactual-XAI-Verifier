@@ -184,21 +184,28 @@ class MatlabSimulinkBridge:
 
     # ── Main API ─────────────────────────────────────────────────────────
 
-    def run_simulation(self, env_params: dict[str, float]) -> SimulationResult:
+    def run_simulation(
+        self,
+        env_params: dict[str, float],
+        viz_png_path: str | None = None,
+    ) -> SimulationResult:
         """Run one simulation step with the given environment parameters.
 
         Args:
-            env_params: dict with keys
-                fog_density_percent  [0, 100]
-                illumination_lux     [200, 20000]
-                camera_noise_level   [0, 0.6]
+            env_params:   dict with keys
+                          fog_density_percent  [0, 100]
+                          illumination_lux     [200, 20000]
+                          camera_noise_level   [0, 0.6]
+            viz_png_path: optional path; when set (engine mode only), the
+                          mountain_visualizer figure is exported as PNG so
+                          the Streamlit UI can display it.
 
         Returns:
             SimulationResult
         """
         env = self._normalize(env_params)
         if self.mode == "engine":
-            return self._run_engine(env)
+            return self._run_engine(env, viz_png_path=viz_png_path)
         if self.mode == "subprocess":
             return self._run_subprocess(env)
         return self._run_mock(env)
@@ -215,7 +222,11 @@ class MatlabSimulinkBridge:
 
     # ── Engine backend ────────────────────────────────────────────────────
 
-    def _run_engine(self, env: dict[str, float]) -> SimulationResult:
+    def _run_engine(
+        self,
+        env: dict[str, float],
+        viz_png_path: str | None = None,
+    ) -> SimulationResult:
         eng = self._eng
         if eng is None:
             raise RuntimeError("MATLAB Engine not started. Call bridge.start() first.")
@@ -230,20 +241,22 @@ class MatlabSimulinkBridge:
         eng.eval("simOut = sim('mountain_uav_model');", nargout=0)
         eng.eval("evalResult = requirements_eval(simOut);", nargout=0)
 
-        # Render the dual-panel scene (left: 3D mountain + UAV, right: camera
-        # image with GT/det bboxes). Close the previous viz figure first so
-        # only one window exists across iterations. Errors here are non-fatal
-        # — the simulation result is still returned.
+        # Render the dual-panel scene (left: 3D mountain + UAV, right: top-down
+        # EO camera with intruder bboxes). Close the previous viz figure first
+        # so only one window exists across iterations. If viz_png_path is set,
+        # also save a PNG snapshot for the Streamlit UI to display.
         try:
             eng.eval(
                 "vf = findobj('Type','figure','Name','Mountain UAV Test'); "
                 "if ~isempty(vf), close(vf); end",
                 nargout=0,
             )
+            save_path_mat = (viz_png_path or "").replace("\\", "/")
             eng.eval(
                 "mountain_visualizer(simOut, struct("
                 "'visible', true, 'animate', true, "
-                "'frameStride', 4, 'pauseSeconds', 0.02));",
+                f"'frameStride', 4, 'pauseSeconds', 0.02, "
+                f"'savePath', '{save_path_mat}'));",
                 nargout=0,
             )
         except Exception as exc:

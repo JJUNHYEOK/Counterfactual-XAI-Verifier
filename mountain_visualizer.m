@@ -40,11 +40,21 @@ Yg  = evalin("base", "TERRAIN_Y");
 Zg  = evalin("base", "TERRAIN_Z");
 obs_xyz = evalin("base", "OBSTACLES_XYZ");
 obs_rh  = evalin("base", "OBSTACLES_RH");
+try
+    obs_class = evalin("base", "OBSTACLES_CLASS");   % 1=person, 2=vehicle
+catch
+    obs_class = ones(size(obs_xyz, 1), 1);            % fallback: all person
+end
 imgSize = evalin("base", "IMG_SIZE");
 camW = imgSize(1); camH = imgSize(2);
 
 Nt = numel(t_vec);
 Nobs = size(obs_xyz, 1);
+
+% Class metadata for labelling / colouring
+INTRUDER_LABEL  = ["Person", "Vehicle"];
+INTRUDER_COLOR  = [0.20 0.50 0.95;   % person: blue
+                   0.95 0.55 0.10];  % vehicle: orange
 
 % --- mAP50 (over per-frame, per-tree detections) ---
 summary = compute_summary(gtBB, detBB, scores, Nobs);
@@ -63,9 +73,15 @@ shading(ax3, "interp");
 colormap(ax3, terrain_colormap());
 hold(ax3, "on");
 
-% Trees: cylinder mesh
+% Intruders: distinct shapes per class (person = upright pillar, vehicle = box-like)
 for k = 1:Nobs
-    draw_tree(ax3, obs_xyz(k,:), obs_rh(k,1), obs_rh(k,2));
+    cls = obs_class(k);
+    color = INTRUDER_COLOR(cls, :);
+    draw_intruder(ax3, obs_xyz(k,:), obs_rh(k,1), obs_rh(k,2), cls, color);
+    text(ax3, obs_xyz(k,1), obs_xyz(k,2), obs_xyz(k,3) + obs_rh(k,2) + 1.0, ...
+        sprintf("%s %d", INTRUDER_LABEL(cls), k), ...
+        "Color", color, "FontWeight", "bold", "FontSize", 9, ...
+        "HorizontalAlignment", "center");
 end
 
 % UAV trajectory
@@ -90,7 +106,7 @@ for ii_l = 1:4
 end
 
 xlabel(ax3, "X (m)"); ylabel(ax3, "Y (m)"); zlabel(ax3, "Z (m)");
-title(ax3, "Mountain Scene + UAV");
+title(ax3, "국경 산악 정찰 — UAV 비행 (3rd person)");
 grid(ax3, "on"); axis(ax3, "equal"); view(ax3, 35, 30);
 xlim(ax3, [min(Xg(:)) max(Xg(:))]);
 ylim(ax3, [min(Yg(:)) max(Yg(:))]);
@@ -110,7 +126,7 @@ set(ax2, "YDir", "reverse");
 hold(ax2, "on");
 xlim(ax2, [0 camW]); ylim(ax2, [0 camH]);
 xlabel(ax2, "u (px)"); ylabel(ax2, "v (px)");
-title(ax2, "Camera View (rendered scene + bboxes)");
+title(ax2, "EO 카메라 (top-down) — 침입자 탐지 bbox");
 axis(ax2, "image");
 
 if opts.animate && opts.visible
@@ -146,21 +162,27 @@ for ii = frameIdx
     set(imHandle, "CData", frameImg);
 
     for k = 1:Nobs
-        gt = squeeze(gtBB(ii, k, :))';
-        dt = squeeze(detBB(ii, k, :))';
-        sc = scores(ii, k);
+        gt   = squeeze(gtBB(ii, k, :))';
+        dt   = squeeze(detBB(ii, k, :))';
+        sc   = scores(ii, k);
+        cls  = obs_class(k);
+        cls_lbl = INTRUDER_LABEL(cls);
 
         if any(gt ~= 0)
             rectangle("Parent", ax2, "Position", clamp_box(gt, camW, camH), ...
-                "EdgeColor", [0.10 0.75 0.20], "LineStyle", "--", ...
+                "EdgeColor", [0.10 0.85 0.20], "LineStyle", "--", ...
                 "LineWidth", 1.4, "Tag", "bbox_overlay");
+            text(ax2, gt(1), max(8, gt(2) - 6), sprintf("%s (GT)", cls_lbl), ...
+                "Color", [0.10 0.85 0.20], "FontWeight", "bold", "FontSize", 8, ...
+                "Tag", "bbox_overlay");
         end
         if sc > 0.30 && any(dt ~= 0)
             rectangle("Parent", ax2, "Position", clamp_box(dt, camW, camH), ...
                 "EdgeColor", [0.95 0.20 0.20], "LineWidth", 1.6, ...
                 "Tag", "bbox_overlay");
-            text(ax2, dt(1), max(8, dt(2) - 6), sprintf("%.2f", sc), ...
-                "Color", [0.95 0.20 0.20], "FontWeight", "bold", ...
+            text(ax2, dt(1), min(camH-8, dt(2) + dt(4) + 12), ...
+                sprintf("%s %.2f", cls_lbl, sc), ...
+                "Color", [0.95 0.20 0.20], "FontWeight", "bold", "FontSize", 8, ...
                 "Tag", "bbox_overlay");
         end
     end
@@ -333,23 +355,41 @@ hh = max(2, min(b(4), h - y));
 box = [x, y, ww, hh];
 end
 
-function draw_tree(ax, base, r, h)
-[xc, yc, zc] = cylinder(r, 16);
-zc = zc * h;
-xc = xc + base(1);
-yc = yc + base(2);
-zc = zc + base(3);
-surf(ax, xc, yc, zc, ...
-    "EdgeColor", "none", ...
-    "FaceColor", [0.10 0.55 0.20], ...
-    "FaceAlpha", 0.95);
-% Trunk: small brown box at base
-[bx, by, bz] = cylinder(r*0.35, 8);
-bz = bz * (h*0.30);
-bx = bx + base(1); by = by + base(2); bz = bz + base(3);
-surf(ax, bx, by, bz, ...
-    "EdgeColor", "none", ...
-    "FaceColor", [0.45 0.25 0.10]);
+function draw_intruder(ax, base, r, h, cls, color)
+% cls = 1 → person (thin upright cylinder + head)
+% cls = 2 → vehicle (flat wide cylinder, ~2m radius × 1.8m height)
+if cls == 2
+    % Vehicle: wider, shorter cylinder (looks like a 4WD/APC top-down)
+    [xc, yc, zc] = cylinder(r, 16);
+    zc = zc * h;
+    xc = xc + base(1);
+    yc = yc + base(2);
+    zc = zc + base(3);
+    surf(ax, xc, yc, zc, ...
+        "EdgeColor", [0.30 0.30 0.30], ...
+        "FaceColor", color, ...
+        "FaceAlpha", 0.95);
+else
+    % Person: slim cylinder body
+    [xc, yc, zc] = cylinder(r, 12);
+    zc = zc * h;
+    xc = xc + base(1);
+    yc = yc + base(2);
+    zc = zc + base(3);
+    surf(ax, xc, yc, zc, ...
+        "EdgeColor", "none", ...
+        "FaceColor", color, ...
+        "FaceAlpha", 0.95);
+    % Head sphere
+    [sx, sy, sz] = sphere(8);
+    sx = sx * (r*1.2) + base(1);
+    sy = sy * (r*1.2) + base(2);
+    sz = sz * (r*1.0) + base(3) + h;
+    surf(ax, sx, sy, sz, ...
+        "EdgeColor", "none", ...
+        "FaceColor", color * 0.85, ...
+        "FaceAlpha", 0.95);
+end
 end
 
 function img = render_camera_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)

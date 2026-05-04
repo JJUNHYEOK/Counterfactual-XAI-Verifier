@@ -1,0 +1,31 @@
+{
+  "mission_id":  "border_mountain_surveillance_v1",
+  "mission_title":  "국경 산악 감시 (Border Mountain Surveillance)",
+  "background": "국경에 인접한 산악 지역으로, 비인가 침입자(사람·차량)는 원칙적으로 존재하면 안 되는 영역.",
+  "objective":  "UAV가 이 영역을 정찰하여 비인가 객체를 자동 감지·보고한다.",
+  "detection_targets": ["사람", "차량"],
+  "non_targets":       ["나무", "수풀", "지형 자체"],
+  "failure_definition": "있어선 안 되는 침입자가 실제로 존재함에도 환경 변조(안개·저조도·센서 잡음)로 인해 객체 감지가 실패하여 보고가 누락된 경우 → 안보 위협 + 책임 발생.",
+  "verification_objective": "어떤 환경 조건의 조합에서 본 임무가 무너지는지(실패 경계) 정량 검증.",
+  "operational_context": {
+    "platform":          "EO 카메라 탑재 회전익 UAV",
+    "flight_profile":    "산악 능선 위 정찰 비행 (약 65 m AGL, 직진 정찰)",
+    "viewpoint":         "위에서 아래를 내려다보는 near-top-down 영상 (pitch ≈ 80°)",
+    "environment_axes":  ["안개 밀도 (fog_density_percent)", "조도 (illumination_lux)", "센서 잡음 (camera_noise_level)"]
+  },
+  "requirements": {
+    "REQ_1": {
+      "name":      "Detection performance",
+      "metric":    "mAP50",
+      "threshold": 0.50,
+      "rationale": "Baseline mAP50 (정상 조건) 대비 30 % 상대 하락을 허용한 안전선. 선행 연구 [30~60 % 허용 범위] 의 가장 보수적 값."
+    },
+    "REQ_3": {
+      "name":      "Detection continuity",
+      "metric":    "max consecutive missed frames",
+      "threshold": 3,
+      "rationale": "임무 보고 신뢰도. 3 frame(=0.3 s) 이상 침입자를 연속해서 놓치면 보고 누락 위험."
+    }
+  },
+  "tone_for_narrator": "안보·국방 보고서 톤 — 명확하고 절제된 어조, '식별', '권고', '위협', '운용성', '교전 거리' 등의 어휘 우선. 수치 노출은 최소화하고 정성적 표현 사용."
+}

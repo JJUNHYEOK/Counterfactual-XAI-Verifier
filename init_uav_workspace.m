@@ -27,33 +27,58 @@ assignin('base', 'TERRAIN_X', Xg);
 assignin('base', 'TERRAIN_Y', Yg);
 assignin('base', 'TERRAIN_Z', Zg);
 
-% ── Tree obstacles (fixed layout on mountainside) ─────────────────────────
-treeXY = [-30,  5;
-          -10, -8;
-           10,  3;
-           30,-10;
-           50,  8];
-treeRadius = 1.2;
-treeHeight = 7.0;
+% ── Intruder targets: 3 people + 2 vehicles on the mountainside ──────────
+% Mission: detect unauthorized intruders (people / vehicles) in a border
+% mountain area. Trees / shrubs are NOT detection targets — only intruders.
+%
+% Object dimensions chosen so bboxes are ~10-25 px wide at the surveillance
+% altitude (small enough to be a "small-object" challenge, big enough that
+% IoU>=0.5 matching is feasible in clean conditions).
+%   person  : r=0.50,  h=1.80
+%   vehicle : r=1.60,  h=1.80   (≈ 3.2 m diameter cylinder ~ small SUV)
 
-OBS_XYZ = zeros(5, 3);
-OBS_RH  = zeros(5, 2);
-for k = 1:5
-    tx = treeXY(k,1);  ty = treeXY(k,2);
+intruderXY = [
+    -35,  4;     % person 1
+     -8, -6;     % person 2
+     12,  9;     % person 3
+     28, -8;     % vehicle 1
+     48,  6      % vehicle 2
+];
+intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
+intruderDims  = [
+    0.50, 1.80;   % person dims (r, h)
+    0.50, 1.80;
+    0.50, 1.80;
+    1.60, 1.80;   % vehicle dims
+    1.60, 1.80
+];
+
+N = size(intruderXY, 1);
+OBS_XYZ = zeros(N, 3);
+OBS_RH  = zeros(N, 2);
+for k = 1:N
+    tx = intruderXY(k,1);  ty = intruderXY(k,2);
     tz = interp2(Xg, Yg, Zg, tx, ty, 'linear', 0);
     OBS_XYZ(k,:) = [tx, ty, tz];
-    OBS_RH(k,:)  = [treeRadius, treeHeight];
+    OBS_RH(k,:)  = intruderDims(k,:);
 end
-assignin('base', 'OBSTACLES_XYZ', OBS_XYZ);
-assignin('base', 'OBSTACLES_RH',  OBS_RH);
+assignin('base', 'OBSTACLES_XYZ',   OBS_XYZ);
+assignin('base', 'OBSTACLES_RH',    OBS_RH);
+assignin('base', 'OBSTACLES_CLASS', intruderClass);
 
-% ── UAV initial state (fixed trajectory) ─────────────────────────────────
-uavZ0 = max(Zg(:)) + 8;          % 8 m above the highest peak
+% ── UAV initial state — surveillance overflight ──────────────────────────
+% +15 m above the highest peak ⇒ ≈ 45 m AGL over the valley.
+% Lower altitude than first attempt; gives larger projected bboxes
+% (10-25 px) which are still "small-object" but actually detectable.
+uavZ0 = max(Zg(:)) + 15;
 assignin('base', 'UAV_X0_VEC', [-80.0, 0.0, uavZ0]);
-assignin('base', 'UAV_V_VEC',  [3.0,   0.0, 0.0]);   % m/s along +X
+assignin('base', 'UAV_V_VEC',  [3.0,   0.0, 0.0]);
 
 % ── Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ──────────────────
-assignin('base', 'CAM_INTRIN', [600, 600, 320, 180, 15]);
+% pitch=60° (looking down at 60° from horizontal) keeps a clear "from above"
+% surveillance feel while preserving non-degenerate vertical projection.
+% pitch=90° would collapse object height to 0 px (all-broken bboxes).
+assignin('base', 'CAM_INTRIN', [600, 600, 320, 180, 60]);
 assignin('base', 'IMG_SIZE',   [640, 360]);
 
 end

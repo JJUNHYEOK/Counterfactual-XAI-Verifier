@@ -161,37 +161,48 @@ assignin("base", "TERRAIN_X", Xg);
 assignin("base", "TERRAIN_Y", Yg);
 assignin("base", "TERRAIN_Z", Zg);
 
-% --- Tree obstacles (5 trees on mountainside) ---
-treeXY = [
-    -30,   5;
-    -10,  -8;
-     10,   3;
-     30, -10;
-     50,   8
+% --- Intruder targets: 3 people + 2 vehicles ---
+% Mission = unauthorized-intruder detection on a border mountain. Only
+% people and vehicles are detection targets; trees / shrubs are NOT.
+intruderXY = [
+    -35,  4;     % person 1
+     -8, -6;     % person 2
+     12,  9;     % person 3
+     28, -8;     % vehicle 1
+     48,  6      % vehicle 2
 ];
-treeRadius = 1.2;
-treeHeight = 7.0;
+intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
+intruderDims  = [
+    0.50, 1.80;   % person r, h
+    0.50, 1.80;
+    0.50, 1.80;
+    1.60, 1.80;   % vehicle r, h
+    1.60, 1.80
+];
 
-OBSTACLES_XYZ = zeros(5, 3);
-OBSTACLES_RH  = zeros(5, 2);
-for k = 1:size(treeXY,1)
-    tx = treeXY(k,1); ty = treeXY(k,2);
+N = size(intruderXY, 1);
+OBSTACLES_XYZ = zeros(N, 3);
+OBSTACLES_RH  = zeros(N, 2);
+for k = 1:N
+    tx = intruderXY(k,1); ty = intruderXY(k,2);
     tz = interp2(Xg, Yg, Zg, tx, ty, "linear", 0);
     OBSTACLES_XYZ(k,:) = [tx, ty, tz];
-    OBSTACLES_RH(k,:)  = [treeRadius, treeHeight];
+    OBSTACLES_RH(k,:)  = intruderDims(k,:);
 end
-assignin("base", "OBSTACLES_XYZ", OBSTACLES_XYZ);
-assignin("base", "OBSTACLES_RH",  OBSTACLES_RH);
+assignin("base", "OBSTACLES_XYZ",   OBSTACLES_XYZ);
+assignin("base", "OBSTACLES_RH",    OBSTACLES_RH);
+assignin("base", "OBSTACLES_CLASS", intruderClass);
 
 % --- UAV initial state and constant velocity ---
+% Surveillance overflight at moderate altitude (~45 m AGL).
 uavX0 = -80; uavY0 = 0;
-uavZ0 = max(Zg(:)) + 8;    % just above the highest peak
+uavZ0 = max(Zg(:)) + 15;
 assignin("base", "UAV_X0_VEC", [uavX0, uavY0, uavZ0]);
 assignin("base", "UAV_V_VEC",  [3.0, 0.0, 0.0]);   % m/s along +X
 
 % --- Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ---
-% Pitch tilts the camera down so trees on the mountainside fall in the FOV.
-assignin("base", "CAM_INTRIN", [600, 600, 320, 180, 15]);
+% pitch = 60° → clearly downward surveillance view, math non-degenerate.
+assignin("base", "CAM_INTRIN", [600, 600, 320, 180, 60]);
 assignin("base", "IMG_SIZE",   [640, 360]);
 
 end
@@ -413,22 +424,27 @@ lines = [
 "        continue;"
 "    end"
 ""
-"    % Reject if too far"
-"    if cz_avg > 90"
+"    % Reject if too far (extended for higher-altitude surveillance)"
+"    if cz_avg > 150"
 "        continue;"
 "    end"
 ""
 "    gt_bboxes(k,:) = [bbox_u, bbox_v, bbox_w, bbox_h];"
 ""
-"    dist_attn = max(0.05, 1 - cz_avg/90);"
+"    dist_attn = max(0.05, 1 - cz_avg/150);"
 "    sc = visibility * dist_attn;"
 ""
-"    % Deterministic jitter (no randn in codegen)"
-"    seed = mod(uav_xyz(1)*0.7 + base_x*1.3 + base_y*0.9, 6.2831853);"
-"    jx = sin(seed)        * (3 + 18*(1 - visibility));"
-"    jy = cos(seed*1.3)    * (3 + 18*(1 - visibility));"
-"    jw = sin(seed*1.7)    * (1 + 6*(1  - visibility));"
-"    jh = cos(seed*2.1)    * (1 + 6*(1  - visibility));"
+"    % Deterministic jitter (no randn in codegen). Scaled to bbox size so"
+"    % it never exceeds ~20% of the bbox in clean conditions; this keeps"
+"    % IoU>=0.5 achievable for small (5-15 px) intruder bboxes."
+"    seed     = mod(uav_xyz(1)*0.7 + base_x*1.3 + base_y*0.9, 6.2831853);"
+"    bb_size  = 0.5 * (bbox_w + bbox_h);"
+"    pos_amp  = bb_size * 0.10 + bb_size * 0.40 * (1 - visibility);"
+"    size_amp = bb_size * 0.05 + bb_size * 0.25 * (1 - visibility);"
+"    jx = sin(seed)        * pos_amp;"
+"    jy = cos(seed*1.3)    * pos_amp;"
+"    jw = sin(seed*1.7)    * size_amp;"
+"    jh = cos(seed*2.1)    * size_amp;"
 ""
 "    det_bboxes(k,:) = [bbox_u + jx, bbox_v + jy, max(2, bbox_w + jw), max(2, bbox_h + jh)];"
 "    det_scores(k)   = sc;"

@@ -398,35 +398,60 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
                   f"top={top['name']} (imp={top['importance']:.2f}, {top['direction']})  "
                   f"R²={shap_payload.get('model_r2')}")
 
-        # ── Decide next scenario ─────────────────────────────────────────
-        have_boundary = (last_pass_env is not None) and (last_fail_env is not None)
+        # ── Decide next scenario (explicit push-on-PASS / recover-on-FAIL) ──
+        # Goal: oscillate around the failure boundary, NOT degrade indefinitely.
+        #   PASS  → push toward known FAIL anchor (degrade)
+        #   FAIL  → recover toward known PASS anchor (relax)
+        # Each transition halves the segment, converging on the boundary.
+        has_pass = last_pass_env is not None
+        has_fail = last_fail_env is not None
 
-        if have_boundary:
-            # Phase 2 — bisect between last PASS and last FAIL
-            next_env   = _bisect_between(last_pass_env, last_fail_env)
+        if result.all_passed and has_fail:
+            # PUSH: just passed and we know where failure lies — push toward it
+            next_env   = _bisect_between(env_params, last_fail_env)
             width      = _segment_width(last_pass_env, last_fail_env)
-            mode       = "bisect"
+            mode       = "boundary_push"
             hypothesis = (
-                f"마지막 PASS와 FAIL의 중간점에서 경계 위치를 좁힙니다 "
-                f"(segment width: {width})."
+                f"직전 시뮬은 PASS. 알려진 FAIL anchor 방향으로 push 하여 "
+                f"경계를 좁힙니다 (segment width: {width})."
             )
             analysis = (
-                "📊 현재 상황: PASS↔FAIL 경계 구간을 확보. bisection으로 폭을 절반씩 좁힙니다.\n"
-                f"  PASS anchor: {last_pass_env}\n"
-                f"  FAIL anchor: {last_fail_env}\n"
-                f"  midpoint:    {next_env}\n"
-                "🎯 경계 탐색 전략: 매 iteration마다 segment width가 1/2로 줄어듭니다."
+                "📊 PUSH 모드 — PASS이므로 더 가혹한 조건으로 한 단계 진행.\n"
+                f"  현재 PASS env: {env_params}\n"
+                f"  목표 FAIL env: {last_fail_env}\n"
+                f"  다음 후보:     {next_env}"
             )
             boundary_log.append({
-                "step":       step + 1,
-                "pass_env":   last_pass_env,
-                "fail_env":   last_fail_env,
-                "midpoint":   next_env,
-                "width":      width,
+                "step": step + 1, "mode": mode,
+                "pass_env": last_pass_env, "fail_env": last_fail_env,
+                "midpoint": next_env, "width": width,
             })
-            print(f"  [Bisect] PASS↔FAIL width={width} → midpoint {next_env}")
-        else:
-            # Phase 1 — LLM exploration with SHAP guidance
+            print(f"  [PUSH] PASS → 가혹화. width={width}")
+
+        elif (not result.all_passed) and has_pass:
+            # RECOVER: just failed and we know where pass lies — recover toward it
+            next_env   = _bisect_between(env_params, last_pass_env)
+            width      = _segment_width(last_pass_env, last_fail_env)
+            mode       = "boundary_recover"
+            hypothesis = (
+                f"직전 시뮬은 FAIL. 알려진 PASS anchor 방향으로 회복 (악화가 아닌 완화). "
+                f"segment width: {width}."
+            )
+            analysis = (
+                "📊 RECOVER 모드 — FAIL이므로 환경을 다시 완화하여 boundary를 좁힙니다.\n"
+                f"  현재 FAIL env: {env_params}\n"
+                f"  목표 PASS env: {last_pass_env}\n"
+                f"  다음 후보:     {next_env}"
+            )
+            boundary_log.append({
+                "step": step + 1, "mode": mode,
+                "pass_env": last_pass_env, "fail_env": last_fail_env,
+                "midpoint": next_env, "width": width,
+            })
+            print(f"  [RECOVER] FAIL → 완화. width={width}")
+
+        elif result.all_passed and not has_fail:
+            # EXPLORE: still all PASS, no FAIL ever — let LLM/SHAP push intelligently
             xai_signals  = _build_xai_signals(result, env_params, shap_payload)
             perf_signals = _build_perf_signals(result)
             iter_history = [
@@ -441,7 +466,7 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
                 }
                 for h in history[-5:]
             ]
-            print(f"  [DSPy] Generating counterfactual (SHAP-guided)…")
+            print(f"  [EXPLORE] PASS만 있음, FAIL 미발견 → LLM/SHAP push…")
             try:
                 prediction = generator(
                     iteration_history  = json.dumps(iter_history, ensure_ascii=False),
@@ -452,18 +477,27 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
                 hypothesis = prediction.target_hypothesis
                 analysis   = prediction.analysis or prediction.reasoning
                 mode       = "llm_explore"
-                print(
-                    f"  [DSPy] Next: fog={next_env.get('fog_density_percent',0):.1f}%  "
-                    f"illum={next_env.get('illumination_lux',0):.0f}lx  "
-                    f"noise={next_env.get('camera_noise_level',0):.3f}"
-                )
-                print(f"  [DSPy] Hypothesis: {hypothesis}")
+                print(f"  [LLM]   다음: fog={next_env.get('fog_density_percent',0):.1f}%  "
+                      f"illum={next_env.get('illumination_lux',0):.0f}lx  "
+                      f"noise={next_env.get('camera_noise_level',0):.3f}")
             except Exception as exc:
-                print(f"  [DSPy] Error ({exc}). Using rule-based fallback.")
-                next_env   = _rule_mutation(env_params, result.all_passed)
-                hypothesis = "Rule-based fallback mutation"
+                print(f"  [LLM] Error ({exc}). 규칙으로 push.")
+                next_env   = _rule_mutation(env_params, True)
+                hypothesis = "Rule-based push (LLM 실패)"
                 analysis   = ""
-                mode       = "rule_fallback"
+                mode       = "rule_push_fallback"
+
+        else:
+            # FAIL but no PASS anchor: never passed yet → relax to baseline
+            next_env   = _rule_mutation(env_params, False)
+            hypothesis = "PASS 시드 미발견. 규칙으로 환경을 baseline 쪽으로 완화."
+            analysis   = (
+                "📊 RULE_RELAX — PASS 앵커 없음, 환경을 완화하여 PASS 가능 영역 탐색.\n"
+                f"  현재 FAIL env: {env_params}\n"
+                f"  완화 후보:     {next_env}"
+            )
+            mode = "rule_relax"
+            print(f"  [RULE_RELAX] PASS 미발견, 규칙으로 환경 완화")
 
         current_scenario = {
             "scenario_id":            f"scenario_dspy_step_{step+1:03d}",

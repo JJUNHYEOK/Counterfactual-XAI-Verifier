@@ -8,22 +8,34 @@ import dspy
 
 
 class UAVAdversarialScenario(dspy.Signature):
-    """UAV 산악 정찰 임무에서 객체 탐지 실패(Mission_Success=0)를 유발하는
-    적대적 환경 시나리오를 생성합니다.
+    """UAV 국경 산악 감시 임무의 PASS↔FAIL 경계를 찾기 위한
+    EXPLORE-단계 시나리오 생성기.
 
-    검증 목표 — 세 요구사항 중 하나 이상 위반 시 임무 실패:
-      REQ-1: mAP50 >= 0.85  (탐지 정확도 — 낮을수록 실패)
-      REQ-2: 최소이격거리 >= 2.0m  (안전 간격 — 낮을수록 실패)
-      REQ-3: 연속 미탐지 프레임 <= 3  (탐지 연속성 — 높을수록 실패)
+    호출 컨텍스트 — 본 시그니처는 "PUSH (탐색)" 모드에서만 호출됩니다:
+      · 호출 조건: 지금까지의 모든 시뮬이 PASS이고, 아직 FAIL anchor가
+        발견되지 않은 상태 → boundary가 어디 있는지 모름
+      · 역할:     SHAP signals를 활용해 점진적으로 가혹화하여
+                  첫 FAIL을 빠르게 찾도록 다음 환경을 제안
+      · 일단 첫 FAIL이 발견되면 본 시그니처는 더 이상 호출되지 않으며,
+        결정론적 bisection이 PASS↔FAIL 사이를 좁히며 boundary를 정밀화함
 
-    반사실적(Counterfactual) 탐색 원칙:
-      1) 최소 파라미터 변화로 실패 경계(decision boundary)를 정밀 탐색.
-      2) XAI dominant_factors가 지목한 취약 파라미터를 집중 공략.
-      3) 단일 변수가 아닌 복합 결함(Composite Fault) 조합 우선:
-           DIF (Weather + Blur): fog_density_percent + low illumination_lux
-           TIS (Sensor + Blur):  camera_noise_level + fog_density_percent
-      4) 개별 변수를 이전 대비 5~15% 내외로 점진적으로 조정.
-         mAP50이 0.5 미만이면 과도한 공격 → 파라미터를 20~30% 완화.
+    검증 목표 — 두 요구사항 중 하나 이상 위반 시 임무 실패:
+      REQ-1: mAP50 >= 0.50  (탐지 정확도 — Safety Line, baseline 대비 30%↓)
+      REQ-3: 연속 미탐지 프레임 <= 3  (탐지 연속성 — 보고 누락 위험)
+    (REQ-2 이격거리는 본 연구에서는 비변동이라 평가 대상에서 제외)
+
+    Push 전략:
+      1) XAI dominant_factors / SHAP global_importance가 지목한
+         취약 파라미터를 우선 공략 (가장 영향력 큰 변수부터)
+      2) 단일 변수가 아닌 복합 결함 (Composite Fault) 조합 우선:
+           DIF (Weather × Lighting): fog_density_percent ↑ + illumination_lux ↓
+           TIS (Sensor × Weather):   camera_noise_level ↑ + fog_density_percent ↑
+      3) 직전 대비 각 파라미터를 5~15% 내외로 점진 조정.
+         이렇게 점진적이어야 첫 FAIL이 발생한 곳이 boundary에 가까운
+         값이 되어, 후속 bisection이 효율적으로 좁힐 수 있음.
+      4) 너무 큰 step으로 mAP50이 0.30 이하로 추락하면 boundary 위치
+         정보가 부정확해지므로, 직전 mAP50과 임계값(0.50)의 차이가
+         크지 않게 push 폭을 자제할 것.
     """
 
     # ── Inputs ──────────────────────────────────────────────────────────────

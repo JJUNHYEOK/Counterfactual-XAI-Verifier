@@ -1,13 +1,19 @@
 function eval = requirements_eval(simOut, opts)
-% requirements_eval — Evaluate three independent requirements from a
-% mountain_uav_model simulation output.
+% requirements_eval — Evaluate detection requirements from a
+% mountain_uav_model simulation output (border surveillance mission).
 %
-%   REQ-1  Detection performance       :  mAP50 >= map_threshold
-%   REQ-2  Safety clearance            :  min(UAV->terrain/obstacle) >= clearance_threshold
-%   REQ-3  Detection continuity        :  worst run of consecutive misses <= continuity_threshold
+% Mission failure = unauthorized intruder (person/vehicle) was present but
+% the UAV failed to detect/report it. Two detection requirements are checked:
+%
+%   REQ-1  Detection performance  :  mAP50 >= map_threshold
+%   REQ-3  Detection continuity   :  worst run of consecutive missed frames
+%                                     <= continuity_threshold
+%
+% (Legacy REQ-2 "Safety clearance" was removed: the UAV trajectory is fixed
+%  in this study and clearance does not vary with environment parameters.)
 %
 % Returns a struct with per-requirement pass/fail/value plus an overall
-% verdict (AND of all three).
+% verdict (AND of REQ-1 and REQ-3).
 %
 % Usage:
 %   eval = requirements_eval(simOut)
@@ -47,15 +53,17 @@ req1.fn        = fn;
 req1.total_gt  = total_gt;
 
 % -------------------------------------------------------------------------
-% REQ-2: minimum clearance UAV <-> terrain/obstacles
+% REQ-2: removed (clearance does not vary with env params; trajectory fixed)
+% Kept as informational only — the value is computed for backward-compatible
+% logging but does NOT participate in all_passed.
 % -------------------------------------------------------------------------
 [min_clear, t_min, where] = compute_min_clearance(uav_xyz, t_vec);
 
 req2.id        = "REQ-2";
-req2.name      = "Safety clearance (min distance UAV->terrain/obstacles)";
+req2.name      = "(informational) Safety clearance — not part of pass/fail";
 req2.threshold = opts.clearance_threshold;
 req2.value     = min_clear;
-req2.passed    = min_clear >= opts.clearance_threshold;
+req2.passed    = true;                         % always true so it's neutral
 req2.violated_at_time = t_min;
 req2.violated_against = where;
 
@@ -77,10 +85,11 @@ req3.worst_run_start_time = worst_run_start_t;
 % -------------------------------------------------------------------------
 eval = struct();
 eval.req1 = req1;
-eval.req2 = req2;
+eval.req2 = req2;                              % informational only
 eval.req3 = req3;
-eval.all_passed = req1.passed && req2.passed && req3.passed;
-eval.violated_count = double(~req1.passed) + double(~req2.passed) + double(~req3.passed);
+% Mission verdict: detection-only (REQ-1 ∧ REQ-3). REQ-2 excluded.
+eval.all_passed = req1.passed && req3.passed;
+eval.violated_count = double(~req1.passed) + double(~req3.passed);
 eval.frames    = Nt;
 eval.obstacles = Nobs;
 
@@ -324,11 +333,13 @@ end
 
 function print_summary(eval)
 mark = @(b) ternary(b, "PASS", "FAIL");
-fprintf("\n+-- Requirements Evaluation --------------------------------------+\n");
-fprintf("| %s [%s]  threshold=%.2f  value=%.4f\n", eval.req1.id, mark(eval.req1.passed), eval.req1.threshold, eval.req1.value);
-fprintf("| %s [%s]  threshold=%.2f m value=%.2f m  (closest=%s)\n", eval.req2.id, mark(eval.req2.passed), eval.req2.threshold, eval.req2.value, eval.req2.violated_against);
-fprintf("| %s [%s]  threshold=%d frames value=%d frames\n", eval.req3.id, mark(eval.req3.passed), eval.req3.threshold, eval.req3.value);
-fprintf("| OVERALL: %s  (violated %d of 3)\n", mark(eval.all_passed), eval.violated_count);
+fprintf("\n+-- Border-Surveillance Mission Evaluation -----------------------+\n");
+fprintf("| %s [%s]  Detection mAP50  threshold=%.2f  value=%.4f\n", ...
+    eval.req1.id, mark(eval.req1.passed), eval.req1.threshold, eval.req1.value);
+fprintf("| %s [%s]  Continuity        threshold=%d  worst_run=%d frames\n", ...
+    eval.req3.id, mark(eval.req3.passed), eval.req3.threshold, eval.req3.value);
+fprintf("| (REQ-2 informational) min_clearance = %.2f m\n", eval.req2.value);
+fprintf("| MISSION: %s  (violated %d of 2)\n", mark(eval.all_passed), eval.violated_count);
 fprintf("+-----------------------------------------------------------------+\n\n");
 end
 
