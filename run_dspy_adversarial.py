@@ -125,7 +125,7 @@ def _build_xai_signals(
 ) -> dict:
     """Bundle XAI signals for the LLM.
 
-    If a SHAP payload is supplied (XGBoost+SHAP from accumulated runs),
+    If a SHAP payload is supplied (KernelSHAP from accumulated runs),
     its global importance ranking *replaces* the heuristic dominant_factors —
     SHAP values reflect the actual measured response surface, while the
     heuristic is just a hand-coded prior. The full SHAP payload is also
@@ -136,7 +136,7 @@ def _build_xai_signals(
             {"name": d["name"], "importance": d["importance"], "direction": d.get("direction")}
             for d in shap_payload["global_feature_importance"]
         ]
-        method = "xgboost_shap"
+        method = "kernelshap"
     else:
         dominant = _infer_dominant_factors(sim_result, env_params)
         method = "heuristic_prior"
@@ -340,7 +340,7 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     from dspy_pipeline.shap_analyzer import compute_shap_signals, is_available as shap_available
 
     if not shap_available():
-        print("[SHAP] xgboost/shap not installed — falling back to heuristic XAI.")
+        print("[SHAP] shap/scikit-learn not installed — falling back to heuristic XAI.")
 
     for step in range(1, args.iterations + 1):
         print(f"{'='*60}")

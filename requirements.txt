@@ -21,7 +21,7 @@ albumentations>=1.3.1
 Pillow>=10.0.0
 
 # --- 머신러닝 및 XAI ---
-xgboost>=3.0.3
+scikit-learn>=1.3.0
 shap>=0.42.0
 
 # --- 네트워크 ---

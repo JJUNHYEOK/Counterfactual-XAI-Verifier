@@ -159,7 +159,7 @@ def main() -> None:
         top_feature = shap.global_importance[0]["name"]
     else:
         shap = None
-        top_feature = "n/a (xgboost/shap not installed)"
+        top_feature = "n/a (shap/scikit-learn not installed)"
 
     # ── Per-threshold boundary table ─────────────────────────────────────
     print(f"\n[Boundary location vs threshold]\n")

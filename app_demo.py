@@ -18,7 +18,7 @@ Sidebar:
   - threshold knobs (mAP, continuity)
 
 Note: run with the project venv active so DSPy / matlab.engine / streamlit
-      / xgboost / shap are all available.
+      / scikit-learn / shap are all available.
 """
 
 from __future__ import annotations

@@ -94,28 +94,46 @@ ax_boundary = uiaxes(main);
 ax_boundary.Layout.Row = 3; ax_boundary.Layout.Column = 1;
 title(ax_boundary, "Counterfactual boundary discovery  —  PASS (green) / FAIL (red)");
 
-% Row 3 right — XAI feature importance panel
+% Row 3 right — XAI panel with two tabs (mAP trend + feature importance)
+% sharing a bottom label bar (dominant cause + verdict summary).
 xaiPanel = uipanel(main, ...
-    "Title", "XAI  —  feature importance & dominant cause", ...
+    "Title", "Counterfactual XAI  —  switch tabs for trend vs feature importance", ...
     "BackgroundColor", [0.96 0.96 0.99], "FontWeight", "bold");
 xaiPanel.Layout.Row = 3; xaiPanel.Layout.Column = 2;
-xaiInner = uigridlayout(xaiPanel, [3, 1], ...
-    "RowHeight", {'1x', 28, 24}, ...
-    "Padding", [6 6 6 6], "RowSpacing", 4);
 
-ax_xai = uiaxes(xaiInner);
-ax_xai.Layout.Row = 1;
+xaiOuter = uigridlayout(xaiPanel, [2, 1], ...
+    "RowHeight", {'1x', 56}, ...
+    "Padding", [4 4 4 4], "RowSpacing", 2);
+
+xaiTabs = uitabgroup(xaiOuter);
+xaiTabs.Layout.Row = 1;
+
+% Tab 1 — mAP@0.5 trend over iterations
+tab_trend  = uitab(xaiTabs, "Title", "mAP@0.5 trend");
+trendInner = uigridlayout(tab_trend, [1, 1], "Padding", [4 4 4 4]);
+ax_trend   = uiaxes(trendInner);
+title(ax_trend, "Run cases to populate mAP@0.5 trend");
+
+% Tab 2 — feature importance bar chart
+tab_xai  = uitab(xaiTabs, "Title", "Feature importance");
+xaiInner = uigridlayout(tab_xai, [1, 1], "Padding", [4 4 4 4]);
+ax_xai   = uiaxes(xaiInner);
 title(ax_xai, "Run cases to populate feature importance");
 
-lblDominant = uilabel(xaiInner, ...
+% Shared bottom label bar (dominant cause + verdict counts)
+lblBox = uigridlayout(xaiOuter, [2, 1], ...
+    "RowHeight", {28, 24}, "RowSpacing", 2, "Padding", [6 0 6 0]);
+lblBox.Layout.Row = 2;
+
+lblDominant = uilabel(lblBox, ...
     "Text", "  Run a case to start boundary discovery.", ...
     "FontWeight", "bold", "FontSize", 12);
-lblDominant.Layout.Row = 2;
+lblDominant.Layout.Row = 1;
 
-lblSummary = uilabel(xaiInner, ...
-    "Text", "  Tries: 0   PASS: 0   FAIL: 0", ...
+lblSummary = uilabel(lblBox, ...
+    "Text", "  Tries: 0   PASS: 0   MARGINAL: 0   FAIL: 0", ...
     "FontSize", 11, "FontColor", [0.30 0.30 0.35]);
-lblSummary.Layout.Row = 3;
+lblSummary.Layout.Row = 2;
 
 % Counterfactual control panel
 ctrlPanel = uipanel(main, ...
@@ -232,12 +250,17 @@ state.mode          = "idle";          % "idle" | "running" | "cooldown"
 state.runStats      = [];
 state.history       = struct( ...      % counterfactual run history
     "iter", {}, "fog", {}, "ill", {}, "noi", {}, ...
-    "f1", {}, "passed", {}, "ngt", {}, "ndet", {}, "ntp", {}, ...
+    "metric", {}, "verdict", {}, ...   % verdict ∈ "PASS" | "MARGINAL" | "FAIL"
+    "ngt", {}, "ndet", {}, "ntp", {}, ...
     "mode", {}, "analysis", {});
 state.iterCount     = 0;
 state.maxIter       = 10;
 state.cooldownTimer = [];
-state.passF1Thresh  = 0.85;            % requirement threshold (matches requirements_eval)
+% 3-tier thresholds — keep PASS at project spec (0.85) AND introduce a
+% literature-aligned FAIL line at 0.50. The MARGINAL band between is the
+% boundary search's natural oscillation zone.
+state.passThresh    = 0.85;            % spec compliance (matches requirements_eval)
+state.failThresh    = 0.50;            % "system broken" — robustness literature consensus
 
 fogSld.ValueChangedFcn   = @(~,~) renderFrame();
 fogSld.ValueChangingFcn  = @(~,e) onSlideLive("fog", e);
@@ -292,7 +315,9 @@ start(tmr);
         state.frameIdx = 1;
         state.runStats = struct( ...
             "ngt", 0, "ndet", 0, "ntp", 0, "nFrames", 0, ...
-            "fog", fogSld.Value, "ill", illSld.Value, "noi", noiSld.Value);
+            "fog", fogSld.Value, "ill", illSld.Value, "noi", noiSld.Value, ...
+            "detEvents", zeros(0, 2), ...    % rows: [score, tp_flag] for mAP@0.5
+            "totalGt",   0);
         setCaseControlsEnabled(false);
         btnRun.Enable  = "off";
         btnStop.Enable = "on";
@@ -314,15 +339,13 @@ start(tmr);
         % Append the just-completed run to history (for boundary search)
         rs = state.runStats;
         if ~isempty(rs) && rs.nFrames > 0
-            recall = rs.ntp / max(1, rs.ngt);
-            prec   = rs.ntp / max(1, rs.ndet);
-            f1     = 2 * prec * recall / max(1e-6, prec + recall);
-            passed = f1 >= state.passF1Thresh;
+            metric  = computeRunMetric(rs);
+            verdict = classifyVerdict(metric);
 
             rec = struct( ...
                 "iter",     numel(state.history) + 1, ...
                 "fog",      rs.fog, "ill", rs.ill, "noi", rs.noi, ...
-                "f1",       f1, "passed", passed, ...
+                "metric",   metric, "verdict", verdict, ...
                 "ngt",      rs.ngt, "ndet", rs.ndet, "ntp", rs.ntp, ...
                 "mode",     "manual", "analysis", "");
             state.history(end + 1) = rec;
@@ -430,7 +453,7 @@ start(tmr);
         % Try DSPy / Python orchestrator first; fall back to the same
         % deterministic boundary policy in MATLAB if Python isn't available.
         try
-            histJson = jsonencode(history);
+            histJson = pyHistoryJson(history);
             pyResult = py.dashboard_step.next_case_from_history(histJson, char(pwd));
             d = struct(pyResult);
             nextEnv = struct( ...
@@ -443,7 +466,7 @@ start(tmr);
             modeStr     = string(char(d.mode));
             analysisStr = string(char(d.analysis));
         catch ME
-            % Python/DSPy unavailable — use MATLAB-native boundary search
+            % Python/DSPy unavailable — use MATLAB-native 3-tier policy
             [nextEnv, modeStr, analysisStr] = decideNextCaseRule(history);
             if numel(state.history) <= 1
                 fprintf("[DASHBOARD] DSPy not available (%s) — using MATLAB rule policy.\n", ME.message);
@@ -451,38 +474,101 @@ start(tmr);
         end
     end
 
+    function payload = pyHistoryJson(history)
+        % Translate the dashboard's verdict-aware history into the dict shape
+        % dashboard_step.py expects (passed = verdict != "FAIL", so MARGINAL
+        % is treated as "not yet broken" and Python keeps pushing).
+        n = numel(history);
+        if n == 0
+            payload = "[]"; return;
+        end
+        items = cell(1, n);
+        for k = 1:n
+            h = history(k);
+            items{k} = struct( ...
+                "fog",     h.fog, ...
+                "ill",     h.ill, ...
+                "noi",     h.noi, ...
+                "f1",      h.metric, ...
+                "passed",  h.verdict ~= "FAIL", ...
+                "verdict", char(h.verdict));
+        end
+        payload = jsonencode(items);
+    end
+
     function [nextEnv, modeStr, analysisStr] = decideNextCaseRule(history)
+        % MATLAB-native 3-tier boundary policy. MARGINAL cases serve as
+        % half-anchors: they help refine the boundary even when only one
+        % side (PASS or FAIL) has been observed.
         if isempty(history)
             nextEnv = struct("fog", 30, "ill", 4000, "noi", 0.1);
             modeStr = "seed"; analysisStr = "Initial seed";
             return;
         end
-        passEnv = []; failEnv = [];
+
+        passEnv = []; failEnv = []; marginalEnv = [];
         for k = 1:numel(history)
             h = history(k);
             e = struct("fog", h.fog, "ill", h.ill, "noi", h.noi);
-            if h.passed, passEnv = e; else, failEnv = e; end
+            switch h.verdict
+                case "PASS",     passEnv     = e;
+                case "MARGINAL", marginalEnv = e;
+                case "FAIL",     failEnv     = e;
+            end
         end
-        last = history(end);
+
+        last    = history(end);
         lastEnv = struct("fog", last.fog, "ill", last.ill, "noi", last.noi);
-        if last.passed && ~isempty(failEnv)
-            nextEnv = bisectEnv(lastEnv, failEnv, 0.65);
-            modeStr = "boundary_push";
-            analysisStr = sprintf("PASS → bisect 65%% toward FAIL anchor (fog=%.0f, illum=%.0f, noise=%.2f)", ...
-                failEnv.fog, failEnv.ill, failEnv.noi);
-        elseif ~last.passed && ~isempty(passEnv)
-            nextEnv = bisectEnv(lastEnv, passEnv, 0.65);
-            modeStr = "boundary_recover";
-            analysisStr = sprintf("FAIL → bisect 65%% toward PASS anchor (fog=%.0f, illum=%.0f, noise=%.2f)", ...
-                passEnv.fog, passEnv.ill, passEnv.noi);
-        elseif last.passed
-            nextEnv = pushEnv(lastEnv);
-            modeStr = "rule_push";
-            analysisStr = "No FAIL anchor yet — push harder (rule)";
-        else
-            nextEnv = relaxEnv(lastEnv);
-            modeStr = "rule_relax";
-            analysisStr = "No PASS anchor yet — relax toward baseline (rule)";
+
+        switch last.verdict
+            case "PASS"
+                if ~isempty(failEnv)
+                    nextEnv = bisectEnv(lastEnv, failEnv, 0.65);
+                    modeStr = "boundary_push";
+                    analysisStr = "PASS → bisect 65% toward FAIL anchor";
+                elseif ~isempty(marginalEnv)
+                    nextEnv = bisectEnv(lastEnv, marginalEnv, 0.65);
+                    modeStr = "boundary_push_to_margin";
+                    analysisStr = "PASS → bisect 65% toward MARGINAL (no FAIL anchor yet)";
+                else
+                    nextEnv = pushEnv(lastEnv);
+                    modeStr = "rule_push";
+                    analysisStr = "All PASS so far — push harder (rule)";
+                end
+
+            case "FAIL"
+                if ~isempty(passEnv)
+                    nextEnv = bisectEnv(lastEnv, passEnv, 0.65);
+                    modeStr = "boundary_recover";
+                    analysisStr = "FAIL → bisect 65% toward PASS anchor";
+                elseif ~isempty(marginalEnv)
+                    nextEnv = bisectEnv(lastEnv, marginalEnv, 0.65);
+                    modeStr = "boundary_recover_to_margin";
+                    analysisStr = "FAIL → bisect 65% toward MARGINAL (no PASS anchor yet)";
+                else
+                    nextEnv = relaxEnv(lastEnv);
+                    modeStr = "rule_relax";
+                    analysisStr = "All FAIL so far — relax toward baseline (rule)";
+                end
+
+            otherwise   % MARGINAL — already near the boundary
+                if ~isempty(passEnv) && ~isempty(failEnv)
+                    nextEnv = bisectEnv(passEnv, failEnv, 0.50);
+                    modeStr = "boundary_refine";
+                    analysisStr = "MARGINAL → midpoint of PASS↔FAIL (narrow boundary)";
+                elseif ~isempty(passEnv)
+                    nextEnv = pushEnv(lastEnv);
+                    modeStr = "rule_push";
+                    analysisStr = "MARGINAL with no FAIL yet — push to find broken side";
+                elseif ~isempty(failEnv)
+                    nextEnv = relaxEnv(lastEnv);
+                    modeStr = "rule_relax";
+                    analysisStr = "MARGINAL with no PASS yet — relax to find safe side";
+                else
+                    nextEnv = pushEnv(lastEnv);
+                    modeStr = "rule_push";
+                    analysisStr = "MARGINAL only — push to probe boundary";
+                end
         end
     end
 
@@ -513,20 +599,56 @@ start(tmr);
             hdr.Text = "  Run stopped before any frame ran.";
             return;
         end
-        recall = rs.ntp / max(1, rs.ngt);
-        prec   = rs.ntp / max(1, rs.ndet);
-        f1     = 2 * prec * recall / max(1e-6, prec + recall);
-        verdict = "PASS"; color = [0.10 0.45 0.20];
-        if f1 < 0.5
-            verdict = "FAIL";     color = [0.55 0.10 0.15];
-        elseif f1 < 0.85
-            verdict = "MARGINAL"; color = [0.55 0.40 0.05];
+        metric  = computeRunMetric(rs);
+        verdict = classifyVerdict(metric);
+        switch verdict
+            case "PASS",     color = [0.10 0.45 0.20];   % green
+            case "MARGINAL", color = [0.55 0.40 0.05];   % amber
+            otherwise,       color = [0.55 0.10 0.15];   % red (FAIL)
         end
         hdr.BackgroundColor = color;
         hdr.Text = sprintf( ...
-            "  [ %s ]   case: fog=%.0f%%  illum=%.0flx  noise=%.2f   |   GT %d  Det %d  TP %d   |   Recall %.2f  Prec %.2f   F1 %.2f", ...
+            "  [ %s ]   case: fog=%.0f%%  illum=%.0flx  noise=%.2f   |   GT %d  Det %d  TP %d   |   %s = %.3f   (PASS≥%.2f, FAIL<%.2f)", ...
             verdict, rs.fog, rs.ill, rs.noi, ...
-            rs.ngt, rs.ndet, rs.ntp, recall, prec, f1);
+            rs.ngt, rs.ndet, rs.ntp, ...
+            metricLabel(), metric, state.passThresh, state.failThresh);
+    end
+
+    function v = classifyVerdict(metric)
+        if metric >= state.passThresh
+            v = "PASS";
+        elseif metric < state.failThresh
+            v = "FAIL";
+        else
+            v = "MARGINAL";
+        end
+    end
+
+    function s = metricLabel()
+        s = "mAP@0.5";
+    end
+
+    function metric = computeRunMetric(rs)
+        % mAP@0.5 over the entire run, mirrors mountain_visualizer's
+        % compute_summary so dashboard verdicts agree with run_mountain_scenario.
+        if ~isfield(rs, "detEvents") || isempty(rs.detEvents) || rs.totalGt == 0
+            metric = 0; return;
+        end
+        ev = rs.detEvents;
+        [~, ord] = sort(ev(:, 1), "descend");
+        ev = ev(ord, :);
+        cumTp = cumsum(ev(:, 2));
+        cumFp = cumsum(1 - ev(:, 2));
+        precision = cumTp ./ max(cumTp + cumFp, eps);
+        recall    = cumTp / rs.totalGt;
+        % VOC-style envelope — make precision monotonically non-increasing
+        mrec = [0; recall; 1];
+        mpre = [0; precision; 0];
+        for i = numel(mpre) - 1 : -1 : 1
+            mpre(i) = max(mpre(i), mpre(i + 1));
+        end
+        idx    = find(mrec(2:end) ~= mrec(1:end-1));
+        metric = sum((mrec(idx + 1) - mrec(idx)) .* mpre(idx + 1));
     end
 
     function onFrameSliderRelease(src)
@@ -600,12 +722,17 @@ start(tmr);
         % --- Overlay GT (green dashed) + detected (red solid) bboxes ---
         delete(findobj(ax2, "Tag", "bbox_overlay"));
         ngt = 0; ndet = 0; ntp = 0;
+        % Per-frame detection events for mAP@0.5 — rows: [score, tp_flag]
+        evtFrame = zeros(0, 2);
         for k = 1:Nobs
             gt = gtFrame(k, :);
             dt = detBB_frame(k, :);
             sc = scores(k);
             cls_lbl = INTRUDER_LABEL(obs_class(k));
-            if any(gt ~= 0)
+            gtPresent  = any(gt ~= 0);
+            detPresent = (sc > 0.30) && any(dt ~= 0);
+
+            if gtPresent
                 ngt = ngt + 1;
                 rectangle("Parent", ax2, "Position", clamp_box(gt, camW, camH), ...
                     "EdgeColor", [0.10 0.85 0.20], "LineStyle", "--", ...
@@ -614,11 +741,14 @@ start(tmr);
                     "Color", [0.10 0.85 0.20], "FontWeight", "bold", "FontSize", 8, ...
                     "Tag", "bbox_overlay");
             end
-            if sc > 0.30 && any(dt ~= 0)
+            if detPresent
                 ndet = ndet + 1;
-                if any(gt ~= 0) && bbox_iou(dt, gt) >= 0.5
+                tpFlag = 0;
+                if gtPresent && bbox_iou(dt, gt) >= 0.5
+                    tpFlag = 1;
                     ntp = ntp + 1;
                 end
+                evtFrame(end + 1, :) = [sc, tpFlag]; %#ok<AGROW>
                 rectangle("Parent", ax2, "Position", clamp_box(dt, camW, camH), ...
                     "EdgeColor", [0.95 0.20 0.20], "LineWidth", 1.7, ...
                     "Tag", "bbox_overlay");
@@ -634,20 +764,21 @@ start(tmr);
         % "Idle..." prompt) so the user can scrub frames / drag sliders to
         % preview without the header flickering.
         if state.mode == "running"
-            state.runStats.ngt     = state.runStats.ngt     + ngt;
-            state.runStats.ndet    = state.runStats.ndet    + ndet;
-            state.runStats.ntp     = state.runStats.ntp     + ntp;
-            state.runStats.nFrames = state.runStats.nFrames + 1;
+            state.runStats.ngt       = state.runStats.ngt       + ngt;
+            state.runStats.ndet      = state.runStats.ndet      + ndet;
+            state.runStats.ntp       = state.runStats.ntp       + ntp;
+            state.runStats.nFrames   = state.runStats.nFrames   + 1;
+            state.runStats.totalGt   = state.runStats.totalGt   + ngt;
+            if ~isempty(evtFrame)
+                state.runStats.detEvents = [state.runStats.detEvents; evtFrame];
+            end
 
-            rs = state.runStats;
-            cumRecall = rs.ntp / max(1, rs.ngt);
-            cumPrec   = rs.ntp / max(1, rs.ndet);
-            cumF1     = 2 * cumPrec * cumRecall / max(1e-6, cumPrec + cumRecall);
+            cumMetric = computeRunMetric(state.runStats);
 
             hdr.BackgroundColor = [0.10 0.30 0.55];
             hdr.Text = sprintf( ...
-                "  ▶ RUNNING   case: fog=%.0f%%  illum=%.0flx  noise=%.2f   |   Frame %d/%d  t=%.2fs   |   cum F1 %.2f", ...
-                fog, ill, noi, ii, Nt, t_vec(ii), cumF1);
+                "  ▶ RUNNING   case: fog=%.0f%%  illum=%.0flx  noise=%.2f   |   Frame %d/%d  t=%.2fs   |   cum %s = %.3f", ...
+                fog, ill, noi, ii, Nt, t_vec(ii), metricLabel(), cumMetric);
         end
 
         frameLbl.Text = sprintf("Frame: %d / %d", ii, Nt);
@@ -669,24 +800,33 @@ start(tmr);
         if N == 0
             title(ax_boundary, "Counterfactual boundary discovery  —  (no cases yet)");
         else
-            fogs   = arrayfun(@(r) r.fog, state.history);
-            ills   = arrayfun(@(r) r.ill, state.history);
-            nois   = arrayfun(@(r) r.noi, state.history);
-            passed = arrayfun(@(r) r.passed, state.history);
+            fogs     = arrayfun(@(r) r.fog, state.history);
+            ills     = arrayfun(@(r) r.ill, state.history);
+            nois     = arrayfun(@(r) r.noi, state.history);
+            verdicts = arrayfun(@(r) r.verdict, state.history);
+
+            isPass = verdicts == "PASS";
+            isMarg = verdicts == "MARGINAL";
+            isFail = verdicts == "FAIL";
 
             % Search trajectory (thin grey line through visit order)
             if N >= 2
                 plot3(ax_boundary, fogs, ills, nois, "-", ...
                     "Color", [0.55 0.55 0.60], "LineWidth", 0.8);
             end
-            % PASS points (green)
-            if any(passed)
-                scatter3(ax_boundary, fogs(passed), ills(passed), nois(passed), ...
+            % PASS (green)
+            if any(isPass)
+                scatter3(ax_boundary, fogs(isPass), ills(isPass), nois(isPass), ...
                     90, [0.10 0.65 0.20], "filled", "MarkerEdgeColor", "k");
             end
-            % FAIL points (red)
-            if any(~passed)
-                scatter3(ax_boundary, fogs(~passed), ills(~passed), nois(~passed), ...
+            % MARGINAL (amber)
+            if any(isMarg)
+                scatter3(ax_boundary, fogs(isMarg), ills(isMarg), nois(isMarg), ...
+                    90, [0.95 0.65 0.10], "filled", "MarkerEdgeColor", "k");
+            end
+            % FAIL (red)
+            if any(isFail)
+                scatter3(ax_boundary, fogs(isFail), ills(isFail), nois(isFail), ...
                     90, [0.85 0.20 0.15], "filled", "MarkerEdgeColor", "k");
             end
             % Highlight latest case (yellow diamond outline)
@@ -694,7 +834,7 @@ start(tmr);
                 200, [0.95 0.85 0.10], "d", "LineWidth", 2.0);
 
             title(ax_boundary, sprintf( ...
-                "Counterfactual boundary discovery  —  %d case%s tried", ...
+                "Counterfactual boundary  —  %d case%s   (PASS green / MARGINAL amber / FAIL red)", ...
                 N, repmat("s", 1, double(N ~= 1))));
         end
         xlabel(ax_boundary, "Fog (%)");
@@ -705,7 +845,56 @@ start(tmr);
         zlim(ax_boundary, [0 1]);
         view(ax_boundary, 35, 25);
 
-        % --- XAI feature importance + dominant cause (B) -----------------
+        % --- mAP@0.5 trend (Tab 1) ---------------------------------------
+        cla(ax_trend);
+        hold(ax_trend, "on");
+        grid(ax_trend, "on");
+        if N == 0
+            title(ax_trend, sprintf("%s trend  —  (no cases yet)", metricLabel()));
+            ax_trend.XLim = [0.5 10.5];
+        else
+            xs = 1:N;
+            metricsT = arrayfun(@(r) r.metric, state.history);
+            % Connecting line through visit order
+            plot(ax_trend, xs, metricsT, "-", ...
+                "Color", [0.55 0.55 0.60], "LineWidth", 0.9);
+            % Threshold reference lines
+            yline(ax_trend, state.passThresh, "--", ...
+                sprintf("PASS ≥ %.2f", state.passThresh), ...
+                "Color", [0.10 0.55 0.20], "LineWidth", 1.1, ...
+                "LabelHorizontalAlignment", "left");
+            yline(ax_trend, state.failThresh, "--", ...
+                sprintf("FAIL < %.2f", state.failThresh), ...
+                "Color", [0.75 0.15 0.15], "LineWidth", 1.1, ...
+                "LabelHorizontalAlignment", "left");
+            % Verdict-coloured points
+            verdictsT = arrayfun(@(r) r.verdict, state.history);
+            isPassT = verdictsT == "PASS";
+            isMargT = verdictsT == "MARGINAL";
+            isFailT = verdictsT == "FAIL";
+            if any(isPassT)
+                scatter(ax_trend, xs(isPassT), metricsT(isPassT), 80, ...
+                    [0.10 0.65 0.20], "filled", "MarkerEdgeColor", "k");
+            end
+            if any(isMargT)
+                scatter(ax_trend, xs(isMargT), metricsT(isMargT), 80, ...
+                    [0.95 0.65 0.10], "filled", "MarkerEdgeColor", "k");
+            end
+            if any(isFailT)
+                scatter(ax_trend, xs(isFailT), metricsT(isFailT), 80, ...
+                    [0.85 0.20 0.15], "filled", "MarkerEdgeColor", "k");
+            end
+            % Highlight latest case
+            scatter(ax_trend, xs(end), metricsT(end), 160, ...
+                [0.95 0.85 0.10], "d", "LineWidth", 2.0);
+            title(ax_trend, sprintf("%s trend  —  iter 1..%d", metricLabel(), N));
+            ax_trend.XLim = [0.5, max(N + 0.5, 10.5)];
+        end
+        xlabel(ax_trend, "Iteration");
+        ylabel(ax_trend, metricLabel());
+        ax_trend.YLim = [0 1];
+
+        % --- XAI feature importance + dominant cause (B, Tab 2) ----------
         cla(ax_xai);
         if N < 3
             title(ax_xai, sprintf( ...
@@ -713,12 +902,12 @@ start(tmr);
             ax_xai.XTick = [];  ax_xai.YTick = [];
             ax_xai.XLim = [0 1]; ax_xai.YLim = [0 1];
         else
-            fogs = arrayfun(@(r) r.fog, state.history);
-            ills = arrayfun(@(r) r.ill, state.history);
-            nois = arrayfun(@(r) r.noi, state.history);
-            f1s  = arrayfun(@(r) r.f1,  state.history);
+            fogs    = arrayfun(@(r) r.fog,    state.history);
+            ills    = arrayfun(@(r) r.ill,    state.history);
+            nois    = arrayfun(@(r) r.noi,    state.history);
+            metrics = arrayfun(@(r) r.metric, state.history);
             % Pearson correlation; sign tells direction (negative = harms detection)
-            corrs = [safeCorr(fogs, f1s), safeCorr(ills, f1s), safeCorr(nois, f1s)];
+            corrs = [safeCorr(fogs, metrics), safeCorr(ills, metrics), safeCorr(nois, metrics)];
             imp   = abs(corrs);
             tot   = sum(imp);
             if tot < 1e-6, imp = [0 0 0]; else, imp = imp / tot; end
@@ -757,35 +946,42 @@ start(tmr);
             lblDominant.FontColor = [0.30 0.30 0.35];
         else
             last = state.history(end);
-            if last.passed
-                lblDominant.Text = sprintf( ...
-                    "  ✓ Latest: PASS  (F1 = %.2f)", last.f1);
-                lblDominant.FontColor = [0.10 0.50 0.20];
-            else
-                % Find most recent PASS reference for deviation analysis
-                refIdx = find([state.history.passed], 1, "last");
-                if isempty(refIdx)
+            mLab = metricLabel();
+            switch last.verdict
+                case "PASS"
+                    lblDominant.Text = sprintf("  ✓ Latest: PASS  (%s = %.3f)", mLab, last.metric);
+                    lblDominant.FontColor = [0.10 0.50 0.20];
+                case "MARGINAL"
                     lblDominant.Text = sprintf( ...
-                        "  ✗ Latest: FAIL  (F1 = %.2f)  —  no PASS reference yet", ...
-                        last.f1);
-                else
-                    refEnv = state.history(refIdx);
-                    devs   = [abs(last.fog - refEnv.fog) / 100, ...
-                              abs(last.ill - refEnv.ill) / 15000, ...
-                              abs(last.noi - refEnv.noi) / 1.0];
-                    [~, di] = max(devs);
-                    names = ["fog", "illumination", "noise"];
-                    lblDominant.Text = sprintf( ...
-                        "  ✗ Latest: FAIL (F1 = %.2f)  —  dominant cause: %s  (Δ = %.0f%%)", ...
-                        last.f1, names(di), devs(di) * 100);
-                end
-                lblDominant.FontColor = [0.55 0.10 0.15];
+                        "  ◐ Latest: MARGINAL  (%s = %.3f)  —  on the boundary (%.2f ≤ x < %.2f)", ...
+                        mLab, last.metric, state.failThresh, state.passThresh);
+                    lblDominant.FontColor = [0.55 0.40 0.05];
+                otherwise   % FAIL
+                    refIdx = find(arrayfun(@(r) r.verdict == "PASS", state.history), 1, "last");
+                    if isempty(refIdx)
+                        lblDominant.Text = sprintf( ...
+                            "  ✗ Latest: FAIL  (%s = %.3f)  —  no PASS reference yet", ...
+                            mLab, last.metric);
+                    else
+                        refEnv = state.history(refIdx);
+                        devs   = [abs(last.fog - refEnv.fog) / 100, ...
+                                  abs(last.ill - refEnv.ill) / 15000, ...
+                                  abs(last.noi - refEnv.noi) / 1.0];
+                        [~, di] = max(devs);
+                        names = ["fog", "illumination", "noise"];
+                        lblDominant.Text = sprintf( ...
+                            "  ✗ Latest: FAIL (%s = %.3f)  —  dominant cause: %s  (Δ = %.0f%% from last PASS)", ...
+                            mLab, last.metric, names(di), devs(di) * 100);
+                    end
+                    lblDominant.FontColor = [0.55 0.10 0.15];
             end
         end
 
-        nPass = sum(arrayfun(@(r) r.passed, state.history));
-        nFail = N - nPass;
-        lblSummary.Text = sprintf("  Tries: %d   PASS: %d   FAIL: %d", N, nPass, nFail);
+        nPass = sum(arrayfun(@(r) r.verdict == "PASS",     state.history));
+        nMarg = sum(arrayfun(@(r) r.verdict == "MARGINAL", state.history));
+        nFail = sum(arrayfun(@(r) r.verdict == "FAIL",     state.history));
+        lblSummary.Text = sprintf("  Tries: %d   PASS: %d   MARGINAL: %d   FAIL: %d", ...
+            N, nPass, nMarg, nFail);
     end
 
 

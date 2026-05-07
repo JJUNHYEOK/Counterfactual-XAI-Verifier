@@ -1,7 +1,7 @@
 import numpy as np
-import xgboost as xgb
 import shap
 import os  # <--- 경로 처리를 위해 추가
+from sklearn.linear_model import Ridge
 from ultralytics import YOLO
 
 def absolute_cleaner(val):
@@ -60,14 +60,14 @@ class RealXAIAnalyzer:
         self.history_X.append(current_X)
         self.history_y.append(current_map50)
 
-        # 4. XGBoost & SHAP 분석
+        # 4. KernelSHAP 분석 (Ridge surrogate)
         try:
             X_arr = np.array(self.history_X, dtype=np.float64)
             y_arr = np.array(self.history_y, dtype=np.float64)
-            
-            model = xgb.XGBRegressor(n_estimators=30).fit(X_arr, y_arr)
-            explainer = shap.TreeExplainer(model)
-            shap_v = np.abs(explainer.shap_values(X_arr)[-1])
+
+            model = Ridge(alpha=1.0, random_state=0).fit(X_arr, y_arr)
+            explainer = shap.KernelExplainer(model.predict, X_arr)
+            shap_v = np.abs(np.array(explainer.shap_values(X_arr[-1:], silent=True))[0])
             
             total = np.sum(shap_v) + 1e-9
             feature_importance = [

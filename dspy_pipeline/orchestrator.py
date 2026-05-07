@@ -412,7 +412,7 @@ def _build_xai_signals(last: dict, shap_payload: dict | None) -> dict:
             {"name": d["name"], "importance": d["importance"], "direction": d.get("direction")}
             for d in shap_payload["global_feature_importance"]
         ]
-        method = "xgboost_shap"
+        method = "kernelshap"
     else:
         dominant = [
             {"name": "fog_density_percent", "importance": 0.5},
