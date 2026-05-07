@@ -76,7 +76,11 @@ def init_session(
     )
 
 
-def _configure_lm(model_override: str | None) -> None:
+_LM_CACHE: "dspy.LM | None" = None
+
+
+def _build_lm(model_override: str | None) -> "dspy.LM":
+    """Build a dspy.LM (no thread-bound configure)."""
     openai_key    = os.environ.get("OPENAI_API_KEY")
     anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
     if model_override:
@@ -88,8 +92,19 @@ def _configure_lm(model_override: str | None) -> None:
         model, api_key = "anthropic/claude-haiku-4-5-20251001", anthropic_key
     else:
         raise EnvironmentError("No LLM API key found in env. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.")
-    dspy.configure(lm=dspy.LM(model, api_key=api_key, temperature=0.4, max_tokens=1024))
-    print(f"[Orchestrator] LM configured: {model}")
+    return dspy.LM(model, api_key=api_key, temperature=0.4, max_tokens=1024)
+
+
+def _configure_lm(model_override: str | None) -> None:
+    """Build LM and cache it. We avoid dspy.configure (thread-bound in DSPy 3.x)
+    and use dspy.context(lm=…) at each call site instead."""
+    global _LM_CACHE
+    _LM_CACHE = _build_lm(model_override)
+    print(f"[Orchestrator] LM ready (use dspy.context(lm=...) at call sites)")
+
+
+def get_lm() -> "dspy.LM | None":
+    return _LM_CACHE
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -293,11 +308,22 @@ def _llm_explore(session: Session, last: dict, shap_payload: dict | None):
         for h in session.history[-5:]
     ]
     try:
-        prediction = session.generator(
-            iteration_history   = json.dumps(iter_history, ensure_ascii=False),
-            xai_analysis        = json.dumps(xai_signals,  ensure_ascii=False),
-            current_performance = json.dumps(perf_signals, ensure_ascii=False),
-        )
+        # dspy.context() is thread-safe across Streamlit reruns
+        # (avoids 'dspy.settings can only be changed by the thread...' error)
+        lm = get_lm()
+        if lm is not None:
+            with dspy.context(lm=lm):
+                prediction = session.generator(
+                    iteration_history   = json.dumps(iter_history, ensure_ascii=False),
+                    xai_analysis        = json.dumps(xai_signals,  ensure_ascii=False),
+                    current_performance = json.dumps(perf_signals, ensure_ascii=False),
+                )
+        else:
+            prediction = session.generator(
+                iteration_history   = json.dumps(iter_history, ensure_ascii=False),
+                xai_analysis        = json.dumps(xai_signals,  ensure_ascii=False),
+                current_performance = json.dumps(perf_signals, ensure_ascii=False),
+            )
         return (prediction.environment_parameters,
                 prediction.target_hypothesis,
                 prediction.analysis or prediction.reasoning,

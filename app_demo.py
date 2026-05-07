@@ -107,9 +107,10 @@ def _ensure_state():
 # Sidebar
 # ─────────────────────────────────────────────────────────────────────────────
 
-st.sidebar.title("🛰️ 검증 컨트롤")
-sim_mode = st.sidebar.selectbox("Sim mode", ["engine", "mock"], index=0,
-    help="engine = 실제 MATLAB Simulink (창 띄움), mock = 빠른 분석용 proxy")
+st.sidebar.title("🛰️ SENTINEL")
+st.sidebar.caption("국경 산악 감시 UAV — 자동 시나리오 검증 시스템")
+sim_mode = st.sidebar.selectbox("시뮬 백엔드", ["engine", "mock"], index=0,
+    help="engine = MATLAB Simulink (실제 모델), mock = 빠른 분석 proxy")
 
 session = _boot_session(sim_mode)
 narrator = _boot_narrator()
@@ -118,8 +119,10 @@ _ensure_state()
 
 st.sidebar.markdown("---")
 col_a, col_b = st.sidebar.columns(2)
-run_clicked  = col_a.button("▶ Next Step", type="primary", use_container_width=True)
-reset_clicked = col_b.button("↻ Reset", use_container_width=True)
+run_clicked  = col_a.button("▶ 다음 정찰", type="primary", use_container_width=True,
+    help="UAV가 한 단계 앞으로 정찰 시뮬레이션을 수행합니다")
+reset_clicked = col_b.button("↻ 초기화", use_container_width=True,
+    help="모든 시나리오와 임무 이력 초기화")
 
 if reset_clicked:
     _boot_session.clear()
@@ -127,37 +130,56 @@ if reset_clicked:
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.caption(f"진행: **{len(session.history)} step** 완료")
+st.sidebar.markdown(f"### 📋 임무 진행")
+st.sidebar.caption(f"검증된 시나리오: **{len(session.history)} 회**")
 if session.history:
-    st.sidebar.metric("최근 mAP50", f"{session.history[-1]['map50']:.3f}")
-    st.sidebar.metric("최근 결과", "PASS ✅" if session.history[-1]['all_passed'] else "FAIL ❌")
+    last = session.history[-1]
+    badge = "🟢 임무 성공" if last['all_passed'] else "🔴 임무 실패"
+    st.sidebar.markdown(f"**최근 판정**: {badge}")
+    st.sidebar.metric("탐지 정확도 (mAP50)", f"{last['map50']:.3f}",
+        delta=f"{last['map50'] - 0.50:+.3f}",
+        delta_color="normal" if last['all_passed'] else "inverse")
+
 st.sidebar.markdown("---")
-st.sidebar.markdown("**다음 시나리오 (예정)**")
+st.sidebar.markdown("### 🎯 다음 시나리오")
 ne = st.session_state.next_scenario["environment_parameters"]
-st.sidebar.write(f"- fog: `{ne.get('fog_density_percent', 0):.1f}%`")
-st.sidebar.write(f"- illum: `{ne.get('illumination_lux', 0):.0f} lx`")
-st.sidebar.write(f"- noise: `{ne.get('camera_noise_level', 0):.3f}`")
-st.sidebar.caption(f"mode = `{st.session_state.next_scenario.get('decision_mode', '?')}`")
+mode = st.session_state.next_scenario.get('decision_mode', 'seed')
+mode_kr = {
+    "seed":             "🟦 정상 정찰 (시드)",
+    "boundary_push":    "🔥 환경 가혹화 (PUSH)",
+    "boundary_recover": "💨 조건 완화 (RECOVER)",
+    "llm_explore":      "🧠 LLM 적대적 생성",
+    "rule_push_fallback":"⚙ 규칙 기반 push",
+    "rule_relax":       "⚙ 규칙 기반 relax",
+    "bisect":           "🎯 경계 좁히기",
+}.get(mode, mode)
+st.sidebar.markdown(f"**모드**: {mode_kr}")
+st.sidebar.write(f"- 안개: `{ne.get('fog_density_percent', 0):.1f}%`")
+st.sidebar.write(f"- 조도: `{ne.get('illumination_lux', 0):.0f} lx`")
+st.sidebar.write(f"- 잡음: `{ne.get('camera_noise_level', 0):.3f}`")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Header — mission context (always visible)
 # ─────────────────────────────────────────────────────────────────────────────
 
-st.title("🛰️ 국경 산악 감시 UAV — 시나리오 검증 시스템")
+st.title("🛰️ SENTINEL — UAV 임무 검증 시스템")
+st.caption("Counterfactual XAI Verifier · DSPy + SHAP + LLM 기반 자동 시나리오 생성")
 mc = json.loads(mission_ctx)
 with st.container(border=True):
     h_col1, h_col2, h_col3 = st.columns([2, 2, 1])
     with h_col1:
-        st.markdown(f"**임무**: {mc['mission_title']}")
+        st.markdown(f"### 🎯 작전 임무")
+        st.markdown(f"**{mc['mission_title']}**")
         st.caption(mc["objective"])
     with h_col2:
-        st.markdown(f"**탐지 대상**: {' · '.join(mc['detection_targets'])}")
-        st.caption(f"실패 정의: {mc['failure_definition'][:80]}…")
+        st.markdown(f"### 🚨 탐지 대상")
+        st.markdown(f"**{' · '.join(mc['detection_targets'])}** (비인가 침입자)")
+        st.caption(f"임무 실패: 환경 변조로 인한 침입자 식별 누락")
     with h_col3:
-        st.markdown("**REQ**")
-        st.caption(f"REQ-1 mAP50 ≥ {mc['requirements']['REQ_1']['threshold']}")
-        st.caption(f"REQ-3 연속 미탐 ≤ {mc['requirements']['REQ_3']['threshold']} fr")
+        st.markdown("### ⚖ 검증 기준")
+        st.caption(f"REQ-1 탐지 정확도 ≥ {mc['requirements']['REQ_1']['threshold']}")
+        st.caption(f"REQ-3 연속 미탐 ≤ {mc['requirements']['REQ_3']['threshold']} 프레임")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -168,21 +190,24 @@ if run_clicked:
     step_no = len(session.history) + 1
     viz_png = str(ASSETS_DIR / f"sim_step_{step_no:03d}.png")
 
-    with st.spinner(f"Step {step_no} 시뮬레이션 실행 중…"):
+    with st.spinner(f"📡 정찰 시나리오 #{step_no} 시뮬레이션 수행 중…"):
         rec = run_one_step(session, st.session_state.next_scenario, viz_png_path=viz_png)
 
     # Generate edge-case narrative for this new step
-    with st.spinner("엣지 케이스 자연어 생성…"):
+    with st.spinner("🛰️ 임무 분석관 LLM 보고서 작성 중…"):
         try:
+            import dspy
+            from dspy_pipeline.orchestrator import get_lm
             qenv = qualitative_env(rec)
             bstatus = boundary_status(rec, session.last_pass_env, session.last_fail_env)
-            ec_pred = narrator.describe_edge_case(
-                mission_context = mission_ctx,
-                env_summary     = json.dumps(qenv, ensure_ascii=False),
-                sim_outcome     = ("PASS" if rec["all_passed"] else "FAIL")
-                                  + f", violated_count={rec['violated_count']}",
-                boundary_status = bstatus,
-            )
+            with dspy.context(lm=get_lm()):
+                ec_pred = narrator.describe_edge_case(
+                    mission_context = mission_ctx,
+                    env_summary     = json.dumps(qenv, ensure_ascii=False),
+                    sim_outcome     = ("PASS" if rec["all_passed"] else "FAIL")
+                                      + f", violated_count={rec['violated_count']}",
+                    boundary_status = bstatus,
+                )
             narrative = ec_pred.edge_case_narrative
         except Exception as exc:
             narrative = f"(자연어 생성 실패: {exc})"
@@ -192,27 +217,30 @@ if run_clicked:
     if len(session.history) >= 2:
         prev = session.history[-2]
         curr = session.history[-1]
-        with st.spinner("이전↔현재 시나리오 비교 생성…"):
+        with st.spinner("📊 이전 ↔ 현재 시나리오 비교 분석…"):
             try:
-                cmp_pred = narrator.compare_scenarios(
-                    mission_context  = mission_ctx,
-                    previous_summary = json.dumps({
-                        "env":        qualitative_env(prev),
-                        "result":     "PASS" if prev["all_passed"] else "FAIL",
-                        "narrative":  st.session_state.edge_narratives[-2],
-                    }, ensure_ascii=False),
-                    current_summary  = json.dumps({
-                        "env":        qualitative_env(curr),
-                        "result":     "PASS" if curr["all_passed"] else "FAIL",
-                        "narrative":  st.session_state.edge_narratives[-1],
-                    }, ensure_ascii=False),
-                )
+                import dspy
+                from dspy_pipeline.orchestrator import get_lm
+                with dspy.context(lm=get_lm()):
+                    cmp_pred = narrator.compare_scenarios(
+                        mission_context  = mission_ctx,
+                        previous_summary = json.dumps({
+                            "env":        qualitative_env(prev),
+                            "result":     "PASS" if prev["all_passed"] else "FAIL",
+                            "narrative":  st.session_state.edge_narratives[-2],
+                        }, ensure_ascii=False),
+                        current_summary  = json.dumps({
+                            "env":        qualitative_env(curr),
+                            "result":     "PASS" if curr["all_passed"] else "FAIL",
+                            "narrative":  st.session_state.edge_narratives[-1],
+                        }, ensure_ascii=False),
+                    )
                 st.session_state.comparison = cmp_pred.comparison_narrative
             except Exception as exc:
                 st.session_state.comparison = f"(비교 생성 실패: {exc})"
 
     # Decide next scenario
-    with st.spinner("다음 시나리오 결정 (LLM/SHAP/bisect)…"):
+    with st.spinner("🧠 적대적 환경 시나리오 자동 생성 중 (DSPy + SHAP)…"):
         try:
             st.session_state.next_scenario = decide_next_scenario(session)
         except Exception as exc:
@@ -338,12 +366,15 @@ else:
                     sd = f"{top['name']} (importance={top['importance']:.2f})"
                 else:
                     sd = "SHAP 미사용"
-                pred = narrator.summarise_mission(
-                    mission_context  = mission_ctx,
-                    iteration_history = json.dumps(compressed, ensure_ascii=False),
-                    boundary_findings = bf,
-                    shap_dominant    = sd,
-                )
+                import dspy
+                from dspy_pipeline.orchestrator import get_lm
+                with dspy.context(lm=get_lm()):
+                    pred = narrator.summarise_mission(
+                        mission_context  = mission_ctx,
+                        iteration_history = json.dumps(compressed, ensure_ascii=False),
+                        boundary_findings = bf,
+                        shap_dominant    = sd,
+                    )
                 st.session_state.summary = {
                     "executive":      pred.executive_summary,
                     "boundary":       pred.failure_boundary_text,
