@@ -5,16 +5,40 @@ from pathlib import Path
 import re
 from PIL import Image
 import plotly.express as px
-import threading 
-import main2     
+import threading
+import subprocess
+import os
+import shutil as _shutil
+import glob as _glob
+import time as _time
+import main2
 from ultralytics import YOLO
 import numpy as np
+
+# ── MATLAB 실행 파일 자동 탐지 (세션 스테이트보다 먼저 실행) ───────────────
+def _find_matlab_exe() -> str:
+    for _r in ["R2026a", "R2025b", "R2025a", "R2024b", "R2024a", "R2023b"]:
+        _p = Path(f"C:/Program Files/MATLAB/{_r}/bin/matlab.exe")
+        if _p.is_file():
+            return str(_p)
+    _found = sorted(_glob.glob("C:/Program Files/MATLAB/R*/bin/matlab.exe"), reverse=True)
+    if _found:
+        return _found[0]
+    return _shutil.which("matlab") or "matlab"
+
+_MATLAB_EXE_DETECTED = _find_matlab_exe()
+
+# 세션 스테이트에 유효하지 않은 경로가 있으면 탐지된 경로로 강제 교체
+if not Path(st.session_state.get("matlab_exe_path", "")).is_file():
+    st.session_state["matlab_exe_path"] = _MATLAB_EXE_DETECTED
 
 # 1. 페이지 설정 및 초기화
 st.set_page_config(page_title="UAV Safety Verifier", layout="wide", initial_sidebar_state="expanded")
 
 DATA_DIR, IMAGE_DIR = Path("./data"), Path("./assets")
-for d in [DATA_DIR, IMAGE_DIR]: d.mkdir(exist_ok=True)
+LIVE_DIR   = IMAGE_DIR / "live"
+FRAMES_DIR = LIVE_DIR / "frames"
+for d in [DATA_DIR, IMAGE_DIR, LIVE_DIR, FRAMES_DIR]: d.mkdir(exist_ok=True)
 
 # UI용 경량 YOLO 모델 로드 (캐싱)
 @st.cache_resource
@@ -164,7 +188,608 @@ if st.sidebar.button("검증 파이프라인 가동", type="primary"):
         st.sidebar.warning("엔진이 이미 가동 중입니다.")
 
 st.sidebar.markdown("---")
-mode = st.sidebar.radio("작동 모드 선택", ["실시간 모니터링 (Live)", "히스토리 분석"])
+mode = st.sidebar.radio("작동 모드 선택", ["MATLAB Live 스트리밍", "실시간 모니터링 (Live)", "히스토리 분석"])
+
+# ── MATLAB Live 제어 UI ──────────────────────────────────────────────────────
+if mode == "MATLAB Live 스트리밍":
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("MATLAB Live 제어")
+    if "matlab_proc" not in st.session_state:
+        st.session_state.matlab_proc = None
+    if "demo_frame_idx" not in st.session_state:
+        st.session_state.demo_frame_idx = 0
+    if "matlab_live_mode_prev" not in st.session_state:
+        st.session_state.matlab_live_mode_prev = "Demo Replay"
+
+    live_mode = st.sidebar.radio(
+        "실행 모드",
+        ["Demo Replay", "Real MATLAB Run"],
+        index=0,
+        key="matlab_live_mode",
+        help="발표 기본값은 Demo Replay입니다. 실제 검증은 Real MATLAB Run 버튼을 사용하세요.",
+    )
+    if st.session_state.matlab_live_mode_prev != live_mode:
+        st.session_state.demo_frame_idx = 0
+        st.session_state.matlab_live_mode_prev = live_mode
+
+    n_iter = st.sidebar.slider("반복 횟수", 1, 10, 3, key="matlab_n_iter")
+    no_llm = st.sidebar.checkbox("LLM 없이 실행 (fallback)", value=True, key="matlab_no_llm")
+    if live_mode == "Demo Replay":
+        st.sidebar.slider(
+            "Demo 재생 간격 (초)",
+            min_value=0.20,
+            max_value=0.40,
+            value=0.20,
+            step=0.05,
+            key="matlab_demo_replay_interval",
+        )
+        st.sidebar.success("발표 모드: MATLAB 미실행, 즉시 Live Mission Replay")
+        if st.sidebar.button("↺ Demo Replay 처음부터", type="primary"):
+            st.session_state.demo_frame_idx = 0
+            st.sidebar.info("Demo Replay 인덱스를 0으로 초기화했습니다.")
+    else:
+        st.sidebar.info("실제 검증 모드: MATLAB + Simulink 전체 실행")
+
+    matlab_exe = st.sidebar.text_input(
+        "MATLAB 실행 파일",
+        value=_MATLAB_EXE_DETECTED,
+        key="matlab_exe_path",
+    )
+    if matlab_exe and Path(matlab_exe).is_file():
+        st.sidebar.caption(f"✔ {Path(matlab_exe).name}  ({Path(matlab_exe).parent.parent.name})")
+    else:
+        st.sidebar.warning(f"파일 없음 — 자동 탐지: {_MATLAB_EXE_DETECTED}")
+
+    proc = st.session_state.matlab_proc
+    matlab_running = proc is not None and proc.poll() is None
+
+    est_low = 20 + (n_iter * 15)
+    est_high = 45 + (n_iter * 35)
+    st.sidebar.caption(
+        f"Real MATLAB Run 예상 소요: 약 {est_low}~{est_high}초 "
+        f"(MATLAB 시작 + Simulink sim())"
+    )
+
+    if matlab_running:
+        st.sidebar.success("MATLAB Live Engine 실행 중...")
+        if st.sidebar.button("⏹️ MATLAB 중지"):
+            try:
+                proc.terminate()
+            except Exception:
+                pass
+            st.session_state.matlab_proc = None
+            st.sidebar.info("중지 요청 전송됨.")
+    elif live_mode == "Real MATLAB Run":
+        if st.sidebar.button("▶️ Real MATLAB Run 실행"):
+            root_dir = str(Path(__file__).resolve().parent).replace("\\", "/")
+            no_llm_arg = ", struct('no_llm', true)" if no_llm else ""
+            # 싱글쿼트 사용 — Windows 명령줄에서 내부 "가 깨지는 문제 방지
+            matlab_cmd = (
+                f"addpath('{root_dir}'); "
+                f"cd('{root_dir}'); "
+                f"run_counterfactual_loop_live({n_iter}{no_llm_arg});"
+            )
+            # 이미 앱 최상단에서 세션 스테이트를 유효한 경로로 교정했으므로 직접 사용
+            _matlab_exe = st.session_state.get("matlab_exe_path") or _MATLAB_EXE_DETECTED
+            if not Path(_matlab_exe).is_file():
+                _matlab_exe = _MATLAB_EXE_DETECTED
+            _stdout_log  = str(DATA_DIR / "matlab_live_stdout.log")
+            _stderr_log  = str(DATA_DIR / "matlab_live_stderr.log")
+            _full_cmd    = f'"{_matlab_exe}" -batch "{matlab_cmd}"'
+            # Clean up stale live files
+            for _f in [LIVE_DIR / "latest_frame.jpg", LIVE_DIR / "latest_frame_tmp.jpg"]:
+                try: _f.unlink(missing_ok=True)
+                except Exception: pass
+            for _f in FRAMES_DIR.glob("frame_*.jpg"):
+                try: _f.unlink(missing_ok=True)
+                except Exception: pass
+            _now    = _time.time()
+            _run_id = f"{int(_now * 1000) % 0xFFFFFFFF:08x}"
+            _init   = {
+                "run_id": _run_id, "phase": "STARTING", "is_running": True,
+                "started_at_epoch": _now, "updated_at": "", "heartbeat": 0,
+                "current_step": 0, "current_time": 0.0,
+                "status": "STARTING", "message": "MATLAB 엔진 시작 중...",
+                "matlab_command": _full_cmd, "matlab_pid": -1,
+                "stdout_log": _stdout_log, "stderr_log": _stderr_log,
+            }
+            _tmp_p = DATA_DIR / "live_state_tmp.json"
+            _fin_p = DATA_DIR / "live_state.json"
+            def _write_state(obj):
+                try:
+                    _tmp_p.write_text(json.dumps(obj, ensure_ascii=False), encoding="utf-8")
+                    try: _fin_p.unlink(missing_ok=True)
+                    except Exception: pass
+                    os.replace(str(_tmp_p), str(_fin_p))
+                except Exception: pass
+            _write_state(_init)
+            try:
+                _fout = open(_stdout_log, "w", encoding="utf-8")
+                _ferr = open(_stderr_log, "w", encoding="utf-8")
+                new_proc = subprocess.Popen(
+                    [_matlab_exe, "-batch", matlab_cmd],
+                    cwd=root_dir, stdout=_fout, stderr=_ferr,
+                )
+                st.session_state.matlab_proc   = new_proc
+                st.session_state.matlab_stdout = _fout
+                st.session_state.matlab_stderr = _ferr
+                _init["matlab_pid"] = new_proc.pid
+                _write_state(_init)
+                st.sidebar.success(f"MATLAB 시작됨! PID={new_proc.pid}")
+                st.sidebar.caption(f"cmd: {_full_cmd[:80]}...")
+            except Exception as _ex:
+                _write_state({**_init, "phase": "ERROR", "is_running": False,
+                              "status": "ERROR", "message": str(_ex)})
+                st.sidebar.error(f"MATLAB 실행 실패: {_ex}")
+    else:
+        st.sidebar.caption("Real MATLAB Run 버튼은 실행 모드를 'Real MATLAB Run'으로 선택하면 활성화됩니다.")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 헬퍼: live_state.json 읽기
+# ─────────────────────────────────────────────────────────────────────────────
+def load_live_state() -> dict | None:
+    p = DATA_DIR / "live_state.json"
+    if not p.exists():
+        return None
+    try:
+        with open(p, "r", encoding="utf-8-sig") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def latest_live_frame_path() -> Path | None:
+    """assets/live/latest_frame.jpg 반환, 없으면 None."""
+    p = LIVE_DIR / "latest_frame.jpg"
+    return p if p.exists() else None
+
+
+def is_fresh_frame(frame_path, live: dict | None) -> bool:
+    if frame_path is None or live is None:
+        return False
+    if str(live.get("phase", "")) not in ("STREAMING", "DONE"):
+        return False
+    started_at = float(live.get("started_at_epoch", 0.0))
+    try:
+        return frame_path.stat().st_mtime > started_at
+    except FileNotFoundError:
+        return False
+
+
+@st.cache_data(show_spinner=False, ttl=5)
+def list_demo_frame_paths() -> list[str]:
+    return [str(p) for p in sorted(FRAMES_DIR.glob("frame_*.jpg"))]
+
+
+@st.cache_data(show_spinner=False, ttl=60)
+def load_frame_bytes_cached(path_str: str, mtime_ns: int) -> bytes:
+    _ = mtime_ns
+    with open(path_str, "rb") as fh:
+        return fh.read()
+
+
+def next_demo_frame() -> tuple[Path | None, int, int]:
+    """assets/live/frames/에서 순환 재생할 다음 프레임을 반환."""
+    frames = list_demo_frame_paths()
+    if not frames:
+        return None, -1, 0
+    idx = st.session_state.get("demo_frame_idx", 0) % len(frames)
+    st.session_state.demo_frame_idx = (idx + 1) % len(frames)
+    return Path(frames[idx]), idx, len(frames)
+
+
+@st.cache_data(show_spinner=False, ttl=10)
+def load_demo_live_state_sequence() -> list[dict]:
+    """데모 재생용 상태 시퀀스 로드 (파일 우선, 없으면 dashboard_step_* 기반 생성)."""
+    candidates = [
+        DATA_DIR / "live_state_sequence.json",
+        DATA_DIR / "live_state_replay.json",
+        DATA_DIR / "demo_live_state_sequence.json",
+    ]
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            with open(path, "r", encoding="utf-8-sig") as f:
+                raw = json.load(f)
+            if isinstance(raw, dict) and isinstance(raw.get("states"), list):
+                return [x for x in raw["states"] if isinstance(x, dict)]
+            if isinstance(raw, list):
+                return [x for x in raw if isinstance(x, dict)]
+        except Exception:
+            pass
+
+    seq: list[dict] = []
+    dashboard_files = sorted(
+        DATA_DIR.glob("dashboard_step_*.json"),
+        key=lambda p: extract_step(p.stem, "dashboard_step") or 0,
+    )
+    for fp in dashboard_files:
+        try:
+            with open(fp, "r", encoding="utf-8-sig") as f:
+                d = json.load(f)
+        except Exception:
+            continue
+
+        if not isinstance(d, dict):
+            continue
+        panel_1 = d.get("panel_1_visual", {})
+        panel_3 = d.get("panel_3_llm", {})
+        panel_4 = d.get("panel_4_counterfactual", {})
+        env = panel_1.get("params", {}) if isinstance(panel_1, dict) else {}
+        xai = d.get("panel_2_xai", [])
+        map50 = _to_float(panel_1.get("map50_score", d.get("map50", 0.0)), default=0.0) if isinstance(panel_1, dict) else 0.0
+        safety_line = _to_float(d.get("safety_line", 0.5), default=0.5)
+        step = int(d.get("iteration", len(seq) + 1))
+        llm_h = panel_3.get("hypothesis", "") if isinstance(panel_3, dict) else ""
+        llm_r = panel_3.get("reasoning", "") if isinstance(panel_3, dict) else ""
+        llm_g = (str(llm_h).strip() or str(llm_r).strip())[:420]
+        summary = panel_4.get("summary", "") if isinstance(panel_4, dict) else ""
+        status = "PASS" if map50 >= safety_line else "FAIL"
+        seq.append(
+            {
+                "phase": "STREAMING",
+                "is_running": False,
+                "status": status,
+                "current_step": step,
+                "current_time": float(step),
+                "map50": map50,
+                "safety_line": safety_line,
+                "environment_params": env if isinstance(env, dict) else {},
+                "xai_top_features": xai if isinstance(xai, list) else [],
+                "llm_guidance": llm_g,
+                "detected_objects": [],
+                "message": str(summary)[:220],
+            }
+        )
+    return seq
+
+
+def select_demo_live_state(frame_idx: int, frame_count: int, seq: list[dict], replay_pause: float = 0.25) -> dict:
+    """현재 프레임 인덱스에 맞는 데모 상태를 반환."""
+    if not seq:
+        return {
+            "phase": "STREAMING",
+            "is_running": False,
+            "status": "DEMO",
+            "current_step": 0,
+            "current_time": max(0.0, frame_idx) * replay_pause,
+            "map50": 0.0,
+            "safety_line": 0.5,
+            "environment_params": {},
+            "xai_top_features": [],
+            "llm_guidance": "",
+            "detected_objects": [],
+            "message": "Demo Replay: 상태 시퀀스 파일 없음",
+        }
+    if len(seq) == 1 or frame_count <= 1:
+        idx = 0
+    else:
+        idx = int(round((frame_idx / max(1, frame_count - 1)) * (len(seq) - 1)))
+    out = dict(seq[max(0, min(idx, len(seq) - 1))])
+    out["phase"] = "STREAMING"
+    out["is_running"] = False
+    out["current_time"] = max(0.0, frame_idx) * replay_pause
+    out["status"] = str(out.get("status", "PASS"))
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3a. MATLAB Live 스트리밍 모드
+# ─────────────────────────────────────────────────────────────────────────────
+if mode == "MATLAB Live 스트리밍":
+    st.header("MATLAB Live Mission Viewer")
+    demo_interval = float(st.session_state.get("matlab_demo_replay_interval", 0.20))
+
+    @st.fragment(run_every=f"{demo_interval:.2f}s")
+    def render_matlab_live():
+        live       = load_live_state()
+        phase      = str(live.get("phase", "")) if live else ""
+        is_running = bool(live.get("is_running", False)) if live else False
+        is_demo    = False
+        frame_path: Path | None = None
+        frame_idx = -1
+        frame_count = 0
+        replay_pause = demo_interval
+        live_mode = st.session_state.get("matlab_live_mode", "Demo Replay")
+
+        def _read_log_tail(path: str, n: int = 15) -> str:
+            try:
+                with open(path, "r", encoding="utf-8", errors="replace") as _f:
+                    return "".join(_f.readlines()[-n:]).strip()
+            except Exception:
+                return ""
+
+        if live_mode == "Demo Replay":
+            frame_path, frame_idx, frame_count = next_demo_frame()
+            if frame_path is not None:
+                is_demo = True
+                demo_seq = load_demo_live_state_sequence()
+                live = select_demo_live_state(frame_idx, frame_count, demo_seq, replay_pause)
+                phase = "STREAMING"
+                is_running = False
+
+        # ── ERROR phase ───────────────────────────────────────────────────
+        if live_mode != "Demo Replay" and phase == "ERROR":
+            err_msg  = str(live.get("error_message") or live.get("message") or "알 수 없는 오류")
+            err_id   = str(live.get("error_identifier", ""))
+            err_stk  = str(live.get("error_stack", ""))
+            cmd_str  = str(live.get("matlab_command", "N/A"))
+            pid_str  = str(live.get("matlab_pid", "N/A"))
+            out_path = str(live.get("stdout_log", str(DATA_DIR / "matlab_live_stdout.log")))
+            err_path = str(live.get("stderr_log", str(DATA_DIR / "matlab_live_stderr.log")))
+            dbg_path = str(DATA_DIR / "matlab_live_debug.log")
+            stderr_tail = _read_log_tail(err_path)
+            debug_tail  = _read_log_tail(dbg_path, 20)
+            st.markdown(
+                "<div style='background:#1a0a0a;border:2px solid #7f1d1d;"
+                "border-radius:12px;padding:20px 24px;'>"
+                "<div style='color:#f87171;font-size:1.1rem;font-weight:700;margin-bottom:8px;'>"
+                "ERROR — MATLAB 실행 실패</div>"
+                f"<div style='color:#fca5a5;font-size:0.9rem;margin-bottom:6px;'>{err_id}: {err_msg[:300]}</div>"
+                "</div>",
+                unsafe_allow_html=True,
+            )
+            with st.expander("진단 정보 (클릭하여 펼치기)", expanded=True):
+                st.markdown(f"**MATLAB 명령어:** `{cmd_str[:120]}`")
+                st.markdown(f"**PID:** `{pid_str}` | **stdout:** `{out_path}` | **stderr:** `{err_path}`")
+                if debug_tail:
+                    st.markdown("**debug.log:**")
+                    st.code(debug_tail, language="text")
+                else:
+                    st.warning("matlab_live_debug.log 없음 — MATLAB 스크립트가 시작조차 안 됐을 가능성 있음")
+                if stderr_tail:
+                    st.markdown("**stderr (마지막 15줄):**")
+                    st.code(stderr_tail, language="text")
+                if err_stk:
+                    st.markdown("**MATLAB error stack:**")
+                    st.code(err_stk, language="text")
+            return
+
+        # ── 로딩 phase: latest_frame.jpg가 존재해도 절대 표시 안 함 ──────
+        if live_mode != "Demo Replay" and phase in ("STARTING", "SIM_RUNNING", "RENDERING"):
+            step_val   = int(live.get("current_step", 0))
+            msg        = str(live.get("message", "") or "")
+            started_at = float(live.get("started_at_epoch", 0.0))
+            elapsed_s  = int(_time.time() - started_at) if started_at > 0 else 0
+
+            # STARTING > 30s: MATLAB 스크립트가 아직 live_state를 갱신 안 함 → 진단 표시
+            if phase == "STARTING" and elapsed_s > 30:
+                cmd_str  = str(live.get("matlab_command", "N/A"))
+                pid_str  = str(live.get("matlab_pid", "N/A"))
+                out_path = str(live.get("stdout_log", str(DATA_DIR / "matlab_live_stdout.log")))
+                err_path = str(live.get("stderr_log", str(DATA_DIR / "matlab_live_stderr.log")))
+                dbg_path = str(DATA_DIR / "matlab_live_debug.log")
+                debug_tail  = _read_log_tail(dbg_path, 20)
+                stderr_tail = _read_log_tail(err_path)
+                has_debug   = bool(debug_tail.strip())
+                st.markdown(
+                    f"<div style='background:#1a1200;border:2px solid #854d0e;"
+                    f"border-radius:12px;padding:20px 24px;'>"
+                    f"<div style='color:#fbbf24;font-size:1.05rem;font-weight:700;margin-bottom:6px;'>"
+                    f"⚠️ STARTING {elapsed_s}초 경과 — MATLAB이 live_state를 갱신하지 않았습니다</div>"
+                    f"<div style='color:#92400e;font-size:0.85rem;'>"
+                    f"MATLAB 스크립트가 정상 시작되면 즉시 SIM_RUNNING으로 바뀌어야 합니다.</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+                with st.expander("진단 정보", expanded=True):
+                    st.markdown(f"**명령어:** `{cmd_str[:120]}`")
+                    st.markdown(f"**PID:** `{pid_str}` | **stdout:** `{out_path}` | **stderr:** `{err_path}`")
+                    if has_debug:
+                        st.success("matlab_live_debug.log 존재 — MATLAB 스크립트 시작은 확인됨")
+                        st.code(debug_tail, language="text")
+                    else:
+                        st.error("matlab_live_debug.log 없음 — MATLAB 스크립트 자체가 시작되지 않음")
+                        st.markdown("가능한 원인: MATLAB 실행 파일 경로 오류, PATH 미등록, 라이선스 오류")
+                    if stderr_tail:
+                        st.markdown("**stderr:**")
+                        st.code(stderr_tail, language="text")
+                return
+
+            phase_label = {
+                "STARTING":    "엔진 시작 중",
+                "SIM_RUNNING": "Simulink 시뮬레이션 실행 중",
+                "RENDERING":   "프레임 렌더링 중",
+            }.get(phase, phase)
+            hint = "프레임 렌더링 후 스트리밍됩니다" if phase == "RENDERING" else "시뮬레이션 완료 후 프레임이 스트리밍됩니다"
+            st.markdown(
+                f"<div style='background:#0d1828;border:2px solid #1e3a5f;"
+                f"border-radius:16px;padding:52px 24px;text-align:center;'>"
+                f"<div style='font-size:2.8rem;margin-bottom:12px;'>⏳</div>"
+                f"<div style='color:#38bdf8;font-size:1.15rem;font-weight:700;'>"
+                f"{phase_label}</div>"
+                f"<div style='color:#64748b;margin-top:8px;font-size:0.9rem;'>"
+                f"Step {step_val} &nbsp;·&nbsp; {elapsed_s}초 경과</div>"
+                f"<div style='color:#475569;margin-top:6px;font-size:0.82rem;'>"
+                f"{msg[:120]}</div>"
+                f"<div style='color:#334155;margin-top:10px;font-size:0.76rem;'>"
+                f"{hint}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            return
+
+        # ── freshness 확인: 이전 run 잔존 파일 차단 ──────────────────────
+        if live_mode != "Demo Replay":
+            frame_path = latest_live_frame_path()
+            if not is_fresh_frame(frame_path, live):
+                frame_path = None
+
+        # ── 아무 프레임도 없음 ────────────────────────────────────────
+        if frame_path is None:
+            if live_mode == "Demo Replay":
+                st.markdown(
+                    "<div style='background:#111827;border:2px dashed #374151;"
+                    "border-radius:12px;padding:80px 20px;text-align:center;"
+                    "color:#6b7280;font-size:1.1rem;'>"
+                    "Demo Replay 프레임이 없습니다<br>"
+                    "<span style='font-size:0.9rem;'>"
+                    "assets/live/frames/frame_*.jpg 파일을 확인하세요</span>"
+                    "</div>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    "<div style='background:#111827;border:2px dashed #374151;"
+                    "border-radius:12px;padding:80px 20px;text-align:center;"
+                    "color:#6b7280;font-size:1.1rem;'>"
+                    "MATLAB Live Engine 대기 중<br>"
+                    "<span style='font-size:0.9rem;'>"
+                    "사이드바에서 ▶️ Real MATLAB Run 실행을 누르세요</span>"
+                    "</div>",
+                    unsafe_allow_html=True,
+                )
+            return
+
+        # ── 상태 D: 프레임 존재 → 2컬럼 레이아웃 ───────────────────────
+        col_live, col_state = st.columns([2, 1], gap="medium")
+
+        with col_live:
+            try:
+                # 디스크 IO를 줄이기 위해 프레임 바이트 캐시 사용
+                mtime_ns = frame_path.stat().st_mtime_ns
+                img_bytes = load_frame_bytes_cached(str(frame_path), mtime_ns)
+                label = "🎬 Live Mission Replay" if is_demo else "📡 Real MATLAB Live Stream"
+                st.image(img_bytes, use_container_width=True, caption=label)
+
+                if not is_demo and live:
+                    is_run   = bool(live.get("is_running", False))
+                    lv_stat  = str(live.get("status", "WAIT"))
+                    step_val = int(live.get("current_step", 0))
+                    cur_t    = float(live.get("current_time", 0.0))
+                    hb       = int(live.get("heartbeat", 0))
+                    upd_at   = str(live.get("updated_at", ""))[-12:]  # HH:mm:ss.SSS
+                    dot_col  = "#ef4444" if is_run else ("#22c55e" if lv_stat == "DONE" else "#94a3b8")
+                    dot_txt  = "● LIVE" if is_run else ("✔ DONE" if lv_stat == "DONE" else "○ STANDBY")
+                    st.markdown(
+                        f"<div style='display:flex;gap:10px;align-items:center;"
+                        f"flex-wrap:wrap;margin-top:4px;'>"
+                        f"<span style='color:{dot_col};font-size:0.86rem;font-weight:700;'>{dot_txt}</span>"
+                        f"<span style='color:#64748b;font-size:0.80rem;'>"
+                        f"Step {step_val} | t={cur_t:.1f}s</span>"
+                        f"<span style='color:#1e3a5f;background:#0d2137;padding:1px 6px;"
+                        f"border-radius:4px;font-size:0.74rem;font-family:monospace;'>hb#{hb}</span>"
+                        f"<span style='color:#334155;font-size:0.74rem;'>{upd_at}</span>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+            except Exception:
+                st.info("프레임 로딩 중...")
+
+        with col_state:
+            if not live:
+                st.info("live_state.json 대기 중...")
+                return
+
+            status    = str(live.get("status", "WAIT"))
+            map50_val = float(live.get("map50", 0.0))
+            sl_val    = float(live.get("safety_line", 0.5))
+            step_val  = int(live.get("current_step", 0))
+            cur_t     = float(live.get("current_time", 0.0))
+            env_p     = live.get("environment_params", {})
+            xai_list  = live.get("xai_top_features", [])
+            llm_g     = str(live.get("llm_guidance", "") or "")
+            msg       = str(live.get("message", "") or "")
+            det_objs  = live.get("detected_objects", [])
+
+            if status == "PASS":      color = "#22c55e"
+            elif status == "FAIL":    color = "#ef4444"
+            elif status == "RUNNING": color = "#38bdf8"
+            else:                     color = "#f59e0b"
+
+            map_pct = min(100, int(map50_val * 100))
+            sl_pct  = min(100, int(sl_val * 100))
+
+            rows: list[str] = []
+            rows.append(
+                f"<div class='metric-card' style='border-left:8px solid {color};'>"
+                f"<div class='metric-title'>mAP50</div>"
+                f"<div class='metric-score' style='color:{color};'>{map50_val:.4f}</div>"
+                f"<div style='position:relative;background:#1e293b;border-radius:4px;"
+                f"height:8px;margin:6px 0 2px;'>"
+                f"  <div style='background:{color};width:{map_pct}%;height:8px;border-radius:4px;'></div>"
+                f"  <div style='position:absolute;top:-3px;left:{sl_pct}%;width:2px;height:14px;"
+                f"background:#fbbf24;border-radius:1px;'></div>"
+                f"</div>"
+                f"<div style='font-size:0.74rem;color:#64748b;margin-bottom:4px;'>"
+                f"Safety Line: {sl_val:.4f}</div>"
+                f"<div class='metric-status' style='color:{color};'>"
+                f"{status} &nbsp;|&nbsp; Step {step_val} &nbsp;|&nbsp; t={cur_t:.1f}s"
+                f"</div></div>"
+            )
+            rows.append(
+                "<div style='margin-top:10px;font-weight:700;color:#e2e8f0;"
+                "font-size:0.9rem;margin-bottom:4px;'>환경 변수</div>"
+            )
+            for k, v in [
+                ("Fog",   f"{_to_float(env_p.get('fog_density_percent', 0)):.1f} %"),
+                ("Illum", f"{_to_float(env_p.get('illumination_lux', 0)):.0f} lux"),
+                ("Noise", f"{_to_float(env_p.get('camera_noise_level', 0)):.3f}"),
+            ]:
+                rows.append(
+                    f"<div style='display:flex;justify-content:space-between;"
+                    f"padding:3px 0;border-bottom:1px solid #1e293b;'>"
+                    f"<span style='color:#94a3b8;'>{k}</span>"
+                    f"<span style='color:#e2e8f0;font-weight:700;'>{v}</span></div>"
+                )
+
+            det_list = det_objs if isinstance(det_objs, list) else []
+            if det_list:
+                rows.append(
+                    f"<div style='margin-top:10px;font-weight:700;color:#e2e8f0;"
+                    f"font-size:0.9rem;margin-bottom:4px;'>탐지 객체 ({len(det_list)})</div>"
+                )
+                for obj in det_list[:5]:
+                    if not isinstance(obj, dict): continue
+                    oid  = obj.get("id", "?")
+                    sc_v = float(obj.get("score", 0))
+                    c    = "#22c55e" if sc_v > 0.7 else ("#f59e0b" if sc_v > 0.4 else "#ef4444")
+                    rows.append(
+                        f"<div style='display:flex;justify-content:space-between;padding:2px 0;'>"
+                        f"<span style='color:#94a3b8;font-size:0.80rem;'>obj #{oid}</span>"
+                        f"<span style='color:{c};font-size:0.80rem;font-weight:700;'>{sc_v:.2f}</span>"
+                        f"</div>"
+                    )
+
+            xai_items = xai_list if isinstance(xai_list, list) else []
+            if xai_items:
+                rows.append(
+                    "<div style='margin-top:10px;font-weight:700;color:#e2e8f0;"
+                    "font-size:0.9rem;margin-bottom:4px;'>XAI 기여도</div>"
+                )
+                for xi in xai_items[:3]:
+                    if not isinstance(xi, dict): continue
+                    nm  = xi.get("name", "")
+                    imp = _to_float(xi.get("importance", 0))
+                    bw  = int(min(100, max(1, imp * 100)))
+                    rows.append(
+                        f"<div style='margin:4px 0;'>"
+                        f"<span style='color:#94a3b8;font-size:0.82rem;'>{nm}</span>"
+                        f"<div style='background:#1e293b;border-radius:4px;height:8px;margin-top:2px;'>"
+                        f"<div style='background:#38bdf8;width:{bw}%;height:8px;border-radius:4px;'></div>"
+                        f"</div><span style='color:#38bdf8;font-size:0.78rem;'>{imp:.3f}</span></div>"
+                    )
+
+            if llm_g:
+                rows.append(
+                    f"<div style='margin-top:10px;background:#172033;border-left:4px solid #38bdf8;"
+                    f"padding:8px 12px;border-radius:0 8px 8px 0;color:#93c5fd;"
+                    f"font-size:0.82rem;'><b>LLM 가이던스</b><br>{llm_g[:280]}</div>"
+                )
+            if msg:
+                rows.append(
+                    f"<div style='margin-top:6px;color:#4b5563;font-size:0.76rem;'>{msg[:160]}</div>"
+                )
+            if is_demo:
+                rows.append(
+                    "<div style='margin-top:8px;color:#6b7280;font-size:0.78rem;'>"
+                    "🎬 Live Mission Replay · Demo Live (MATLAB 미실행)</div>"
+                )
+            st.markdown("".join(rows), unsafe_allow_html=True)
+
+    render_matlab_live()
+
 
 # 3. 메인 화면 - 실시간 모니터링 (Live)
 if mode == "실시간 모니터링 (Live)":
@@ -283,7 +908,7 @@ if mode == "실시간 모니터링 (Live)":
     render_live_monitor()
 
 # 4. 메인 화면 - 히스토리 분석
-else:
+elif mode == "히스토리 분석":
     st.header("검증 히스토리 정밀 분석")
     
     json_files = list(DATA_DIR.glob("dashboard_step_*.json"))
@@ -371,7 +996,109 @@ else:
                         yaxis=dict(title_font=dict(color="#ffffff"), tickfont=dict(color="#ffffff")),
                     )
                     st.plotly_chart(fig, use_container_width=True)
-                    
+
+                # ── Scenario Difference 패널 ──
+                prev_step = sel - 1 if sel > 1 else None
+                prev_d = load_json(prev_step) if prev_step and prev_step in steps else None
+
+                cur_params = d.get("panel_1_visual", {}).get("params", {})
+                cur_score = float(d["panel_1_visual"]["map50_score"])
+                cur_pass = cur_score >= threshold
+
+                if prev_d:
+                    prev_params = prev_d.get("panel_1_visual", {}).get("params", {})
+                    prev_score = float(prev_d["panel_1_visual"]["map50_score"])
+                    prev_pass = prev_score >= threshold
+                else:
+                    prev_params = {}
+                    prev_score = float(d.get("baseline_map50", 0))
+                    prev_pass = prev_score >= threshold
+
+                # 환경 변수 이름 매핑
+                ENV_LABELS = {
+                    "fog_density_percent": ("Fog Density", "%"),
+                    "illumination_lux": ("Illumination", " lux"),
+                    "camera_noise_level": ("Camera Noise", ""),
+                    "motion_blur_intensity": ("Motion Blur", ""),
+                    "zoom_blur_intensity": ("Zoom Blur", ""),
+                    "wind_speed": ("Wind Speed", " m/s"),
+                }
+
+                all_keys = sorted(set(list(cur_params.keys()) + list(prev_params.keys())))
+
+                diff_rows = []
+                for k in all_keys:
+                    label, unit = ENV_LABELS.get(k, (k.replace("_", " ").title(), ""))
+                    pv = _to_float(prev_params.get(k, 0))
+                    cv = _to_float(cur_params.get(k, 0))
+                    change = cv - pv
+                    diff_rows.append({"Variable": label, "Previous": f"{pv:.2f}{unit}", "Current": f"{cv:.2f}{unit}",
+                                      "Change": f"{change:+.2f}{unit}", "changed": abs(change) > 1e-6})
+
+                # mAP50 / Status 행 추가
+                map_change = cur_score - prev_score
+                diff_rows.append({"Variable": "mAP50", "Previous": f"{prev_score:.4f}",
+                                  "Current": f"{cur_score:.4f}", "Change": f"{map_change:+.4f}", "changed": True})
+                prev_status_str = "PASS" if prev_pass else "FAIL"
+                cur_status_str = "PASS" if cur_pass else "FAIL"
+                status_changed = prev_status_str != cur_status_str
+                diff_rows.append({"Variable": "Status", "Previous": prev_status_str,
+                                  "Current": cur_status_str, "Change": f"{prev_status_str} → {cur_status_str}",
+                                  "changed": status_changed})
+
+                st.markdown("---")
+                st.subheader(f"🔍 Scenario Difference — Step {prev_step or 'Baseline'} → Step {sel}")
+
+                # HTML 테이블 생성
+                table_html = """
+                <style>
+                .diff-table { width:100%; border-collapse:collapse; font-size:0.92rem; }
+                .diff-table th { background:#1e293b; color:#94a3b8; padding:8px 12px; text-align:center; font-weight:700; letter-spacing:1px; font-size:0.78rem; text-transform:uppercase; }
+                .diff-table td { padding:8px 12px; text-align:center; border-bottom:1px solid #1e293b; color:#e2e8f0; }
+                .diff-table tr.changed { background:rgba(56,189,248,0.06); }
+                .diff-table tr.critical { background:rgba(239,68,68,0.10); }
+                .diff-table td.var-name { text-align:left; font-weight:700; font-family:'Courier New',monospace; }
+                .diff-table .pass-badge { background:rgba(34,197,94,0.15); color:#22c55e; padding:3px 10px; border-radius:999px; font-weight:800; font-size:0.82rem; border:1px solid #22c55e; }
+                .diff-table .fail-badge { background:rgba(239,68,68,0.15); color:#ef4444; padding:3px 10px; border-radius:999px; font-weight:800; font-size:0.82rem; border:1px solid #ef4444; }
+                .diff-table .change-val { font-weight:800; }
+                .diff-table .change-warn { color:#fbbf24; }
+                .diff-table .change-danger { color:#ef4444; }
+                .diff-table .change-neutral { color:#64748b; }
+                </style>
+                <table class="diff-table">
+                <thead><tr><th>Variable</th><th>Previous</th><th>Current</th><th>Change</th></tr></thead>
+                <tbody>
+                """
+                for row in diff_rows:
+                    is_critical = row["Variable"] in ("mAP50", "Status") and row["changed"]
+                    tr_class = "critical" if is_critical else ("changed" if row["changed"] else "")
+
+                    # Change 셀 색상
+                    if is_critical:
+                        change_cls = "change-danger"
+                    elif row["changed"]:
+                        change_cls = "change-warn"
+                    else:
+                        change_cls = "change-neutral"
+
+                    # Status 뱃지 처리
+                    if row["Variable"] == "Status":
+                        prev_cell = f'<span class="{("pass" if prev_pass else "fail")}-badge">{row["Previous"]}</span>'
+                        curr_cell = f'<span class="{("pass" if cur_pass else "fail")}-badge">{row["Current"]}</span>'
+                    else:
+                        prev_cell = row["Previous"]
+                        curr_cell = row["Current"]
+
+                    table_html += f'''<tr class="{tr_class}">
+                        <td class="var-name">{row["Variable"]}</td>
+                        <td>{prev_cell}</td>
+                        <td>{curr_cell}</td>
+                        <td class="change-val {change_cls}">{row["Change"]}</td>
+                    </tr>'''
+
+                table_html += "</tbody></table>"
+                st.markdown(table_html, unsafe_allow_html=True)
+
             with col_r:
                 st.markdown(
                     f"""
