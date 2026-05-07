@@ -63,10 +63,10 @@ INTRUDER_COLOR = [0.20 0.50 0.95;
 % Build UI
 % =========================================================================
 fig = uifigure("Name", "Mountain UAV — Counterfactual XAI Dashboard", ...
-    "Position", [60 60 1500 880], "Color", [0.97 0.97 0.99]);
+    "Position", [60 40 1500 1000], "Color", [0.97 0.97 0.99]);
 
-main = uigridlayout(fig, [4, 2], ...
-    "RowHeight",   {38, '1x', 110, 100}, ...
+main = uigridlayout(fig, [5, 2], ...
+    "RowHeight",   {38, '1x', 240, 110, 100}, ...
     "ColumnWidth", {'1x', '1x'}, ...
     "RowSpacing", 6, "ColumnSpacing", 8, ...
     "Padding", [10 10 10 10]);
@@ -89,11 +89,39 @@ ax2 = uiaxes(main);
 ax2.Layout.Row = 2; ax2.Layout.Column = 2;
 title(ax2, "EO Camera  +  detection (live re-rendered)");
 
+% Row 3 left  — Counterfactual boundary scatter (3D)
+ax_boundary = uiaxes(main);
+ax_boundary.Layout.Row = 3; ax_boundary.Layout.Column = 1;
+title(ax_boundary, "Counterfactual boundary discovery  —  PASS (green) / FAIL (red)");
+
+% Row 3 right — XAI feature importance panel
+xaiPanel = uipanel(main, ...
+    "Title", "XAI  —  feature importance & dominant cause", ...
+    "BackgroundColor", [0.96 0.96 0.99], "FontWeight", "bold");
+xaiPanel.Layout.Row = 3; xaiPanel.Layout.Column = 2;
+xaiInner = uigridlayout(xaiPanel, [3, 1], ...
+    "RowHeight", {'1x', 28, 24}, ...
+    "Padding", [6 6 6 6], "RowSpacing", 4);
+
+ax_xai = uiaxes(xaiInner);
+ax_xai.Layout.Row = 1;
+title(ax_xai, "Run cases to populate feature importance");
+
+lblDominant = uilabel(xaiInner, ...
+    "Text", "  Run a case to start boundary discovery.", ...
+    "FontWeight", "bold", "FontSize", 12);
+lblDominant.Layout.Row = 2;
+
+lblSummary = uilabel(xaiInner, ...
+    "Text", "  Tries: 0   PASS: 0   FAIL: 0", ...
+    "FontSize", 11, "FontColor", [0.30 0.30 0.35]);
+lblSummary.Layout.Row = 3;
+
 % Counterfactual control panel
 ctrlPanel = uipanel(main, ...
     "Title", "Counterfactual case  (set parameters, then press ▶ Run)", ...
     "BackgroundColor", [0.95 0.95 0.97], "FontWeight", "bold");
-ctrlPanel.Layout.Row = 3; ctrlPanel.Layout.Column = [1 2];
+ctrlPanel.Layout.Row = 4; ctrlPanel.Layout.Column = [1 2];
 ctrl = uigridlayout(ctrlPanel, [1, 3], ...
     "ColumnWidth", {'1x', '1x', '1x'}, ...
     "Padding", [10 6 10 6], "ColumnSpacing", 14);
@@ -104,7 +132,7 @@ ctrl = uigridlayout(ctrlPanel, [1, 3], ...
 
 % Playback control panel
 pbPanel = uipanel(main, "BackgroundColor", [0.96 0.96 0.98]);
-pbPanel.Layout.Row = 4; pbPanel.Layout.Column = [1 2];
+pbPanel.Layout.Row = 5; pbPanel.Layout.Column = [1 2];
 pb = uigridlayout(pbPanel, [2, 5], ...
     "RowHeight", {32, 50}, ...
     "ColumnWidth", {180, 90, 90, 110, '1x'}, ...
@@ -238,6 +266,7 @@ fig.CloseRequestFcn = @(~,~) cleanup();
 hdr.BackgroundColor = [0.10 0.20 0.40];
 hdr.Text = "  Idle  —  set counterfactual parameters, then press  ▶ Run Counterfactual";
 renderFrame();
+updateAnalysisPanels();
 start(tmr);
 
 % =========================================================================
@@ -297,6 +326,7 @@ start(tmr);
                 "ngt",      rs.ngt, "ndet", rs.ndet, "ntp", rs.ntp, ...
                 "mode",     "manual", "analysis", "");
             state.history(end + 1) = rec;
+            updateAnalysisPanels();
         end
 
         state.mode = "idle";
@@ -464,6 +494,7 @@ start(tmr);
         frameSld.Value = 1;
         frameLbl.Text  = sprintf("Frame: 1 / %d", Nt);
         renderFrame();
+        updateAnalysisPanels();
         hdr.BackgroundColor = [0.10 0.20 0.40];
         hdr.Text = "  Idle  —  set counterfactual parameters, then press  ▶ Run Counterfactual";
     end
@@ -623,6 +654,140 @@ start(tmr);
         title(ax2, sprintf("EO Camera   t=%.2fs   fog=%.0f%%  illum=%.0flx  noise=%.2f", ...
             t_vec(ii), fog, ill, noi));
     end
+
+    function updateAnalysisPanels()
+        % Update both the boundary scatter (C) and the XAI feature
+        % importance / dominant cause panel (B). Called after each
+        % run finalises, and once at startup.
+        if ~isvalid(fig), return; end
+        N = numel(state.history);
+
+        % --- Boundary scatter (C) ----------------------------------------
+        cla(ax_boundary);
+        hold(ax_boundary, "on");
+        grid(ax_boundary, "on");
+        if N == 0
+            title(ax_boundary, "Counterfactual boundary discovery  —  (no cases yet)");
+        else
+            fogs   = arrayfun(@(r) r.fog, state.history);
+            ills   = arrayfun(@(r) r.ill, state.history);
+            nois   = arrayfun(@(r) r.noi, state.history);
+            passed = arrayfun(@(r) r.passed, state.history);
+
+            % Search trajectory (thin grey line through visit order)
+            if N >= 2
+                plot3(ax_boundary, fogs, ills, nois, "-", ...
+                    "Color", [0.55 0.55 0.60], "LineWidth", 0.8);
+            end
+            % PASS points (green)
+            if any(passed)
+                scatter3(ax_boundary, fogs(passed), ills(passed), nois(passed), ...
+                    90, [0.10 0.65 0.20], "filled", "MarkerEdgeColor", "k");
+            end
+            % FAIL points (red)
+            if any(~passed)
+                scatter3(ax_boundary, fogs(~passed), ills(~passed), nois(~passed), ...
+                    90, [0.85 0.20 0.15], "filled", "MarkerEdgeColor", "k");
+            end
+            % Highlight latest case (yellow diamond outline)
+            scatter3(ax_boundary, fogs(end), ills(end), nois(end), ...
+                200, [0.95 0.85 0.10], "d", "LineWidth", 2.0);
+
+            title(ax_boundary, sprintf( ...
+                "Counterfactual boundary discovery  —  %d case%s tried", ...
+                N, repmat("s", 1, double(N ~= 1))));
+        end
+        xlabel(ax_boundary, "Fog (%)");
+        ylabel(ax_boundary, "Illumination (lx)");
+        zlabel(ax_boundary, "Noise");
+        xlim(ax_boundary, [0 100]);
+        ylim(ax_boundary, [0 15000]);
+        zlim(ax_boundary, [0 1]);
+        view(ax_boundary, 35, 25);
+
+        % --- XAI feature importance + dominant cause (B) -----------------
+        cla(ax_xai);
+        if N < 3
+            title(ax_xai, sprintf( ...
+                "Feature importance  —  need ≥ 3 cases  (currently %d)", N));
+            ax_xai.XTick = [];  ax_xai.YTick = [];
+            ax_xai.XLim = [0 1]; ax_xai.YLim = [0 1];
+        else
+            fogs = arrayfun(@(r) r.fog, state.history);
+            ills = arrayfun(@(r) r.ill, state.history);
+            nois = arrayfun(@(r) r.noi, state.history);
+            f1s  = arrayfun(@(r) r.f1,  state.history);
+            % Pearson correlation; sign tells direction (negative = harms detection)
+            corrs = [safeCorr(fogs, f1s), safeCorr(ills, f1s), safeCorr(nois, f1s)];
+            imp   = abs(corrs);
+            tot   = sum(imp);
+            if tot < 1e-6, imp = [0 0 0]; else, imp = imp / tot; end
+
+            % Color bars by direction: red = harms F1, blue = helps F1
+            cdata = zeros(3, 3);
+            for k = 1:3
+                if corrs(k) < 0
+                    cdata(k,:) = [0.85 0.25 0.20];
+                else
+                    cdata(k,:) = [0.20 0.50 0.85];
+                end
+            end
+            bar(ax_xai, imp, "FaceColor", "flat", "CData", cdata, ...
+                "EdgeColor", [0.20 0.20 0.25]);
+            ax_xai.XTick = 1:3;
+            ax_xai.XTickLabel = {"Fog", "Illum", "Noise"};
+            ax_xai.YLim = [0 max(0.05, max(imp) * 1.20)];
+            ylabel(ax_xai, "Normalized importance");
+            grid(ax_xai, "on");
+
+            % Annotate each bar with corr sign and value
+            for k = 1:3
+                arrow = "↓"; if corrs(k) >= 0, arrow = "↑"; end
+                text(ax_xai, k, imp(k) + 0.02, sprintf("%s%.2f", arrow, corrs(k)), ...
+                    "HorizontalAlignment", "center", ...
+                    "FontWeight", "bold", "FontSize", 9);
+            end
+            title(ax_xai, sprintf( ...
+                "Feature importance  (red = harms F1, blue = helps F1)  N=%d", N));
+        end
+
+        % --- Dominant cause line (B) -------------------------------------
+        if N == 0
+            lblDominant.Text = "  Run a case to start boundary discovery.";
+            lblDominant.FontColor = [0.30 0.30 0.35];
+        else
+            last = state.history(end);
+            if last.passed
+                lblDominant.Text = sprintf( ...
+                    "  ✓ Latest: PASS  (F1 = %.2f)", last.f1);
+                lblDominant.FontColor = [0.10 0.50 0.20];
+            else
+                % Find most recent PASS reference for deviation analysis
+                refIdx = find([state.history.passed], 1, "last");
+                if isempty(refIdx)
+                    lblDominant.Text = sprintf( ...
+                        "  ✗ Latest: FAIL  (F1 = %.2f)  —  no PASS reference yet", ...
+                        last.f1);
+                else
+                    refEnv = state.history(refIdx);
+                    devs   = [abs(last.fog - refEnv.fog) / 100, ...
+                              abs(last.ill - refEnv.ill) / 15000, ...
+                              abs(last.noi - refEnv.noi) / 1.0];
+                    [~, di] = max(devs);
+                    names = ["fog", "illumination", "noise"];
+                    lblDominant.Text = sprintf( ...
+                        "  ✗ Latest: FAIL (F1 = %.2f)  —  dominant cause: %s  (Δ = %.0f%%)", ...
+                        last.f1, names(di), devs(di) * 100);
+                end
+                lblDominant.FontColor = [0.55 0.10 0.15];
+            end
+        end
+
+        nPass = sum(arrayfun(@(r) r.passed, state.history));
+        nFail = N - nPass;
+        lblSummary.Text = sprintf("  Tries: %d   PASS: %d   FAIL: %d", N, nPass, nFail);
+    end
+
 
     function cleanup()
         cancelCooldown();
@@ -858,6 +1023,21 @@ out = struct( ...
     "fog", round(min(100,    e.fog + 30),   2), ...
     "ill", round(max(200,    e.ill * 0.50), 1), ...
     "noi", round(min(0.60,   e.noi + 0.20), 4));
+end
+
+
+function r = safeCorr(x, y)
+% Pearson correlation with NaN/zero-variance guards. Returns 0 when
+% either vector has zero variance (all identical samples) or fewer
+% than 2 points — keeps the XAI bar plot well-defined for small N.
+x = double(x(:)); y = double(y(:));
+if numel(x) < 2 || std(x) < 1e-9 || std(y) < 1e-9
+    r = 0; return;
+end
+mx = mean(x); my = mean(y);
+num = sum((x - mx) .* (y - my));
+den = sqrt(sum((x - mx).^2) * sum((y - my).^2));
+if den < 1e-12, r = 0; else, r = num / den; end
 end
 
 

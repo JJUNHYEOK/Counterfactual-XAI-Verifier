@@ -1,11 +1,11 @@
-"""SHAP-based parameter importance for the boundary-search loop.
+"""KernelSHAP-based parameter importance for the boundary-search loop.
 
-Trains a small XGBoost regressor on accumulated (env_params, mAP50) pairs
-and produces SHAP signals in the schema consumed by:
+Trains a small Ridge surrogate on accumulated (env_params, mAP50) pairs
+and produces SHAP signals via shap.KernelExplainer in the schema consumed by:
   * dspy_pipeline.signatures.UAVAdversarialScenario (xai_analysis input)
   * xai/counterfactual_boundary.Map50ProxyEvaluator (shap_signals payload)
 
-Why XGBoost+SHAP rather than gradient/perturbation:
+Why KernelSHAP rather than gradient/perturbation:
   - Captures non-monotone interactions (fog x noise) once enough samples exist
   - SHAP gives both global importance and a *signed* local contribution per
     feature, which the LLM uses to decide which knob to push for PASS->FAIL
@@ -13,7 +13,7 @@ Why XGBoost+SHAP rather than gradient/perturbation:
 
 The module degrades gracefully:
   - With <3 samples it returns a uniform-importance fallback (no model fit)
-  - If xgboost/shap are not installed it returns None (caller falls back to
+  - If shap/sklearn are not installed it returns None (caller falls back to
     the heuristic _infer_dominant_factors in run_dspy_adversarial.py)
 """
 
@@ -23,8 +23,8 @@ from dataclasses import dataclass
 
 try:
     import numpy as np
-    import xgboost as xgb
     import shap
+    from sklearn.linear_model import Ridge
     _SHAP_AVAILABLE = True
 except ImportError:
     _SHAP_AVAILABLE = False
@@ -62,14 +62,14 @@ def compute_shap_signals(
     history: list[dict],
     current_env: dict[str, float],
 ) -> ShapSignals | None:
-    """Fit XGBoost on (env -> mAP50) history and explain current_env.
+    """Fit a Ridge surrogate on (env -> mAP50) history and explain current_env via KernelSHAP.
 
     Args:
         history:     list of dicts each containing the FEATURES keys + 'map50'
         current_env: env params for which we want a local SHAP explanation
 
     Returns:
-        ShapSignals or None if SHAP/XGBoost unavailable.
+        ShapSignals or None if SHAP/sklearn unavailable.
     """
     if not _SHAP_AVAILABLE:
         return None
@@ -81,16 +81,9 @@ def compute_shap_signals(
     X = np.array([[float(r[k]) for k in FEATURES] for r in rows], dtype=float)
     y = np.array([float(r["map50"]) for r in rows], dtype=float)
 
-    # Tiny tree ensemble — cheap and robust for ~10-50 samples
-    model = xgb.XGBRegressor(
-        n_estimators=64,
-        max_depth=3,
-        learning_rate=0.1,
-        subsample=1.0,
-        reg_lambda=1.0,
-        random_state=0,
-        verbosity=0,
-    )
+    # Linear surrogate — stable for small samples (~10-50) and provides a
+    # well-defined predict() that KernelSHAP can perturb.
+    model = Ridge(alpha=1.0, random_state=0)
     model.fit(X, y)
 
     # In-sample R^2 (sanity check; we don't trust it for generalisation)
@@ -99,10 +92,12 @@ def compute_shap_signals(
     ss_tot = float(((y - y.mean()) ** 2).sum())
     r2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-12 else None
 
-    explainer  = shap.TreeExplainer(model)
-    shap_train = explainer.shap_values(X)            # (n, 3) — for global importance
+    # KernelExplainer: model-agnostic SHAP — needs a callable f(X) and a
+    # background sample. We use the training history itself as background.
+    explainer  = shap.KernelExplainer(model.predict, X)
+    shap_train = np.array(explainer.shap_values(X, silent=True))            # (n, 3)
     x_curr     = np.array([[float(current_env.get(k, 0.0)) for k in FEATURES]])
-    shap_curr  = explainer.shap_values(x_curr)[0]    # (3,) — local for current
+    shap_curr  = np.array(explainer.shap_values(x_curr, silent=True))[0]    # (3,)
 
     base_value = float(np.atleast_1d(explainer.expected_value)[0])
 
