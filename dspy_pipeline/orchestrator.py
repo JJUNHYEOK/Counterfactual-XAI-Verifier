@@ -311,26 +311,36 @@ def _llm_explore(session: Session, last: dict, shap_payload: dict | None):
 
 
 def _rule_push(env: dict) -> dict:
-    """Deterministic 'push harder' step (used when LLM fails)."""
+    """Deterministic 'push harder' step (aggressive variant — large jumps).
+
+    Each call makes a clearly visible adversarial change so the
+    counterfactual is meaningful, not a tiny perturbation.
+    """
     fog   = float(env.get("fog_density_percent", 30))
     illum = float(env.get("illumination_lux",    4000))
     noise = float(env.get("camera_noise_level",  0.1))
     return {
-        "fog_density_percent": round(min(100, fog + 18), 2),
-        "illumination_lux":    round(max(200, illum * 0.70), 1),
-        "camera_noise_level":  round(min(0.60, noise + 0.10), 4),
+        # +30 absolute fog points (was +18) — stronger weather attack
+        "fog_density_percent": round(min(100, fog + 30), 2),
+        # × 0.50 illum (was × 0.70) — halve illumination per step
+        "illumination_lux":    round(max(200, illum * 0.50), 1),
+        # +0.20 noise (was +0.10) — double the sensor degradation rate
+        "camera_noise_level":  round(min(0.60, noise + 0.20), 4),
     }
 
 
 def _rule_relax(env: dict) -> dict:
-    """Deterministic 'recover toward baseline' step."""
+    """Deterministic 'recover toward baseline' step (aggressive variant)."""
     fog   = float(env.get("fog_density_percent", 30))
     illum = float(env.get("illumination_lux",    4000))
     noise = float(env.get("camera_noise_level",  0.1))
     return {
-        "fog_density_percent": round(max(0, fog - 12), 2),
-        "illumination_lux":    round(min(20000, illum * 1.30), 1),
-        "camera_noise_level":  round(max(0, noise - 0.08), 4),
+        # -25 fog points (was -12)
+        "fog_density_percent": round(max(0, fog - 25), 2),
+        # × 1.80 illum (was × 1.30)
+        "illumination_lux":    round(min(20000, illum * 1.80), 1),
+        # -0.18 noise (was -0.08)
+        "camera_noise_level":  round(max(0, noise - 0.18), 4),
     }
 
 
@@ -339,9 +349,15 @@ def _rule_relax(env: dict) -> dict:
 # self-contained and the CLI script remains independently runnable)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _bisect_between(a: dict, b: dict) -> dict:
+def _bisect_between(a: dict, b: dict, weight: float = 0.65) -> dict:
+    """Weighted point between a and b. weight=0 gives a, weight=1 gives b.
+    Default 0.65 = 65% of the way from a → b, so each PUSH/RECOVER step
+    makes a clearly visible jump (was 0.5 = pure midpoint, too subtle for demo)."""
     keys = set(a) | set(b)
-    return {k: round((float(a.get(k, 0)) + float(b.get(k, 0))) / 2.0, 4) for k in keys}
+    return {
+        k: round((1.0 - weight) * float(a.get(k, 0)) + weight * float(b.get(k, 0)), 4)
+        for k in keys
+    }
 
 
 def _segment_width(a: dict, b: dict) -> dict:

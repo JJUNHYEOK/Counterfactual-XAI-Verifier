@@ -73,7 +73,23 @@ shading(ax3, "interp");
 colormap(ax3, terrain_colormap());
 hold(ax3, "on");
 
-% Intruders: distinct shapes per class (person = upright pillar, vehicle = box-like)
+% Scenery: non-target trees + rocks (for visual realism, NOT detection targets)
+try
+    SCENERY = evalin("base", "SCENERY_OBJECTS");
+catch
+    SCENERY = zeros(0, 5);
+end
+for k = 1:size(SCENERY, 1)
+    sx = SCENERY(k, 1); sy = SCENERY(k, 2); sz = SCENERY(k, 3);
+    sr = SCENERY(k, 4); st = SCENERY(k, 5);
+    if st == 1                                 % tree (dark green)
+        draw_scenery_tree(ax3, [sx, sy, sz], sr);
+    else                                       % rock (grey-brown, low)
+        draw_scenery_rock(ax3, [sx, sy, sz], sr);
+    end
+end
+
+% Intruders: distinct shapes per class (person = upright pillar+head, vehicle = wide cylinder)
 for k = 1:Nobs
     cls = obs_class(k);
     color = INTRUDER_COLOR(cls, :);
@@ -355,6 +371,35 @@ hh = max(2, min(b(4), h - y));
 box = [x, y, ww, hh];
 end
 
+function draw_scenery_tree(ax, base, r)
+% Background tree (dark green canopy + brown trunk). Smaller than intruders.
+trunkR = max(0.10, r * 0.25);
+trunkH = max(1.5, r * 1.8);
+canopyR = r;
+canopyH = max(2.5, r * 3.2);
+
+% Trunk
+[xc, yc, zc] = cylinder(trunkR, 8);
+zc = zc * trunkH; xc = xc + base(1); yc = yc + base(2); zc = zc + base(3);
+surf(ax, xc, yc, zc, "EdgeColor", "none", "FaceColor", [0.40 0.25 0.12]);
+
+% Canopy (sphere blob)
+[sx, sy, sz] = sphere(10);
+sx = sx * canopyR + base(1);
+sy = sy * canopyR + base(2);
+sz = sz * (canopyH * 0.5) + base(3) + trunkH;
+surf(ax, sx, sy, sz, "EdgeColor", "none", "FaceColor", [0.10 0.40 0.18], "FaceAlpha", 0.95);
+end
+
+function draw_scenery_rock(ax, base, r)
+% Background rock (low grey blob).
+[sx, sy, sz] = sphere(8);
+sx = sx * r + base(1);
+sy = sy * r + base(2);
+sz = sz * (r * 0.5) + base(3) + r * 0.3;
+surf(ax, sx, sy, sz, "EdgeColor", "none", "FaceColor", [0.50 0.45 0.40], "FaceAlpha", 0.95);
+end
+
 function draw_intruder(ax, base, r, h, cls, color)
 % cls = 1 → person (thin upright cylinder + head)
 % cls = 2 → vehicle (flat wide cylinder, ~2m radius × 1.8m height)
@@ -392,71 +437,11 @@ else
 end
 end
 
-function img = render_camera_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
-% Renders a synthetic camera image: sky, mountain skyline (from base
-% workspace TERRAIN_*), projected tree silhouettes, then applies
-% fog/illumination/noise. Returns HxWx3 in [0,1].
-
-W = img_size(1); H = img_size(2);
-fx = cam_intrin(1); fy = cam_intrin(2);
-cx = cam_intrin(3); cy = cam_intrin(4);
-pitch = cam_intrin(5) * pi/180;
-sp = sin(pitch); cp = cos(pitch);
-
-% --- Sky / ground gradient (horizon depends on pitch) ---
-% Camera pitched DOWN by 'pitch' rad: horizon moves UP in image
-% (smaller v). Far horizontal points project to v = cy - fy*tan(pitch).
-v_horizon = cy - fy * tan(pitch);
-v_horizon = max(8, min(H-8, v_horizon));
-
-img = zeros(H, W, 3);
-vv = (1:H).';
-
-sky_idx = 1:floor(v_horizon);
-if ~isempty(sky_idx)
-    a = vv(sky_idx) ./ max(1, v_horizon);
-    img(sky_idx, :, 1) = repmat(0.55 + 0.30*a, 1, W);
-    img(sky_idx, :, 2) = repmat(0.70 + 0.20*a, 1, W);
-    img(sky_idx, :, 3) = repmat(0.88 + 0.08*a, 1, W);
-end
-
-gnd_idx = ceil(v_horizon):H;
-if ~isempty(gnd_idx)
-    a = (vv(gnd_idx) - v_horizon) ./ max(1, H - v_horizon);
-    img(gnd_idx, :, 1) = repmat(0.32 - 0.18*a, 1, W);
-    img(gnd_idx, :, 2) = repmat(0.46 - 0.22*a, 1, W);
-    img(gnd_idx, :, 3) = repmat(0.20 - 0.10*a, 1, W);
-end
-
-% --- Mountain skyline (project terrain points, splat with depth fade) ---
-img = paint_terrain(img, uav, fx, fy, cx, cy, sp, cp, W, H);
-
-% --- Project + render trees, painter's algorithm (back to front) ---
-N = size(obs_xyz, 1);
-depth = nan(N, 1);
-proj  = zeros(N, 4);
-
-for k = 1:N
-    [bbox, dval] = project_cylinder(uav, obs_xyz(k,:), obs_rh(k,1), obs_rh(k,2), ...
-        cx, cy, fx, fy, sp, cp);
-    if isempty(bbox), continue; end
-    proj(k, :) = bbox;
-    depth(k) = dval;
-end
-
-[~, order] = sort(depth, "descend", "MissingPlacement", "first");
-for k = order(:).'
-    if isnan(depth(k)), continue; end
-    bbox = proj(k, :);
-    if all(bbox == 0), continue; end
-    img = paint_tree(img, bbox, depth(k), k);
-end
-
-% --- Weather effects ---
-img = apply_weather(img, fog, illum, noise);
-
-img = max(0, min(1, img));
-end
+% NOTE: the local render_camera_image was removed so the standalone
+% render_camera_image.m (top-down ground + class-aware intruders +
+% scenery + weather) is used by the visualizer. The orphan helpers
+% paint_terrain / project_cylinder / paint_tree / apply_weather below
+% are kept in place as legacy reference but are no longer called.
 
 function img = paint_terrain(img, uav, fx, fy, cx, cy, sp, cp, W, H)
 % Projects subsampled terrain grid points into the camera image and splats

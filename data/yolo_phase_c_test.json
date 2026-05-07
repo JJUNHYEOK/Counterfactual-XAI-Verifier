@@ -1,0 +1,119 @@
+{
+  "n_images": 8,
+  "weights": "yolov8s.pt",
+  "conf": 0.1,
+  "frames": [
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_001.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 927.0
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_001_yolo.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 34.6
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_002.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 25.3
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_002_yolo.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 28.3
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_003.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 27.6
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_003_yolo.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 28.4
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_004.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 24.5
+    },
+    {
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\sim_step_004_yolo.png",
+      "image_shape": [
+        711,
+        2175,
+        3
+      ],
+      "n_detections": 0,
+      "detections": [],
+      "inference_ms": 30.0
+    }
+  ],
+  "evaluation": {
+    "all_passed": false,
+    "violated_count": 1,
+    "req1": {
+      "id": "REQ-1",
+      "passed": false,
+      "value": 0.0,
+      "threshold": 0.5
+    },
+    "req3": {
+      "id": "REQ-3",
+      "passed": true,
+      "value": 0,
+      "threshold": 3
+    },
+    "stats": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "total_gt": 0,
+      "precision": 0.0,
+      "recall": 0.0
+    }
+  }
+}

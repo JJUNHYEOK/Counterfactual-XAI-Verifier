@@ -244,6 +244,19 @@ else:
     if sim_mode == "engine":
         st.caption("💡 MATLAB 창에서 실시간 애니메이션이 함께 재생됩니다.")
 
+    # Live metrics row (under the image)
+    m1, m2, m3, m4, m5 = st.columns(5)
+    m1.metric("mAP50",            f"{last['map50']:.3f}",
+              delta=f"{last['map50'] - 0.50:+.3f} vs th",
+              delta_color="normal" if last['all_passed'] else "inverse")
+    m2.metric("연속 미탐 (frame)", f"{last['worst_run']}",
+              delta=f"≤ 3 임계", delta_color="off")
+    m3.metric("위반 REQ 수",        f"{last['violated_count']} / 2",
+              delta=("PASS" if last['all_passed'] else "FAIL"),
+              delta_color="normal" if last['all_passed'] else "inverse")
+    m4.metric("실행 시간",          f"{last.get('elapsed_s', 0):.1f}s")
+    m5.metric("결정 모드",          last.get('decision_mode', 'seed'))
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 2 — Scenario comparison

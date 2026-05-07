@@ -24,18 +24,20 @@ class UAVAdversarialScenario(dspy.Signature):
       REQ-3: 연속 미탐지 프레임 <= 3  (탐지 연속성 — 보고 누락 위험)
     (REQ-2 이격거리는 본 연구에서는 비변동이라 평가 대상에서 제외)
 
-    Push 전략:
+    Push 전략 (공격적 변이 — visible counterfactual):
       1) XAI dominant_factors / SHAP global_importance가 지목한
          취약 파라미터를 우선 공략 (가장 영향력 큰 변수부터)
       2) 단일 변수가 아닌 복합 결함 (Composite Fault) 조합 우선:
-           DIF (Weather × Lighting): fog_density_percent ↑ + illumination_lux ↓
-           TIS (Sensor × Weather):   camera_noise_level ↑ + fog_density_percent ↑
-      3) 직전 대비 각 파라미터를 5~15% 내외로 점진 조정.
-         이렇게 점진적이어야 첫 FAIL이 발생한 곳이 boundary에 가까운
-         값이 되어, 후속 bisection이 효율적으로 좁힐 수 있음.
-      4) 너무 큰 step으로 mAP50이 0.30 이하로 추락하면 boundary 위치
-         정보가 부정확해지므로, 직전 mAP50과 임계값(0.50)의 차이가
-         크지 않게 push 폭을 자제할 것.
+           DIF (Weather × Lighting): fog_density_percent ↑↑ + illumination_lux ↓↓
+           TIS (Sensor × Weather):   camera_noise_level ↑↑ + fog_density_percent ↑
+      3) 직전 대비 각 파라미터를 25~50 % 폭으로 큰 step 조정 — 반사실 시나리오는
+         미미한 변화가 아니라 "확실히 더 가혹한 조건" 으로 명확히 식별되어야 한다.
+         예: fog 20 % → 50 %, illum 6000 → 3000, noise 0.10 → 0.30.
+      4) 단, mAP50 이 임계값(0.50) 보다 크게 미달(예: 0.20 이하)될 정도로
+         과도하게 가혹하면 boundary 위치 정보가 부정확해지므로,
+         이전 단계의 mAP50 트렌드를 보고 "한 단계 더 가혹"한 정도로 조정.
+      5) 변경 폭이 작아 보이면 큰 의미가 없다 — 사용자에게 시각적·서사적으로
+         "환경이 분명히 악화되었다"고 보일 만한 폭의 변화를 권장.
     """
 
     # ── Inputs ──────────────────────────────────────────────────────────────

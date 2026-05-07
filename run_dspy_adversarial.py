@@ -158,11 +158,18 @@ def _build_xai_signals(
     return out
 
 
-def _bisect_between(env_a: dict[str, float], env_b: dict[str, float]) -> dict[str, float]:
-    """Midpoint of two environments — used to narrow PASS/FAIL boundary."""
+def _bisect_between(
+    env_a: dict[str, float],
+    env_b: dict[str, float],
+    weight: float = 0.65,
+) -> dict[str, float]:
+    """Weighted point between env_a and env_b. weight=0 returns env_a, 1 returns env_b.
+    Default 0.65 = aggressive bisection (65 % of the way), so each PUSH/RECOVER
+    step makes a clearly visible jump (was 0.5 = pure midpoint, too subtle)."""
     keys = set(env_a) | set(env_b)
     return {
-        k: round((float(env_a.get(k, 0.0)) + float(env_b.get(k, 0.0))) / 2.0, 4)
+        k: round((1.0 - weight) * float(env_a.get(k, 0.0))
+                 + weight * float(env_b.get(k, 0.0)), 4)
         for k in keys
     }
 
@@ -199,18 +206,19 @@ def _build_perf_signals(sim_result) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _rule_mutation(env: dict[str, float], last_passed: bool) -> dict[str, float]:
+    """Aggressive variant — visible counterfactual jumps (was 18/0.7/0.1)."""
     fog   = float(env.get("fog_density_percent", 30))
     illum = float(env.get("illumination_lux",    4000))
     noise = float(env.get("camera_noise_level",  0.1))
 
-    if last_passed:                  # worsen conditions
-        fog   = min(100.0, fog   + 18.0)
-        illum = max(200.0, illum * 0.70)
-        noise = min(0.60,  noise + 0.10)
-    else:                            # recover slightly (boundary search)
-        fog   = max(0.0,     fog   -  9.0)
-        illum = min(20000.0, illum *  1.25)
-        noise = max(0.0,     noise -  0.05)
+    if last_passed:                  # PUSH — worsen conditions hard
+        fog   = min(100.0, fog   + 30.0)
+        illum = max(200.0, illum * 0.50)
+        noise = min(0.60,  noise + 0.20)
+    else:                            # RECOVER — relax aggressively too
+        fog   = max(0.0,     fog   - 25.0)
+        illum = min(20000.0, illum *  1.80)
+        noise = max(0.0,     noise -  0.18)
 
     return {
         "fog_density_percent": round(fog,   2),

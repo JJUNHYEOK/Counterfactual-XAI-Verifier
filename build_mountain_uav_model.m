@@ -193,6 +193,10 @@ assignin("base", "OBSTACLES_XYZ",   OBSTACLES_XYZ);
 assignin("base", "OBSTACLES_RH",    OBSTACLES_RH);
 assignin("base", "OBSTACLES_CLASS", intruderClass);
 
+% --- Scenery (non-target background) ---
+SCENERY = make_scenery_for_build(Xg, Yg, Zg, intruderXY);
+assignin("base", "SCENERY_OBJECTS", SCENERY);
+
 % --- UAV initial state and constant velocity ---
 % Surveillance overflight at moderate altitude (~45 m AGL).
 uavX0 = -80; uavY0 = 0;
@@ -208,19 +212,23 @@ assignin("base", "IMG_SIZE",   [640, 360]);
 end
 
 % =========================================================================
-% Mountain terrain (Gaussian mixture)
+% Mountain terrain (Gaussian mixture + ridges + drainage)
 % =========================================================================
 function [Xg, Yg, Zg] = mountain_terrain_grid(extent, step)
 xs = -extent/2 : step : extent/2;
 ys = -extent/2 : step : extent/2;
 [Xg, Yg] = meshgrid(xs, ys);
 
+% Larger peak set for a more realistic ridgeline (8 peaks, varied scales)
 peaks = [
-       0,    0,  30,  35;
+       0,    0,  30,  35;     % central main peak
       55,   30,  22,  28;
      -50,   25,  18,  30;
       35,  -45,  20,  25;
-     -30,  -40,  15,  22
+     -30,  -40,  15,  22;
+      80,    5,  16,  22;     % small ridge to the east
+     -75,  -10,  14,  20;     % small ridge to the west
+      15,   60,  19,  26      % northern subpeak
 ];
 
 Zg = zeros(size(Xg));
@@ -228,8 +236,42 @@ for k = 1:size(peaks,1)
     cx = peaks(k,1); cy = peaks(k,2); h = peaks(k,3); s = peaks(k,4);
     Zg = Zg + h * exp(-((Xg-cx).^2 + (Yg-cy).^2) / (2*s^2));
 end
-Zg = Zg + 0.6 * sin(0.10*Xg) .* cos(0.12*Yg);
+
+% Ridge ripples + valley drainage (sinusoidal + a soft trough along y=-5)
+Zg = Zg + 0.8 * sin(0.10*Xg) .* cos(0.12*Yg);
+Zg = Zg + 0.4 * sin(0.05*Xg + 0.07*Yg);
+
+% A shallow valley/path running roughly E-W around y=0 (where intruders move)
+valley = -3.0 * exp(-((Yg + 1).^2) / 50);
+Zg = Zg + valley;
+
 Zg = max(Zg, 0);
+end
+
+
+% =========================================================================
+% Scenery generator (mirror of init_uav_workspace.make_scenery_)
+% =========================================================================
+function S = make_scenery_for_build(Xg, Yg, Zg, intruderXY)
+S = zeros(0, 5);
+M = 80;
+for k = 1:M
+    seed  = mod(k * 12.9898 + 78.233, 1.0);
+    seed2 = mod(k * 39.346  + 11.135, 1.0);
+    seed3 = mod(k * 67.123  + 53.842, 1.0);
+    seed4 = mod(k * 29.478  + 91.231, 1.0);
+    x = -90 + 180 * seed;
+    y = -90 + 180 * seed2;
+    z = interp2(Xg, Yg, Zg, x, y, "linear", 0);
+    d = min(sqrt((intruderXY(:,1) - x).^2 + (intruderXY(:,2) - y).^2));
+    if d < 5.0, continue; end
+    if seed3 < 0.7
+        type = 1;  r = 0.6 + 0.9 * seed4;       % tree
+    else
+        type = 2;  r = 0.7 + 1.3 * seed4;       % rock
+    end
+    S(end+1, :) = [x, y, z, r, type]; %#ok<AGROW>
+end
 end
 
 % =========================================================================

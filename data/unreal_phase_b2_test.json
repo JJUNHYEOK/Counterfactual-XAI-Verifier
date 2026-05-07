@@ -1,0 +1,11 @@
+[
+  {
+    "step": 1,
+    "fp_png": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\unreal_fp_001.png",
+    "tp_png": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\assets\\unreal_tp_001.png",
+    "n_frames": 101,
+    "n_persons": 0,
+    "n_vehicles": 0,
+    "elapsed_s": 64.46544070006348
+  }
+]

@@ -66,6 +66,14 @@ assignin('base', 'OBSTACLES_XYZ',   OBS_XYZ);
 assignin('base', 'OBSTACLES_RH',    OBS_RH);
 assignin('base', 'OBSTACLES_CLASS', intruderClass);
 
+% ── Scenery: non-target background (trees + rocks) ───────────────────────
+% These objects appear in the 3D scene and the camera image to give the
+% UAV operator a realistic mountain environment, but they are NOT in
+% OBSTACLES_XYZ so the detector / requirements eval ignores them.
+% Deterministic generation so every iteration sees the same landscape.
+SCENERY_OBJECTS = make_scenery_(Xg, Yg, Zg);
+assignin('base', 'SCENERY_OBJECTS', SCENERY_OBJECTS);
+
 % ── UAV initial state — surveillance overflight ──────────────────────────
 % +15 m above the highest peak ⇒ ≈ 45 m AGL over the valley.
 % Lower altitude than first attempt; gives larger projected bboxes
@@ -87,7 +95,47 @@ end
 % =========================================================================
 % Local helper: mountain terrain (must match build_mountain_uav_model.m)
 % =========================================================================
+function S = make_scenery_(Xg, Yg, Zg)
+% Generates ~80 procedural background objects on the mountainside:
+%   type 1 = tree   (radius 0.6~1.5 m, taller)
+%   type 2 = rock   (radius 0.7~2.0 m, low/flat)
+% Output: Mx5 array [x, y, z, radius, type]
+% Avoids placing scenery within 5 m of any intruder so they don't collide
+% visually with the detection targets.
+intruderXY = [-35,4; -8,-6; 12,9; 28,-8; 48,6];
+
+S = zeros(0, 5);
+% Deterministic pseudo-random pattern (no rng for codegen safety)
+M = 80;
+for k = 1:M
+    seed = mod(k * 12.9898 + 78.233, 1.0);
+    seed2 = mod(k * 39.346 + 11.135, 1.0);
+    seed3 = mod(k * 67.123 + 53.842, 1.0);
+    seed4 = mod(k * 29.478 + 91.231, 1.0);
+
+    x = -90 + 180 * seed;
+    y = -90 + 180 * seed2;
+    z = interp2(Xg, Yg, Zg, x, y, 'linear', 0);
+
+    % Skip if too close to any intruder
+    d = min(sqrt((intruderXY(:,1)-x).^2 + (intruderXY(:,2)-y).^2));
+    if d < 5.0, continue; end
+
+    if seed3 < 0.7
+        type = 1;                 % tree
+        r    = 0.6 + 0.9 * seed4;
+    else
+        type = 2;                 % rock
+        r    = 0.7 + 1.3 * seed4;
+    end
+    S(end+1, :) = [x, y, z, r, type]; %#ok<AGROW>
+end
+end
+
+
 function [Xg, Yg, Zg] = terrain_grid_()
+% 8-peak Gaussian mixture + ridges + a shallow E-W valley.
+% MUST match build_mountain_uav_model.mountain_terrain_grid().
 extent = 200;  step = 2.0;
 xs = -extent/2 : step : extent/2;
 ys = -extent/2 : step : extent/2;
@@ -98,7 +146,10 @@ peaks = [
       55,   30,  22,  28;
      -50,   25,  18,  30;
       35,  -45,  20,  25;
-     -30,  -40,  15,  22
+     -30,  -40,  15,  22;
+      80,    5,  16,  22;
+     -75,  -10,  14,  20;
+      15,   60,  19,  26
 ];
 
 Zg = zeros(size(Xg));
@@ -106,6 +157,13 @@ for k = 1:size(peaks,1)
     cx = peaks(k,1); cy = peaks(k,2); h = peaks(k,3); s = peaks(k,4);
     Zg = Zg + h * exp(-((Xg-cx).^2 + (Yg-cy).^2) / (2*s^2));
 end
-Zg = Zg + 0.6 * sin(0.10*Xg) .* cos(0.12*Yg);
+
+Zg = Zg + 0.8 * sin(0.10*Xg) .* cos(0.12*Yg);
+Zg = Zg + 0.4 * sin(0.05*Xg + 0.07*Yg);
+
+% Shallow E-W valley around y=0 where intruders move
+valley = -3.0 * exp(-((Yg + 1).^2) / 50);
+Zg = Zg + valley;
+
 Zg = max(Zg, 0);
 end
