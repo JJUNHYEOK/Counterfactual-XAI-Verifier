@@ -1,0 +1,38 @@
+[
+  {
+    "fog": 50.0,
+    "ill": 6000.0,
+    "noi": 0.02,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 2,
+    "mode": "llm_push",
+    "saved_at": "2026-05-12T17:08:14+09:00"
+  },
+  {
+    "fog": 75.0,
+    "ill": 3000.0,
+    "noi": 0.02,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 3,
+    "mode": "llm_recover",
+    "saved_at": "2026-05-12T17:09:04+09:00"
+  },
+  {
+    "fog": 100.0,
+    "ill": 1500.0,
+    "noi": 0.02,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 4,
+    "mode": "llm_recover",
+    "saved_at": "2026-05-12T17:09:49+09:00"
+  }
+]
