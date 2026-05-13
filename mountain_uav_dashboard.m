@@ -1790,33 +1790,55 @@ start(tmr);
     end
 
     function onReplayClicked()
-        % Load the selected test_suite_*.json and start sequential replay.
-        if state.replayActive
+        fprintf("[Replay] onReplayClicked: button pressed\n");
+        % Pre-flight checks. Recovery: if state.replayActive is true but no
+        % suite is loaded (e.g. a previous click errored mid-setup), we
+        % reset to allow retry instead of permanently blocking.
+        if state.replayActive && ~isempty(state.replaySuite)
             lblReplayStatus.Text = "  이미 replay 진행 중. ⏹ Replay 중단 후 다시 시도하세요.";
+            fprintf("[Replay]   already active — abort\n");
             return;
+        end
+        if state.replayActive
+            fprintf("[Replay]   replayActive stuck on True but suite empty — auto-reset\n");
+            state.replayActive = false;
         end
         if state.mode == "running"
             lblReplayStatus.Text = "  진행 중인 case 완료 후 replay를 시도하세요.";
+            fprintf("[Replay]   mode=running — abort\n");
             return;
         end
+        if state.mode == "cooldown"
+            % Auto-loop is mid-cooldown; cancel it so replay can take over
+            fprintf("[Replay]   mode=cooldown — cancelling auto cooldown\n");
+            cancelCooldown();
+            state.mode = "idle";
+        end
         selPath = string(replayDropdown.Value);
+        fprintf("[Replay]   selPath='%s' (len=%d)\n", selPath, strlength(selPath));
         if strlength(selPath) == 0
-            lblReplayStatus.Text = "  스위트가 선택되지 않았습니다.";
+            lblReplayStatus.Text = "  스위트가 선택되지 않았습니다. 🔄 새로고침 후 드롭다운에서 선택하세요.";
             return;
         end
         try
+            fprintf("[Replay]   .. step 1: calling py.dashboard_step.load_test_suite\n");
             pyPayload = py.dashboard_step.load_test_suite(selPath);
+            fprintf("[Replay]   .. step 2: converting py payload to MATLAB struct\n");
             payload   = struct(pyPayload);
             if isfield(payload, "error")
-                lblReplayStatus.Text = sprintf("  로드 실패: %s", string(char(payload.error)));
+                msg = string(char(payload.error));
+                lblReplayStatus.Text = sprintf("  로드 실패: %s", msg);
+                fprintf("[Replay]   .. payload error: %s\n", msg);
                 return;
             end
+            fprintf("[Replay]   .. step 3: extracting cases list\n");
             cases = cell(payload.cases);
+            fprintf("[Replay]   .. step 4: %d case(s) found in suite\n", numel(cases));
             if isempty(cases)
                 lblReplayStatus.Text = "  스위트에 case가 없습니다.";
                 return;
             end
-            % Cache cases as MATLAB struct array
+            fprintf("[Replay]   .. step 5: converting py.dict cases to MATLAB struct\n");
             caseStructs = cell(1, numel(cases));
             for k = 1:numel(cases)
                 caseStructs{k} = struct(cases{k});
@@ -1825,8 +1847,10 @@ start(tmr);
             state.replayIdx     = 0;
             state.replayResults = {};
             state.replayActive  = true;
+            fprintf("[Replay]   .. step 6: state.replayActive=true, suite cached\n");
             % Disable auto-loop during replay (they conflict)
             if autoToggle.Value
+                fprintf("[Replay]   .. step 7: disabling auto-loop\n");
                 autoToggle.Value = false;
             end
             % UI lock
@@ -1835,11 +1859,24 @@ start(tmr);
             btnRefreshSuites.Enable = "off";
             replayDropdown.Enable = "off";
             % Show banner in the test-cases panel
-            lblTestCases.Value = sprintf("📂 Replay 시작 (%d cases)...", numel(cases));
+            lblTestCases.Value = sprintf("[Replay] 시작 (%d cases) ...", numel(cases));
+            fprintf("[Replay]   .. step 8: calling advanceReplay() for case 1\n");
             advanceReplay();
         catch ME
             lblReplayStatus.Text = sprintf("  로드 실패: %s", ME.message);
+            fprintf("[Replay] !!! ERROR:\n");
+            fprintf("        identifier: %s\n", ME.identifier);
+            fprintf("        message: %s\n", ME.message);
+            for s = 1:numel(ME.stack)
+                fprintf("        at %s (line %d)\n", ME.stack(s).name, ME.stack(s).line);
+            end
+            % Reset so user can retry
             state.replayActive = false;
+            state.replaySuite  = [];
+            btnReplay.Enable        = "on";
+            btnReplayStop.Enable    = "off";
+            btnRefreshSuites.Enable = "on";
+            replayDropdown.Enable   = "on";
         end
     end
 
@@ -1857,33 +1894,62 @@ start(tmr);
     end
 
     function advanceReplay()
-        % Apply the next saved case's env to the hidden sliders and trigger
-        % a single sim run. After the run finalises, finalizeRun's replay
-        % hook calls back here for the next case.
-        if ~state.replayActive, return; end
-        if state.replayIdx >= numel(state.replaySuite)
-            finishReplay();
-            return;
+        fprintf("[Replay] advanceReplay called: idx=%d, total=%d, active=%d\n", ...
+            state.replayIdx, numel(state.replaySuite), logical(state.replayActive));
+        try
+            if ~state.replayActive
+                fprintf("[Replay]   replayActive=false, abort advance\n");
+                return;
+            end
+            if state.replayIdx >= numel(state.replaySuite)
+                fprintf("[Replay]   all cases done, calling finishReplay\n");
+                finishReplay();
+                return;
+            end
+            state.replayIdx = state.replayIdx + 1;
+            c = state.replaySuite{state.replayIdx};
+            env = struct( ...
+                "fog", double(c.fog), ...
+                "ill", double(c.ill), ...
+                "noi", double(c.noi));
+            fprintf("[Replay]   case %d: fog=%.1f ill=%.0f noi=%.2f\n", ...
+                state.replayIdx, env.fog, env.ill, env.noi);
+            applyEnvToSliders(env);
+            % Reset playback head BEFORE renderFrame — otherwise frameIdx is
+            % still at Nt+1 from the previous case's finalizeRun, and
+            % renderFrame indexes uav_xyz / gtBB out of bounds. (Matches
+            % what scheduleNextAutoRun does for auto-loop.)
+            state.frameIdx = 1;
+            frameSld.Value = 1;
+            frameLbl.Text  = sprintf("Frame: 1 / %d", Nt);
+            % Provenance for the upcoming history record
+            labelStr = "";
+            if isfield(c, "label"), labelStr = string(char(c.label)); end
+            state.nextMode     = sprintf("replay_%d_of_%d", ...
+                state.replayIdx, numel(state.replaySuite));
+            state.nextAnalysis = char(sprintf("Replay: %s", labelStr));
+            lblReplayStatus.Text = sprintf( ...
+                "  Replay %d/%d - %s  (fog=%.0f%%, illum=%.0flx, noise=%.2f)", ...
+                state.replayIdx, numel(state.replaySuite), labelStr, ...
+                env.fog, env.ill, env.noi);
+            renderFrame();
+            fprintf("[Replay]   .. calling startRun()\n");
+            startRun();
+            fprintf("[Replay]   .. startRun() returned (sim now running)\n");
+        catch ME
+            fprintf("[Replay] !!! advanceReplay ERROR:\n");
+            fprintf("        identifier: %s\n", ME.identifier);
+            fprintf("        message: %s\n", ME.message);
+            for s = 1:numel(ME.stack)
+                fprintf("        at %s (line %d)\n", ME.stack(s).name, ME.stack(s).line);
+            end
+            state.replayActive = false;
+            btnReplay.Enable        = "on";
+            btnReplayStop.Enable    = "off";
+            btnRefreshSuites.Enable = "on";
+            replayDropdown.Enable   = "on";
+            lblReplayStatus.Text = sprintf("  Replay 오류로 중단 (콘솔 확인): %s", ME.message);
         end
-        state.replayIdx = state.replayIdx + 1;
-        c = state.replaySuite{state.replayIdx};
-        env = struct( ...
-            "fog", double(c.fog), ...
-            "ill", double(c.ill), ...
-            "noi", double(c.noi));
-        applyEnvToSliders(env);
-        % Provenance for the upcoming history record
-        labelStr = "";
-        if isfield(c, "label"), labelStr = string(char(c.label)); end
-        state.nextMode     = sprintf("replay_%d_of_%d", ...
-            state.replayIdx, numel(state.replaySuite));
-        state.nextAnalysis = char(sprintf("Replay: %s", labelStr));
-        lblReplayStatus.Text = sprintf( ...
-            "  ▶ Replay %d/%d — %s  (fog=%.0f%%, illum=%.0flx, noise=%.2f)", ...
-            state.replayIdx, numel(state.replaySuite), labelStr, ...
-            env.fog, env.ill, env.noi);
-        renderFrame();
-        startRun();
     end
 
     function recordReplayResult()
