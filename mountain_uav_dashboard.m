@@ -47,8 +47,20 @@ try
         "ngt", 0, "ndet", 0, "ntp", 0)));
     pyMod.summarize_mission("[]");
     pyMod.save_edge_case(jsonencode(struct("verdict", "PASS")));
+    pyMod.parse_requirement_to_env("baseline");
+    % NOTE: generate_normalized_test_cases is NOT smoke-tested here because
+    % its side-effect (writing test_suite_<ts>.json to disk) would pollute
+    % data/test_suites/ on every dashboard launch. The function is tested
+    % implicitly when the user clicks 🧪 Generate.
+    pyMod.list_test_suites();
+    pyMod.compare_replay_result( ...
+        py.dict(struct("expected_verdict", "PASS", "expected_metric", 0.8, ...
+                       "metric_min", 0.6, "metric_max", 1.0, ...
+                       "acceptable_verdicts", {{ "PASS" }})), ...
+        "PASS", 0.8);
     fprintf("[DASHBOARD] dashboard_step module loaded OK " + ...
-            "(narrate_edge_case / summarize_mission / save_edge_case ready)\n");
+            "(narrate / summarize / save_edge / parse_NL / gen_tests / " + ...
+            "list_suites / compare_replay ready)\n");
 catch ME
     fprintf("[DASHBOARD] **Python bootstrap FAILED** — LLM features disabled.\n");
     fprintf("    Reason: %s\n", ME.message);
@@ -114,12 +126,14 @@ INTRUDER_COLOR = [0.20 0.50 0.95;
 % Build UI
 % =========================================================================
 fig = uifigure("Name", "Mountain UAV — Counterfactual XAI Dashboard", ...
-    "Position", [60 20 1500 1160], "Color", [0.97 0.97 0.99]);
+    "Position", [60 20 1500 1320], "Color", [0.97 0.97 0.99]);
 
-% Top mission/business-goal header removed per user request — mission
-% metadata is still loaded internally for LLM narration, just not shown.
-main = uigridlayout(fig, [5, 2], ...
-    "RowHeight",   {40, '1x', 360, 130, 100}, ...
+% Layout: 6 rows. Replay panel was relocated into ctrlPanel's right column
+% per user request — its dedicated row 5 was removed and the natural-
+% language input section was commented out, leaving preset + replay
+% side-by-side for tighter use of vertical space.
+main = uigridlayout(fig, [6, 2], ...
+    "RowHeight",   {40, '1x', 360, 140, 150, 100}, ...
     "ColumnWidth", {'1x', '1x'}, ...
     "RowSpacing", 6, "ColumnSpacing", 8, ...
     "Padding", [10 10 10 10]);
@@ -149,18 +163,30 @@ ax_boundary.Layout.Row = 4; ax_boundary.Layout.Column = 1;
 title(ax_boundary, "Counterfactual boundary discovery  —  PASS (green) / FAIL (red)");
 %}
 
-% Operations-log panel — left half of row 3.
-xaiPanel = uipanel(main, ...
-    "Title", "Operations log  —  edge-case narrative + case history", ...
-    "BackgroundColor", [0.96 0.96 0.99], "FontWeight", "bold");
-xaiPanel.Layout.Row = 3; xaiPanel.Layout.Column = 1;
+% =========================================================================
+% Row 3 — System deliverable: 정규화된 테스트 케이스 (left) + LLM 임무 요약 (right).
+% Per-run LLM narrative was removed from the UI; the per-run text is now
+% saved silently to disk (see autoSaveSession in finalizeRun). The previous
+% Operations-log tab (narrative + history + lblDominant/lblSummary) is fully
+% replaced by the test-cases panel which is the primary user-facing output.
+% =========================================================================
 
-% LLM 임무 종합 요약 — right half of row 3, sibling of the log section.
-% Per user request the summary lives next to the log instead of inside it,
-% so the operator sees both panels at a glance without tab-switching or
-% scrolling. Updated by onSummaryClicked (button lives in playback panel).
+% LEFT — 정규화된 테스트 케이스 (the deliverable)
+testCasesPanel = uipanel(main, ...
+    "Title", "🧪 정규화된 테스트 케이스 (옵티마이저 결과 · 1~10건)", ...
+    "BackgroundColor", [0.96 1.00 0.96], "FontWeight", "bold");
+testCasesPanel.Layout.Row = 3; testCasesPanel.Layout.Column = 1;
+testCasesInner = uigridlayout(testCasesPanel, [1, 1], "Padding", [8 6 8 6]);
+lblTestCases = uitextarea(testCasesInner, ...
+    "Value",      "  시뮬레이션을 실행한 뒤 '🧪 정규화된 테스트 케이스 생성' 버튼을 눌러 1~10건의 케이스를 산출하세요.", ...
+    "Editable",   "off", ...
+    "FontSize",   12, ...
+    "FontName",   "Malgun Gothic", ...
+    "BackgroundColor", [0.96 1.00 0.96]);
+
+% RIGHT — LLM 임무 종합 요약 (kept, supporting context)
 mainSummaryPanel = uipanel(main, ...
-    "Title", "LLM 임무 종합 요약 (전체 case 누적 분석)", ...
+    "Title", "📋 LLM 임무 종합 요약 (보조 · 전체 case 누적 분석)", ...
     "BackgroundColor", [0.94 0.96 1.00], "FontWeight", "bold");
 mainSummaryPanel.Layout.Row = 3; mainSummaryPanel.Layout.Column = 2;
 mainSummaryInner = uigridlayout(mainSummaryPanel, [1, 1], "Padding", [8 6 8 6]);
@@ -171,114 +197,172 @@ lblSummaryLLM = uitextarea(mainSummaryInner, ...
     "FontName",   "Malgun Gothic", ...
     "BackgroundColor", [0.94 0.96 1.00]);
 
-xaiOuter = uigridlayout(xaiPanel, [2, 1], ...
-    "RowHeight", {'1x', 56}, ...
-    "Padding", [4 4 4 4], "RowSpacing", 2);
-
-xaiTabs = uitabgroup(xaiOuter);
-xaiTabs.Layout.Row = 1;
-
 %{
-% --- DISABLED per user request: mAP@0.5 trend tab ---
-tab_trend  = uitab(xaiTabs, "Title", "mAP@0.5 trend");
-trendInner = uigridlayout(tab_trend, [1, 1], "Padding", [4 4 4 4]);
-ax_trend   = uiaxes(trendInner);
-title(ax_trend, "Run cases to populate mAP@0.5 trend");
-
-% --- DISABLED per user request: feature importance tab ---
-tab_xai  = uitab(xaiTabs, "Title", "Feature importance");
-xaiInner = uigridlayout(tab_xai, [1, 1], "Padding", [4 4 4 4]);
-ax_xai   = uiaxes(xaiInner);
-title(ax_xai, "Run cases to populate feature importance");
-%}
-
-% Operations log: latest narrative on top, case history below. LLM summary
-% lives in its own top-level panel next to this one (see mainSummaryPanel
-% in main grid row 3, col 2 — adjacent to the log section).
+% =========================================================================
+% DISABLED per user request: per-run LLM narrative ("case별 운용 보고"),
+% Operations-log tab, case-history table, dominant-cause / verdict-count
+% labels. Detailed per-run narratives are still generated server-side and
+% persisted via autoSaveSession; they're just not shown in the UI anymore.
+% The system's user-facing deliverable is now the normalized test cases
+% above. To restore, delete this %{...%} wrapper AND uncomment update calls.
+% =========================================================================
+xaiPanel = uipanel(main, ...
+    "Title", "Operations log  —  edge-case narrative + case history", ...
+    "BackgroundColor", [0.96 0.96 0.99], "FontWeight", "bold");
+xaiPanel.Layout.Row = 3; xaiPanel.Layout.Column = 1;
+xaiOuter = uigridlayout(xaiPanel, [2, 1], ...
+    "RowHeight", {'1x', 56}, "Padding", [4 4 4 4], "RowSpacing", 2);
+xaiTabs = uitabgroup(xaiOuter);  xaiTabs.Layout.Row = 1;
 tab_ops  = uitab(xaiTabs, "Title", "Operations log");
-opsInner = uigridlayout(tab_ops, [2, 1], ...
-    "RowHeight", {'1x', 165}, ...
+opsInner = uigridlayout(tab_ops, [2, 1], "RowHeight", {'1x', 165}, ...
     "Padding", [6 6 6 6], "RowSpacing", 6);
-
-% --- Latest edge-case narrative (per-run report) -------------------------
-narrPanel = uipanel(opsInner, ...
-    "Title", "Latest edge-case narrative (case별 운용 보고)", ...
+narrPanel = uipanel(opsInner, "Title", "Latest edge-case narrative", ...
     "BackgroundColor", [1.00 0.99 0.95], "FontWeight", "bold", "FontSize", 12);
 narrPanel.Layout.Row = 1;
 narrInner = uigridlayout(narrPanel, [1, 1], "Padding", [8 4 8 4]);
-lblNarrative = uilabel(narrInner, ...
-    "Text", "  Run a counterfactual case to generate a narrative.", ...
-    "FontSize", 13, "WordWrap", "on", ...
-    "VerticalAlignment", "top");
-
-% --- Case history (last 5 iters as fixed-width table) --------------------
-histPanel = uipanel(opsInner, ...
-    "Title", "Case history (latest 5)", ...
+lblNarrative = uilabel(narrInner, "Text", "  Run a counterfactual case.", ...
+    "FontSize", 13, "WordWrap", "on", "VerticalAlignment", "top");
+histPanel = uipanel(opsInner, "Title", "Case history (latest 5)", ...
     "BackgroundColor", [0.97 0.97 0.99], "FontWeight", "bold", "FontSize", 12);
 histPanel.Layout.Row = 2;
 histInner = uigridlayout(histPanel, [1, 1], "Padding", [8 4 8 4]);
-lblHistory = uilabel(histInner, ...
-    "Text", "  (empty)", ...
-    "FontSize", 12, "WordWrap", "off", ...
-    "FontName", "Consolas", ...
-    "VerticalAlignment", "top");
-
-% Shared bottom label bar (dominant cause + verdict counts)
-lblBox = uigridlayout(xaiOuter, [2, 1], ...
-    "RowHeight", {28, 24}, "RowSpacing", 2, "Padding", [6 0 6 0]);
+lblHistory = uilabel(histInner, "Text", "  (empty)", ...
+    "FontSize", 12, "WordWrap", "off", "FontName", "Consolas", "VerticalAlignment", "top");
+lblBox = uigridlayout(xaiOuter, [2, 1], "RowHeight", {28, 24}, ...
+    "RowSpacing", 2, "Padding", [6 0 6 0]);
 lblBox.Layout.Row = 2;
-
-lblDominant = uilabel(lblBox, ...
-    "Text", "  Run a case to start boundary discovery.", ...
+lblDominant = uilabel(lblBox, "Text", "  Run a case to start.", ...
     "FontWeight", "bold", "FontSize", 12);
 lblDominant.Layout.Row = 1;
-
-lblSummary = uilabel(lblBox, ...
-    "Text", "  Tries: 0   PASS: 0   MARGINAL: 0   FAIL: 0", ...
+lblSummary = uilabel(lblBox, "Text", "  Tries: 0   PASS: 0   MARGINAL: 0   FAIL: 0", ...
     "FontSize", 11, "FontColor", [0.30 0.30 0.35]);
 lblSummary.Layout.Row = 2;
+%}
 
-% Counterfactual control panel — predefined scenario dropdown only.
-% Slider bars and the REQ threshold dropdown were removed per user request;
-% PASS threshold is locked to 0.50 (REQ-1 default) in state.passThresh below.
+% =========================================================================
+% Row 4 — Case history (scrollable, shows ALL runs). Uses uitextarea so the
+% list can grow past the visible area without truncation.
+% =========================================================================
+histPanel = uipanel(main, ...
+    "Title", "📑 Case history (전체 · 스크롤)", ...
+    "BackgroundColor", [0.97 0.97 0.99], "FontWeight", "bold");
+histPanel.Layout.Row = 4; histPanel.Layout.Column = [1 2];
+histInner = uigridlayout(histPanel, [1, 1], "Padding", [8 4 8 4]);
+lblHistory = uitextarea(histInner, ...
+    "Value",      "  (empty — 시뮬레이션을 실행하면 누적됩니다)", ...
+    "Editable",   "off", ...
+    "FontSize",   12, ...
+    "FontName",   "Consolas", ...
+    "BackgroundColor", [0.97 0.97 0.99]);
+
+% =========================================================================
+% Row 5 — Combined control panel: 프리셋 (left) + 이전 테스트 재현 (right).
+% NL textarea input was commented out per user request — preset dropdown
+% is now the sole user-facing input. The replay panel previously lived in
+% its own row 5; it was relocated here as the right column for a tighter
+% layout (one row instead of two).
+% =========================================================================
 ctrlPanel = uipanel(main, ...
-    "Title", "Counterfactual case  (시나리오 선택 후 ▶ Run Counterfactual)", ...
+    "Title", "테스트 입력 (프리셋) + 이전 테스트 재현 (Replay)", ...
     "BackgroundColor", [0.95 0.95 0.97], "FontWeight", "bold");
-ctrlPanel.Layout.Row = 4; ctrlPanel.Layout.Column = [1 2];
-ctrl = uigridlayout(ctrlPanel, [1, 1], ...
-    "Padding", [10 6 10 6]);
+ctrlPanel.Layout.Row = 5; ctrlPanel.Layout.Column = [1 2];
+ctrl = uigridlayout(ctrlPanel, [1, 2], ...
+    "ColumnWidth", {'1x', '1.4x'}, ...
+    "Padding", [10 6 10 6], "ColumnSpacing", 14);
 
-% --- Pre-defined scenarios -----------------------------------------------
-% 5 PASS-yielding operating regimes covering nominal Korean mountain
-% surveillance conditions (clear-to-light-haze, daytime). All values stay
-% well inside the REQ-1 = 0.50 safety envelope so every scenario verifies
-% the system passes — they vary in *character* (haze / cloud / sensor age)
-% rather than in stress level.
+% --- Preset scenarios (sole input modality — 5 PASS-yielding baselines) --
 SCENARIO_NAMES = [ ...
     "① 맑은 한낮 baseline (정상 작전)", ...
-    "② 봄·가을 옅은 시계 (일반 시계)", ...
+    "② 봄·가을 옅은 시계", ...
     "③ 옅은 산 안개 + 부분 흐림", ...
     "④ 부분 흐림 정오 (광량 양호)", ...
     "⑤ 이른 오후 옅은 안개 (센서 약간 노후)"];
 SCENARIO_FOG = [  5,   10,   18,   12,   15];
 SCENARIO_ILL = [12000, 10000, 9000, 7500, 8500];
 SCENARIO_NOI = [ 0.02, 0.03, 0.04, 0.05, 0.06];
+SCENARIO_NL = [ ...
+    "맑은 한낮 baseline — 정상 산악 작전 환경에서 침입자 식별",
+    "봄·가을의 옅은 시계 — 일반적 한국 산악 일상 작전",
+    "옅은 산 안개와 부분 흐림 — 시계가 약간 제한된 상태",
+    "부분 흐림 정오 — 광량은 충분하나 약간의 안개",
+    "이른 오후 옅은 안개 — 노후 센서로 약간의 잡음 누적"];
 
-scnPanel = uipanel(ctrl, "BorderType", "none", "BackgroundColor", [0.95 0.95 0.97]);
-scnGrid  = uigridlayout(scnPanel, [3, 1], "RowHeight", {22, 32, '1x'}, ...
+% LEFT — preset dropdown only
+presetPanel = uipanel(ctrl, "BorderType", "none", "BackgroundColor", [0.95 0.95 0.97]);
+presetPanel.Layout.Column = 1;
+presetGrid  = uigridlayout(presetPanel, [3, 1], "RowHeight", {22, 32, 22}, ...
     "Padding", [4 4 4 4], "RowSpacing", 4);
-uilabel(scnGrid, "Text", "사전 정의 시나리오  (모두 PASS 예상 · REQ-1 mAP ≥ 0.50)", ...
+uilabel(presetGrid, "Text", "▣ 사전 정의 시나리오 (5건 · 모두 PASS 예상)", ...
     "FontWeight", "bold", "FontSize", 12);
-scenarioDropdown = uidropdown(scnGrid, ...
+scenarioDropdown = uidropdown(presetGrid, ...
     "Items",     SCENARIO_NAMES, ...
     "ItemsData", 1:numel(SCENARIO_NAMES), ...
     "Value",     1, ...
     "FontSize",  12, ...
-    "Tooltip",   "선택하면 fog · illumination · noise 값이 자동 반영됩니다.");
-lblScenarioVals = uilabel(scnGrid, ...
-    "Text", sprintf("  선택된 환경값:  fog %.0f %%,  illum %.0f lx,  noise %.2f", ...
+    "Tooltip",   "선택 후 ▶ Run 을 누르면 해당 환경으로 시뮬레이션 시작.");
+lblParsedEnvVisible = uilabel(presetGrid, ...
+    "Text", sprintf("  → fog %.0f %%,  illum %.0f lx,  noise %.2f", ...
         SCENARIO_FOG(1), SCENARIO_ILL(1), SCENARIO_NOI(1)), ...
     "FontSize", 11, "FontColor", [0.30 0.30 0.40]);
+
+% RIGHT — Replay (이전 테스트 재현) controls
+replayInnerPanel = uipanel(ctrl, "BorderType", "none", "BackgroundColor", [1.00 0.97 0.93]);
+replayInnerPanel.Layout.Column = 2;
+replayInnerGrid = uigridlayout(replayInnerPanel, [3, 4], ...
+    "RowHeight",   {22, 32, 22}, ...
+    "ColumnWidth", {'1x', 90, 100, 110}, ...
+    "Padding", [4 4 4 4], "RowSpacing", 4, "ColumnSpacing", 6);
+
+lblReplayTitle = uilabel(replayInnerGrid, ...
+    "Text", "▣ 이전 테스트 재현 (Replay · 저장된 스위트 그대로 재실행)", ...
+    "FontWeight", "bold", "FontSize", 12);
+lblReplayTitle.Layout.Row = 1; lblReplayTitle.Layout.Column = [1 4];
+
+replayDropdown = uidropdown(replayInnerGrid, ...
+    "Items",     {'  (테스트 스위트 없음 — 먼저 🧪 생성 버튼을 사용하세요)'}, ...
+    "ItemsData", {''}, ...
+    "Value",     '', ...
+    "FontSize",  12, ...
+    "Tooltip",   "data/test_suites/ 에 저장된 이전 세션의 정규화 케이스 파일 목록");
+replayDropdown.Layout.Row = 2; replayDropdown.Layout.Column = 1;
+
+btnRefreshSuites = uibutton(replayInnerGrid, "Text", "🔄 새로고침", ...
+    "BackgroundColor", [0.70 0.70 0.75], "FontColor", "w", ...
+    "Tooltip", "디스크 재스캔 — 새 test_suite_*.json 발견 시 목록에 추가");
+btnRefreshSuites.Layout.Row = 2; btnRefreshSuites.Layout.Column = 2;
+
+btnReplay = uibutton(replayInnerGrid, "Text", "▶ Replay", ...
+    "BackgroundColor", [0.50 0.30 0.70], "FontColor", "w", "FontWeight", "bold", ...
+    "Tooltip", "선택한 스위트의 모든 케이스를 순차 재실행 후 실제 결과를 기대값과 비교");
+btnReplay.Layout.Row = 2; btnReplay.Layout.Column = 3;
+
+btnReplayStop = uibutton(replayInnerGrid, "Text", "⏹ Replay 중단", ...
+    "BackgroundColor", [0.70 0.30 0.30], "FontColor", "w", "Enable", "off");
+btnReplayStop.Layout.Row = 2; btnReplayStop.Layout.Column = 4;
+
+lblReplayStatus = uilabel(replayInnerGrid, ...
+    "Text", "  대기 — 스위트 선택 후 ▶ Replay 를 누르세요.", ...
+    "FontSize", 11, "FontColor", [0.30 0.25 0.15]);
+lblReplayStatus.Layout.Row = 3; lblReplayStatus.Layout.Column = [1 4];
+
+%{
+% --- DISABLED per user request: natural-language requirement textarea -----
+% Kept as comment so the design can be restored if NL input returns.
+nlPanel = uipanel(ctrl, "BorderType", "none", "BackgroundColor", [0.95 0.95 0.97]);
+nlPanel.Layout.Column = 1;
+nlGrid  = uigridlayout(nlPanel, [3, 1], "RowHeight", {22, '1x', 22}, ...
+    "Padding", [4 4 4 4], "RowSpacing", 4);
+uilabel(nlGrid, "Text", "▣ 테스트 요구사항 (자연어):", ...
+    "FontWeight", "bold", "FontSize", 12);
+lblRequirement = uitextarea(nlGrid, ...
+    "Value",      "맑은 한낮 baseline — 정상 산악 작전 환경에서 침입자 식별", ...
+    "FontSize",   12, ...
+    "FontName",   "Malgun Gothic", ...
+    "Placeholder","예) 야간 산악 정찰에서 짙은 안개와 노후 센서가 결합된 상황의 침입자 식별");
+lblParsedEnv = uilabel(nlGrid, ...
+    "Text", "  → 파싱 결과 (▶ Run 시 표시됨)", ...
+    "FontSize", 11, "FontColor", [0.30 0.30 0.40]);
+%}
 
 % --- Hidden state holder: fog/ill/noi sliders ----------------------------
 % Sliders are kept (off-screen) so all downstream code paths (renderFrame,
@@ -293,16 +377,30 @@ hiddenCtrl = uigridlayout(hiddenCtrlPanel, [1, 3], ...
 [illSld, illLbl] = mkSlider(hiddenCtrl, "Illumination",  100,  15000, SCENARIO_ILL(1), "lx");
 [noiSld, noiLbl] = mkSlider(hiddenCtrl, "Camera noise",    0,    1.0,  SCENARIO_NOI(1), "");
 
+% Hidden state holders for the (now-disabled) natural-language widgets.
+% The callbacks below still reference `lblRequirement.Value` and
+% `lblParsedEnv.Text`; rather than rewriting them, we keep these widgets
+% alive but invisible. The preset dropdown writes the chosen scenario's
+% Korean description into lblRequirement so downstream code (LLM mission
+% summary, normalized test-case requirement field) still has a meaningful
+% requirement string to consume.
+hiddenNlPanel = uipanel(fig, "Visible", "off", "Position", [1 1 200 60]);
+hiddenNlGrid  = uigridlayout(hiddenNlPanel, [2, 1]);
+lblRequirement = uitextarea(hiddenNlGrid, ...
+    "Value", char(SCENARIO_NL(1)), "Editable", "off");
+lblParsedEnv = uilabel(hiddenNlGrid, "Text", "");
+
 % Playback control panel
 pbPanel = uipanel(main, "BackgroundColor", [0.96 0.96 0.98]);
-pbPanel.Layout.Row = 5; pbPanel.Layout.Column = [1 2];
-pb = uigridlayout(pbPanel, [2, 6], ...
+pbPanel.Layout.Row = 6; pbPanel.Layout.Column = [1 2];
+pb = uigridlayout(pbPanel, [2, 7], ...
     "RowHeight", {32, 50}, ...
-    "ColumnWidth", {180, 90, 90, 110, 150, '1x'}, ...
+    "ColumnWidth", {180, 90, 90, 110, 170, 150, '1x'}, ...
     "Padding", [10 4 10 4], "RowSpacing", 4, "ColumnSpacing", 10);
 
-btnRun   = uibutton(pb, "Text", "▶ Run Counterfactual", ...
-    "BackgroundColor", [0.20 0.65 0.30], "FontColor", "w", "FontWeight", "bold");
+btnRun   = uibutton(pb, "Text", "▶ Run (boundary search)", ...
+    "BackgroundColor", [0.20 0.65 0.30], "FontColor", "w", "FontWeight", "bold", ...
+    "Tooltip", "선택된 프리셋에서 출발해 PASS↔FAIL 경계를 자동 탐색 (최대 10 iter). Auto-loop 자동 활성화.");
 btnRun.Layout.Row = 1; btnRun.Layout.Column = 1;
 
 btnStop  = uibutton(pb, "Text", "⏹ Stop", ...
@@ -313,29 +411,34 @@ btnReset = uibutton(pb, "Text", "⟲ Reset", ...
     "BackgroundColor", [0.60 0.60 0.65], "FontColor", "w");
 btnReset.Layout.Row = 1; btnReset.Layout.Column = 3;
 
-autoToggle = uicheckbox(pb, "Text", "Auto-loop (DSPy)", ...
+autoToggle = uicheckbox(pb, "Text", "Auto-loop (boundary)", ...
     "Value", false, "FontWeight", "bold", ...
-    "Tooltip", "After each run, automatically iterate toward the failure boundary using DSPy / boundary-search policy");
+    "Tooltip", "PASS↔FAIL 경계 자동 탐색. ▶ Run 누르면 자동 ON. 도중 OFF 하면 다음 case부터 중단.");
 autoToggle.Layout.Row = 1; autoToggle.Layout.Column = 4;
+
+btnGenerateTests = uibutton(pb, "Text", "🧪 정규화된 테스트 케이스 생성", ...
+    "BackgroundColor", [0.20 0.55 0.30], "FontColor", "w", "FontWeight", "bold", ...
+    "Tooltip", "지금까지 수집된 PASS/MARGINAL/FAIL case에서 1~10건의 정규화된 테스트 케이스를 산출");
+btnGenerateTests.Layout.Row = 1; btnGenerateTests.Layout.Column = 5;
 
 btnSummary = uibutton(pb, "Text", "📋 LLM 임무 요약", ...
     "BackgroundColor", [0.30 0.40 0.65], "FontColor", "w", "FontWeight", "bold", ...
     "Tooltip", "전체 case history를 LLM에 보내 임무 종합 요약·실패 경계·시사점·권고를 생성");
-btnSummary.Layout.Row = 1; btnSummary.Layout.Column = 5;
+btnSummary.Layout.Row = 1; btnSummary.Layout.Column = 6;
 
 iterLbl = uilabel(pb, ...
     "Text", "Iter: 0 / 10  —  manual mode", ...
     "FontWeight", "bold", "HorizontalAlignment", "left");
-iterLbl.Layout.Row = 1; iterLbl.Layout.Column = 6;
+iterLbl.Layout.Row = 1; iterLbl.Layout.Column = 7;
 
 frameSld = uislider(pb, "Limits", [1 max(2,Nt)], "Value", 1, ...
     "MajorTicks", round(linspace(1, max(2,Nt), 5)));
-frameSld.Layout.Row = 2; frameSld.Layout.Column = [1 5];
+frameSld.Layout.Row = 2; frameSld.Layout.Column = [1 6];
 
 frameLbl = uilabel(pb, ...
     "Text", sprintf("Frame: 1 / %d", Nt), ...
     "HorizontalAlignment", "right", "FontWeight", "bold");
-frameLbl.Layout.Row = 2; frameLbl.Layout.Column = 6;
+frameLbl.Layout.Row = 2; frameLbl.Layout.Column = 7;
 
 % =========================================================================
 % Static 3D content
@@ -409,6 +512,15 @@ state.history       = struct( ...      % counterfactual run history
 state.iterCount     = 0;
 state.maxIter       = 10;
 state.cooldownTimer = [];
+% --- Replay-mode state (drives Row 5's "이전 테스트 재현" workflow) -----
+%   replayActive : true while a saved suite is being re-run sequentially.
+%   replaySuite  : full payload dict loaded from data/test_suites/*.json.
+%   replayIdx    : 1-based index of the case currently in flight.
+%   replayResults: cell of compare_replay_result outputs (one per case).
+state.replayActive  = false;
+state.replaySuite   = [];
+state.replayIdx     = 0;
+state.replayResults = {};
 % Provenance fields — what produced the NEXT case to be recorded.
 % Default "seed" for the very first run; reset to "manual" after each
 % finalizeRun so user-driven Run clicks are tagged correctly; replaced
@@ -433,10 +545,14 @@ illSld.ValueChangingFcn  = @(~,e) onSlideLive("ill", e);
 noiSld.ValueChangedFcn   = @(~,~) renderFrame();
 noiSld.ValueChangingFcn  = @(~,e) onSlideLive("noi", e);
 
-btnRun.ButtonPushedFcn   = @(~,~) startRun();
+btnRun.ButtonPushedFcn   = @(~,~) onRunRequested();
 btnStop.ButtonPushedFcn  = @(~,~) stopRun();
 btnReset.ButtonPushedFcn = @(~,~) doReset();
 btnSummary.ButtonPushedFcn = @(~,~) onSummaryClicked();
+btnGenerateTests.ButtonPushedFcn = @(~,~) onGenerateTestsClicked();
+btnRefreshSuites.ButtonPushedFcn = @(~,~) onRefreshSuites();
+btnReplay.ButtonPushedFcn        = @(~,~) onReplayClicked();
+btnReplayStop.ButtonPushedFcn    = @(~,~) onReplayStopClicked();
 autoToggle.ValueChangedFcn = @(s,~) onAutoToggle(s);
 scenarioDropdown.ValueChangedFcn = @(s,~) onScenarioChanged(s);
 
@@ -457,6 +573,7 @@ hdr.Text = "  Idle  —  set counterfactual parameters, then press  ▶ Run Coun
 renderFrame();
 updateAnalysisPanels();
 updateOpsLog();
+onRefreshSuites();    % populate replay dropdown from disk at startup
 start(tmr);
 
 % =========================================================================
@@ -559,14 +676,45 @@ start(tmr);
         btnStop.Enable = "off";
         showRunSummary();
 
+        % --- Replay-mode hook: compare result to saved expectation, then
+        % schedule the next case (or finish). Mutually exclusive with
+        % Auto-loop — replay deliberately turns Auto-loop off before start.
+        if state.replayActive
+            recordReplayResult();
+            % Brief pause so the operator can read the verdict before the
+            % sliders animate to the next replay case.
+            cancelCooldown();
+            state.cooldownTimer = timer( ...
+                "StartDelay", 1.2, ...
+                "TimerFcn", @(t,~) onReplayCooldownFire(t), ...
+                "ExecutionMode", "singleShot");
+            start(state.cooldownTimer);
+            return;
+        end
+
         % Auto-loop: schedule next iteration after a brief pause so the user
         % can read the verdict before sliders animate to the next case.
+        fprintf("[Loop] finalizeRun done — autoToggle.Value=%d, history=%d/%d\n", ...
+            logical(autoToggle.Value), numel(state.history), state.maxIter);
         if autoToggle.Value && numel(state.history) < state.maxIter
+            fprintf("[Loop] scheduling next auto run...\n");
             scheduleNextAutoRun();
         elseif autoToggle.Value
             autoToggle.Value = false;
             iterLbl.Text = sprintf("Auto: done (%d iters)", numel(state.history));
+            fprintf("[Loop] maxIter reached — auto-loop disabled.\n");
+        else
+            fprintf("[Loop] autoToggle off — stopping at iter %d.\n", ...
+                numel(state.history));
         end
+    end
+
+    function onReplayCooldownFire(t)
+        try, delete(t); catch, end
+        state.cooldownTimer = [];
+        if ~isvalid(fig), return; end
+        if ~state.replayActive, return; end
+        advanceReplay();
     end
 
     function onAutoToggle(src)
@@ -590,61 +738,95 @@ start(tmr);
     end
 
     function scheduleNextAutoRun()
-        % Show "DSPy thinking" status BEFORE the (potentially slow) LLM call
-        hdr.BackgroundColor = [0.30 0.30 0.55];
-        hdr.Text = sprintf( ...
-            "  ⚙ DSPy LLM analyzing iter %d → %d  (SHAP + history → next counterfactual case)...", ...
+        fprintf("[Loop] scheduleNextAutoRun: iter %d -> %d\n", ...
             numel(state.history), numel(state.history) + 1);
-        iterLbl.Text = sprintf("Auto: %d / %d  —  LLM consulting...", ...
-            numel(state.history), state.maxIter);
-        drawnow;
+        try
+            fprintf("[Loop]   .. step 1: enter try block\n");
+            % Show "thinking" status BEFORE the next-case decision. NOTE: no
+            % drawnow here — drawnow used to be the suspected hang point. UI
+            % text will refresh on the next normal MATLAB event-loop tick.
+            hdr.BackgroundColor = [0.30 0.30 0.55];
+            fprintf("[Loop]   .. step 2: hdr.BackgroundColor set\n");
+            hdr.Text = sprintf( ...
+                "  Boundary policy analyzing iter %d -> %d ...", ...
+                numel(state.history), numel(state.history) + 1);
+            fprintf("[Loop]   .. step 3: hdr.Text set\n");
+            iterLbl.Text = sprintf("Auto: %d / %d  -  deciding next case...", ...
+                numel(state.history), state.maxIter);
+            fprintf("[Loop]   .. step 4: iterLbl.Text set\n");
 
-        % Compute next case from history using boundary-search policy
-        [nextEnv, modeStr, analysisStr] = decideNextCase(state.history);
+            fprintf("[Loop]   .. step 5: calling decideNextCase\n");
+            [nextEnv, modeStr, analysisStr] = decideNextCase(state.history);
+            fprintf("[Loop]   .. step 6: decided fog=%.1f ill=%.0f noi=%.2f mode=%s\n", ...
+                nextEnv.fog, nextEnv.ill, nextEnv.noi, modeStr);
+            state.nextMode     = modeStr;
+            state.nextAnalysis = analysisStr;
 
-        % Record provenance for the upcoming auto-iter's history entry
-        state.nextMode     = modeStr;
-        state.nextAnalysis = analysisStr;
+            applyEnvToSliders(nextEnv);
+            fprintf("[Loop]   .. step 7: applyEnvToSliders done\n");
 
-        % Animate sliders to new values
-        applyEnvToSliders(nextEnv);
+            state.frameIdx = 1;
+            frameSld.Value = 1;
+            frameLbl.Text  = sprintf("Frame: 1 / %d", Nt);
+            renderFrame();
+            fprintf("[Loop]   .. step 8: renderFrame done\n");
 
-        % Re-render preview at frame 1 with new params so user sees the case
-        state.frameIdx = 1;
-        frameSld.Value = 1;
-        frameLbl.Text  = sprintf("Frame: 1 / %d", Nt);
-        renderFrame();
+            hdr.BackgroundColor = [0.20 0.30 0.65];
+            hdr.Text = sprintf( ...
+                "  -> next case (%s):  fog=%.0f%%  illum=%.0flx  noise=%.2f", ...
+                modeStr, nextEnv.fog, nextEnv.ill, nextEnv.noi);
+            iterLbl.Text = sprintf("Auto: %d / %d  -  starting next iter...", ...
+                numel(state.history), state.maxIter);
 
-        % Header + iter label show the suggested next case
-        hdr.BackgroundColor = [0.20 0.30 0.65];
-        hdr.Text = sprintf( ...
-            "  → next case (DSPy / %s):  fog=%.0f%%  illum=%.0flx  noise=%.2f   |   %s", ...
-            modeStr, nextEnv.fog, nextEnv.ill, nextEnv.noi, analysisStr);
-        iterLbl.Text = sprintf("Auto: %d / %d  —  starting next iter...", ...
-            numel(state.history), state.maxIter);
+            state.mode = "cooldown";
+            btnRun.Enable = "off";
+            setCaseControlsEnabled(false);
 
-
-        % Lock controls during cooldown so user can't interrupt mid-decision
-        state.mode = "cooldown";
-        btnRun.Enable = "off";
-        setCaseControlsEnabled(false);
-
-        % One-shot timer fires after pause and starts the next run
-        cancelCooldown();
-        state.cooldownTimer = timer( ...
-            "StartDelay", 1.8, ...
-            "TimerFcn", @(t,~) onCooldownFire(t), ...
-            "ExecutionMode", "singleShot");
-        start(state.cooldownTimer);
+            cancelCooldown();
+            fprintf("[Loop]   .. step 9: creating cooldown timer\n");
+            state.cooldownTimer = timer( ...
+                "StartDelay", 1.8, ...
+                "TimerFcn", @(t,~) onCooldownFire(t), ...
+                "ExecutionMode", "singleShot");
+            fprintf("[Loop]   .. step 10: timer created, calling start()\n");
+            start(state.cooldownTimer);
+            fprintf("[Loop]   .. step 11: timer started (will fire in 1.8s)\n");
+        catch ME
+            fprintf("[Loop] !!! scheduleNextAutoRun ERROR:\n");
+            fprintf("        identifier: %s\n", ME.identifier);
+            fprintf("        message: %s\n", ME.message);
+            for s = 1:numel(ME.stack)
+                fprintf("        at %s (line %d)\n", ME.stack(s).name, ME.stack(s).line);
+            end
+            % Unlock controls so user can recover
+            state.mode = "idle";
+            btnRun.Enable  = "on";
+            setCaseControlsEnabled(true);
+            autoToggle.Value = false;
+            iterLbl.Text = "Auto: stopped on error (check console)";
+        end
     end
 
     function onCooldownFire(t)
-        try, delete(t); catch, end
-        state.cooldownTimer = [];
-        if ~isvalid(fig), return; end
-        if ~autoToggle.Value, return; end           % toggled off mid-cooldown
-        state.mode = "idle";                         % unlock briefly
-        startRun();
+        try
+            try, delete(t); catch, end
+            state.cooldownTimer = [];
+            fprintf("[Loop] onCooldownFire — autoToggle.Value=%d, mode=%s\n", ...
+                logical(autoToggle.Value), state.mode);
+            if ~isvalid(fig), return; end
+            if ~autoToggle.Value
+                fprintf("[Loop] cooldown fired but autoToggle is OFF — abort next iter.\n");
+                return;
+            end
+            state.mode = "idle";                         % unlock briefly
+            startRun();
+        catch ME
+            fprintf("[Loop] !!! onCooldownFire ERROR: %s\n        %s\n", ...
+                ME.identifier, ME.message);
+            for s = 1:numel(ME.stack)
+                fprintf("        at %s (line %d)\n", ME.stack(s).name, ME.stack(s).line);
+            end
+        end
     end
 
     function cancelCooldown()
@@ -752,14 +934,18 @@ start(tmr);
                 end
 
             case "FAIL"
+                % Asymmetric weight 0.75 (vs 0.65 for the PASS→FAIL probe).
+                % Recovery must be RELIABLE — otherwise the next case lands
+                % on / past the boundary and FAILs again, never recovering.
+                % System purpose = oscillate PASS↔FAIL to find the boundary.
                 if ~isempty(passEnv)
-                    nextEnv = bisectEnv(lastEnv, passEnv, 0.65);
+                    nextEnv = bisectEnv(lastEnv, passEnv, 0.75);
                     modeStr = "boundary_recover";
-                    analysisStr = "FAIL → bisect 65% toward PASS anchor";
+                    analysisStr = "FAIL → bisect 75% toward PASS anchor (reliable recovery)";
                 elseif ~isempty(marginalEnv)
-                    nextEnv = bisectEnv(lastEnv, marginalEnv, 0.65);
+                    nextEnv = bisectEnv(lastEnv, marginalEnv, 0.75);
                     modeStr = "boundary_recover_to_margin";
-                    analysisStr = "FAIL → bisect 65% toward MARGINAL (no PASS anchor yet)";
+                    analysisStr = "FAIL → bisect 75% toward MARGINAL (no PASS anchor yet)";
                 else
                     nextEnv = relaxEnv(lastEnv);
                     modeStr = "rule_relax";
@@ -1282,7 +1468,11 @@ start(tmr);
         end
         %}
 
-        % --- Dominant cause line (B) -------------------------------------
+        %{
+        % --- Dominant cause line + verdict-count summary --- DISABLED -----
+        % These wrote into lblDominant / lblSummary, both of which are now
+        % commented out in the UI build. Leaving the original code visible
+        % so it can be reinstated if the labels come back.
         if N == 0
             lblDominant.Text = "  Run a case to start boundary discovery.";
             lblDominant.FontColor = [0.30 0.30 0.35];
@@ -1298,7 +1488,7 @@ start(tmr);
                         "  ◐ Latest: MARGINAL  (%s = %.3f)  —  on the boundary (%.2f ≤ x < %.2f)", ...
                         mLab, last.metric, state.failThresh, state.passThresh);
                     lblDominant.FontColor = [0.55 0.40 0.05];
-                otherwise   % FAIL
+                otherwise
                     refIdx = find(arrayfun(@(r) r.verdict == "PASS", state.history), 1, "last");
                     if isempty(refIdx)
                         lblDominant.Text = sprintf( ...
@@ -1318,34 +1508,53 @@ start(tmr);
                     lblDominant.FontColor = [0.55 0.10 0.15];
             end
         end
-
         nPass = sum(arrayfun(@(r) r.verdict == "PASS",     state.history));
         nMarg = sum(arrayfun(@(r) r.verdict == "MARGINAL", state.history));
         nFail = sum(arrayfun(@(r) r.verdict == "FAIL",     state.history));
         lblSummary.Text = sprintf("  Tries: %d   PASS: %d   MARGINAL: %d   FAIL: %d", ...
             N, nPass, nMarg, nFail);
+        %}
     end
 
 
     function updateOpsLog()
-        % Update Operations log tab: latest narrative + history list.
+        % Per-run LLM narrative stays disabled (per earlier user request),
+        % but case history was re-added to the UI as a top-level row-4
+        % panel — populate `lblHistory` here. Detailed per-run record is
+        % still persisted via autoSaveSession.
         if ~isvalid(fig), return; end
+        autoSaveSession();
+
+        % --- Case history list (ALL runs, newest first, scrollable) -----
+        N = numel(state.history);
+        if N == 0
+            lblHistory.Value = "  (empty — 시뮬레이션을 실행하면 누적됩니다)";
+            return;
+        end
+        lines = strings(0, 1);
+        lines(end+1) = "  iter  verdict    fog %  illum lx  noise   mAP    사람   차량   mode";
+        lines(end+1) = "  ----  ---------  -----  --------  -----   -----  -----  -----  -----------";
+        % All entries (no 5-case cap) — uitextarea provides scroll for us.
+        for k = N : -1 : 1
+            h = state.history(k);
+            verdictTag = sprintf("[%s]", h.verdict);
+            verdictPad = pad(verdictTag, 9, "right");
+            mp = 0; mv = 0;
+            if isfield(h, "metric_person"),  mp = h.metric_person;  end
+            if isfield(h, "metric_vehicle"), mv = h.metric_vehicle; end
+            lines(end+1) = sprintf("  %3d   %s  %5.1f  %7.0f   %5.2f   %.3f  %.3f  %.3f  %s", ...
+                h.iter, verdictPad, h.fog, h.ill, h.noi, h.metric, mp, mv, h.mode); %#ok<AGROW>
+        end
+        lblHistory.Value = cellstr(lines);
+        %{
         N = numel(state.history);
         if N == 0
             lblNarrative.Text = "  Run a counterfactual case to generate a narrative.";
             lblHistory.Text   = "  (empty)";
             return;
         end
-
         last = state.history(end);
-        % Try LLM-driven narrative via DSPy Narrator; fall back to template
-        % if Python/LLM call fails. Template is identical schema (security
-        % report tone) so demo flow is uninterrupted on failure.
         try
-            % Send UNIQUE-intruder counts (max 5 = 3 people + 2 vehicles) as
-            % "ngt" / "ntp" so the narrator reports "X missed of 5 intruders"
-            % instead of frame-aggregated "40 missed". Mission semantics =
-            % per-unique-intruder, not per-frame-instance.
             recPy = struct( ...
                 "fog", last.fog, "ill", last.ill, "noi", last.noi, ...
                 "metric", last.metric, "verdict", char(last.verdict), ...
@@ -1356,19 +1565,11 @@ start(tmr);
                 "n_intruders_seen",     last.n_intruders_seen, ...
                 "n_intruders_detected", last.n_intruders_detected, ...
                 "n_intruders_missed",   last.n_intruders_missed);
-            payload = jsonencode(recPy);
-            narrPy = py.dashboard_step.narrate_edge_case(payload);
+            narrPy = py.dashboard_step.narrate_edge_case(jsonencode(recPy));
             lblNarrative.Text = string(char(narrPy));
         catch ME
             lblNarrative.Text = buildTemplateNarrative(last);
-            if numel(state.history) <= 2
-                fprintf("[Narrator] LLM unavailable (%s) — template fallback.\n", ME.message);
-            end
         end
-
-        % History list — latest 5 entries, formatted as fixed-width columns.
-        % Per-class mAP (사람·차량) columns surface class-level failures that
-        % the overall mAP could otherwise mask.
         startIdx = max(1, N - 4);
         lines = strings(0, 1);
         lines(end+1) = "  iter  verdict   fog %  illum lx  noise   mAP    사람    차량   mode";
@@ -1384,6 +1585,7 @@ start(tmr);
                 h.iter, verdictPad, h.fog, h.ill, h.noi, h.metric, mp, mv, h.mode);
         end
         lblHistory.Text = strjoin(lines, newline);
+        %}
     end
 
     function txt = buildTemplateNarrative(rec)
@@ -1429,12 +1631,13 @@ start(tmr);
 
 
     function onScenarioChanged(src)
-        % Operator picked a pre-defined scenario. Look up the corresponding
-        % (fog, illumination, noise) triple and write through to the hidden
-        % sliders so downstream code paths (renderFrame, startRun, DSPy
-        % auto-loop) keep reading the chosen environment unchanged.
+        % Preset picker now directly applies the chosen scenario's env to
+        % the hidden sliders (no NL round-trip). Visible label echoes the
+        % current values; hidden lblRequirement keeps the Korean
+        % description in sync so downstream features (LLM summary, test-
+        % case requirement field) still see a meaningful requirement.
         if state.mode == "running"
-            return;     % case is locked during a run — ignore changes
+            return;
         end
         idx = double(src.Value);
         idx = max(1, min(numel(SCENARIO_FOG), idx));
@@ -1442,10 +1645,338 @@ start(tmr);
                      "ill", SCENARIO_ILL(idx), ...
                      "noi", SCENARIO_NOI(idx));
         applyEnvToSliders(env);
-        lblScenarioVals.Text = sprintf( ...
-            "  선택된 환경값:  fog %.0f %%,  illum %.0f lx,  noise %.2f", ...
+        lblParsedEnvVisible.Text = sprintf( ...
+            "  → fog %.0f %%,  illum %.0f lx,  noise %.2f", ...
+            env.fog, env.ill, env.noi);
+        lblRequirement.Value = char(SCENARIO_NL(idx));
+        renderFrame();
+    end
+
+    function onRunRequested()
+        % ▶ Run starts a *boundary-search session*, not a single sim.
+        % Auto-loop is force-enabled here so the system iterates PASS↔FAIL
+        % to characterise the failure envelope (up to state.maxIter cases).
+        % Manual single-case testing is still available — toggle Auto-loop
+        % OFF mid-run and the next scheduleNextAutoRun call will abort.
+        if ~autoToggle.Value
+            autoToggle.Value = true;
+            iterLbl.Text = sprintf("Auto: %d / %d iters", ...
+                numel(state.history), state.maxIter);
+            fprintf("[Run] Auto-loop 자동 활성화 — boundary search 시작 (최대 %d iter).\n", ...
+                state.maxIter);
+        end
+        startRun();
+    end
+
+    function onGenerateTestsClicked()
+        % Call Python optimizer to produce 1~10 normalized test cases from
+        % the collected PASS/MARGINAL/FAIL history. Output is rendered in
+        % the top-level testCasesPanel (lblTestCases uitextarea).
+        prevText = btnGenerateTests.Text;
+        btnGenerateTests.Enable = "off";
+        btnGenerateTests.Text   = "⏳ 옵티마이저 실행 중...";
+        lblTestCases.Value = "  ⏳ 정규화된 테스트 케이스 생성 중...";
+        drawnow;
+        try
+            nl = lblRequirement.Value;
+            if iscell(nl), nl = strjoin(nl, newline); end
+            histJson = jsonencode(arrayfun(@(h) struct( ...
+                "iter",            h.iter, ...
+                "fog",             h.fog, ...
+                "ill",             h.ill, ...
+                "noi",             h.noi, ...
+                "metric",          h.metric, ...
+                "verdict",         char(h.verdict)), ...
+                state.history, "UniformOutput", false));
+            res = py.dashboard_step.generate_normalized_test_cases( ...
+                histJson, string(nl), int32(10));
+            d = struct(res);
+            txt = string(char(d.text));
+            lines = splitlines(txt);
+            lblTestCases.Value = cellstr(lines);
+            % Auto-refresh replay dropdown so the freshly-exported suite
+            % shows up without the user having to click 🔄 새로고침.
+            onRefreshSuites();
+        catch ME
+            lblTestCases.Value = sprintf("정규화된 테스트 케이스 생성 실패: %s", ME.message);
+        end
+        btnGenerateTests.Enable = "on";
+        btnGenerateTests.Text   = prevText;
+    end
+
+    function autoSaveSession()
+        % Per-session disk persistence. Every finalizeRun appends to
+        % data/sessions/session_<launch-time>.json so the full record (env,
+        % verdict, per-class mAP, unique intruders) survives MATLAB restart
+        % and can be reloaded for offline analysis or test-case replay.
+        try
+            if ~isfield(state, "sessionFile") || isempty(state.sessionFile)
+                ts = datestr(now, "yyyymmdd_HHMMSS");
+                sessDir = fullfile(pwd, "data", "sessions");
+                if ~isfolder(sessDir), mkdir(sessDir); end
+                state.sessionFile = fullfile(sessDir, "session_" + ts + ".json");
+            end
+            recs = cell(1, numel(state.history));
+            for k = 1:numel(state.history)
+                h = state.history(k);
+                recs{k} = struct( ...
+                    "iter",                h.iter, ...
+                    "fog",                 h.fog, ...
+                    "ill",                 h.ill, ...
+                    "noi",                 h.noi, ...
+                    "metric",              h.metric, ...
+                    "metric_person",       h.metric_person, ...
+                    "metric_vehicle",      h.metric_vehicle, ...
+                    "verdict",             char(h.verdict), ...
+                    "n_intruders_total",   h.n_intruders_total, ...
+                    "n_intruders_seen",    h.n_intruders_seen, ...
+                    "n_intruders_detected",h.n_intruders_detected, ...
+                    "n_intruders_missed",  h.n_intruders_missed, ...
+                    "mode",                h.mode, ...
+                    "analysis",            h.analysis);
+            end
+            fid = fopen(state.sessionFile, "w", "n", "UTF-8");
+            if fid > 0
+                fwrite(fid, jsonencode(recs, "PrettyPrint", true));
+                fclose(fid);
+            end
+        catch ME
+            fprintf("[Session] save failed: %s\n", ME.message);
+        end
+    end
+
+    function onRefreshSuites()
+        % Rescan data/test_suites/ and update the replay dropdown items.
+        % Uses cell-of-char-vectors throughout — the previous version mixed
+        % string scalars and cellstr which some MATLAB releases reject on
+        % uidropdown (silent failure mode: dropdown stays empty).
+        try
+            pyList = py.dashboard_step.list_test_suites();
+            cellList = cell(pyList);
+            nFound = numel(cellList);
+            if nFound == 0
+                replayDropdown.Items     = {'  (테스트 스위트 없음 — 먼저 🧪 생성 버튼을 사용하세요)'};
+                replayDropdown.ItemsData = {''};
+                replayDropdown.Value     = '';
+                lblReplayStatus.Text = "  대기 — 저장된 스위트가 없습니다. 시뮬레이션 후 🧪 정규화된 테스트 케이스 생성을 누르세요.";
+                fprintf("[Refresh] data/test_suites/ 스캔 → 0건 (디스크에 파일 없거나 디렉터리 미존재).\n");
+                return;
+            end
+            namesCell = cell(1, nFound);
+            pathsCell = cell(1, nFound);
+            for k = 1:nFound
+                d = struct(cellList{k});
+                fname  = char(d.filename);
+                req    = char(d.requirement);
+                ncases = double(d.n_cases);
+                if length(req) > 30
+                    req = [req(1:30) char(8230)];   % … ellipsis
+                end
+                namesCell{k} = sprintf('%s  ·  %d cases  ·  %s', fname, ncases, req);
+                pathsCell{k} = char(d.path);
+            end
+            % Order matters: Items + ItemsData first, THEN Value pinned to a
+            % member of ItemsData. Setting Value before the new ItemsData
+            % is in place causes MATLAB to keep the old (stale) value.
+            replayDropdown.Items     = namesCell;
+            replayDropdown.ItemsData = pathsCell;
+            replayDropdown.Value     = pathsCell{1};
+            lblReplayStatus.Text = sprintf("  %d개의 스위트 발견 — 선택 후 ▶ Replay 를 누르세요.", nFound);
+            fprintf("[Refresh] data/test_suites/ 스캔 → %d건 발견.\n", nFound);
+        catch ME
+            lblReplayStatus.Text = sprintf("  새로고침 실패: %s", ME.message);
+            fprintf("[Refresh] 실패: %s\n", ME.message);
+        end
+    end
+
+    function onReplayClicked()
+        % Load the selected test_suite_*.json and start sequential replay.
+        if state.replayActive
+            lblReplayStatus.Text = "  이미 replay 진행 중. ⏹ Replay 중단 후 다시 시도하세요.";
+            return;
+        end
+        if state.mode == "running"
+            lblReplayStatus.Text = "  진행 중인 case 완료 후 replay를 시도하세요.";
+            return;
+        end
+        selPath = string(replayDropdown.Value);
+        if strlength(selPath) == 0
+            lblReplayStatus.Text = "  스위트가 선택되지 않았습니다.";
+            return;
+        end
+        try
+            pyPayload = py.dashboard_step.load_test_suite(selPath);
+            payload   = struct(pyPayload);
+            if isfield(payload, "error")
+                lblReplayStatus.Text = sprintf("  로드 실패: %s", string(char(payload.error)));
+                return;
+            end
+            cases = cell(payload.cases);
+            if isempty(cases)
+                lblReplayStatus.Text = "  스위트에 case가 없습니다.";
+                return;
+            end
+            % Cache cases as MATLAB struct array
+            caseStructs = cell(1, numel(cases));
+            for k = 1:numel(cases)
+                caseStructs{k} = struct(cases{k});
+            end
+            state.replaySuite   = caseStructs;
+            state.replayIdx     = 0;
+            state.replayResults = {};
+            state.replayActive  = true;
+            % Disable auto-loop during replay (they conflict)
+            if autoToggle.Value
+                autoToggle.Value = false;
+            end
+            % UI lock
+            btnReplay.Enable     = "off";
+            btnReplayStop.Enable = "on";
+            btnRefreshSuites.Enable = "off";
+            replayDropdown.Enable = "off";
+            % Show banner in the test-cases panel
+            lblTestCases.Value = sprintf("📂 Replay 시작 (%d cases)...", numel(cases));
+            advanceReplay();
+        catch ME
+            lblReplayStatus.Text = sprintf("  로드 실패: %s", ME.message);
+            state.replayActive = false;
+        end
+    end
+
+    function onReplayStopClicked()
+        if ~state.replayActive, return; end
+        state.replayActive = false;
+        cancelCooldown();
+        btnReplay.Enable        = "on";
+        btnReplayStop.Enable    = "off";
+        btnRefreshSuites.Enable = "on";
+        replayDropdown.Enable   = "on";
+        lblReplayStatus.Text = sprintf("  중단됨 — %d/%d case 완료.", ...
+            state.replayIdx, numel(state.replaySuite));
+        finishReplay();
+    end
+
+    function advanceReplay()
+        % Apply the next saved case's env to the hidden sliders and trigger
+        % a single sim run. After the run finalises, finalizeRun's replay
+        % hook calls back here for the next case.
+        if ~state.replayActive, return; end
+        if state.replayIdx >= numel(state.replaySuite)
+            finishReplay();
+            return;
+        end
+        state.replayIdx = state.replayIdx + 1;
+        c = state.replaySuite{state.replayIdx};
+        env = struct( ...
+            "fog", double(c.fog), ...
+            "ill", double(c.ill), ...
+            "noi", double(c.noi));
+        applyEnvToSliders(env);
+        % Provenance for the upcoming history record
+        labelStr = "";
+        if isfield(c, "label"), labelStr = string(char(c.label)); end
+        state.nextMode     = sprintf("replay_%d_of_%d", ...
+            state.replayIdx, numel(state.replaySuite));
+        state.nextAnalysis = char(sprintf("Replay: %s", labelStr));
+        lblReplayStatus.Text = sprintf( ...
+            "  ▶ Replay %d/%d — %s  (fog=%.0f%%, illum=%.0flx, noise=%.2f)", ...
+            state.replayIdx, numel(state.replaySuite), labelStr, ...
             env.fog, env.ill, env.noi);
         renderFrame();
+        startRun();
+    end
+
+    function recordReplayResult()
+        % Called from finalizeRun after a replay case completes. Compares
+        % the actual outcome to the saved expectation via Python helper.
+        if ~state.replayActive, return; end
+        if isempty(state.history), return; end
+        if state.replayIdx < 1 || state.replayIdx > numel(state.replaySuite), return; end
+        last = state.history(end);
+        c    = state.replaySuite{state.replayIdx};
+        try
+            cmpPy = py.dashboard_step.compare_replay_result( ...
+                py.dict(c), ...
+                char(last.verdict), ...
+                last.metric);
+            d = struct(cmpPy);
+            state.replayResults{end+1} = struct( ...
+                "idx",      state.replayIdx, ...
+                "expected", string(char(c.expected_verdict)), ...
+                "actual",   string(last.verdict), ...
+                "metric",   last.metric, ...
+                "match",    logical(d.match), ...
+                "drift",    logical(d.drift), ...
+                "regression", logical(d.regression), ...
+                "summary",  string(char(d.summary)));
+        catch ME
+            % Python compare unavailable — do a rule-based comparison in
+            % MATLAB so replay still produces a report even offline.
+            accept = string(c.acceptable_verdicts);
+            if iscell(c.acceptable_verdicts)
+                accept = string(c.acceptable_verdicts);
+            end
+            isMatch = any(string(last.verdict) == accept);
+            mn = double(c.metric_min);
+            mx = double(c.metric_max);
+            inBand = (last.metric >= mn) && (last.metric <= mx);
+            tag = "✗ REGRESSION";
+            if isMatch && inBand,      tag = "✓ OK";
+            elseif isMatch,            tag = "△ DRIFT";
+            end
+            state.replayResults{end+1} = struct( ...
+                "idx",        state.replayIdx, ...
+                "expected",   string(char(c.expected_verdict)), ...
+                "actual",     string(last.verdict), ...
+                "metric",     last.metric, ...
+                "match",      isMatch, ...
+                "drift",      isMatch && ~inBand, ...
+                "regression", ~isMatch, ...
+                "summary",    sprintf("%s (fallback): %s", tag, ME.message));
+        end
+    end
+
+    function finishReplay()
+        % Build a one-shot summary of all replay results and dump it into
+        % the test-cases panel. Re-enables the UI controls.
+        results = state.replayResults;
+        state.replayActive = false;
+        btnReplay.Enable        = "on";
+        btnReplayStop.Enable    = "off";
+        btnRefreshSuites.Enable = "on";
+        replayDropdown.Enable   = "on";
+
+        if isempty(results)
+            lblTestCases.Value = "  (Replay 결과 없음)";
+            return;
+        end
+        nOK = 0; nDrift = 0; nReg = 0;
+        for k = 1:numel(results)
+            r = results{k};
+            if r.regression,    nReg   = nReg + 1;
+            elseif r.drift,     nDrift = nDrift + 1;
+            else,               nOK    = nOK + 1;
+            end
+        end
+        lines = strings(0, 1);
+        lines(end+1) = sprintf("▣ Replay 결과 — 총 %d cases", numel(results));
+        lines(end+1) = sprintf("  ✓ OK %d  ·  △ DRIFT %d  ·  ✗ REGRESSION %d", nOK, nDrift, nReg);
+        if nReg > 0
+            lines(end+1) = "  ⚠ Regression 발생 — 새 시스템에서 기대된 verdict 가 재현되지 않았습니다.";
+        elseif nDrift > 0
+            lines(end+1) = "  ⓘ Drift 감지 — verdict 는 유지되었으나 mAP 가 허용 범위를 벗어났습니다.";
+        else
+            lines(end+1) = "  ✓ 전체 회귀 통과 — 시스템 envelope 가 원본 세션과 일치합니다.";
+        end
+        lines(end+1) = "";
+        for k = 1:numel(results)
+            r = results{k};
+            lines(end+1) = sprintf("[Case %d] %s", r.idx, r.summary);  %#ok<AGROW>
+        end
+        lblTestCases.Value = cellstr(lines);
+        lblReplayStatus.Text = sprintf( ...
+            "  Replay 완료 — OK %d / DRIFT %d / REGRESSION %d (결과는 위 패널에 표시)", ...
+            nOK, nDrift, nReg);
     end
 
     function onSummaryClicked()

@@ -1,0 +1,50 @@
+[
+  {
+    "iter": 1,
+    "fog": 5,
+    "ill": 12000,
+    "noi": 0.02,
+    "metric": 0.8491898628998753,
+    "metric_person": 0.75862068965517238,
+    "metric_vehicle": 0.93975903614457823,
+    "verdict": "PASS",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 5,
+    "n_intruders_missed": 0,
+    "mode": "seed",
+    "analysis": "Initial seed — user-defined operating baseline"
+  },
+  {
+    "iter": 2,
+    "fog": 5,
+    "ill": 12000,
+    "noi": 0.02,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
+    "verdict": "FAIL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 0,
+    "n_intruders_detected": 0,
+    "n_intruders_missed": 0,
+    "mode": "manual",
+    "analysis": "User-driven slider values"
+  },
+  {
+    "iter": 3,
+    "fog": 5,
+    "ill": 12000,
+    "noi": 0.02,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
+    "verdict": "FAIL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 0,
+    "n_intruders_detected": 0,
+    "n_intruders_missed": 0,
+    "mode": "manual",
+    "analysis": "User-driven slider values"
+  }
+]

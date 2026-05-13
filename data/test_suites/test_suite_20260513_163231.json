@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-13T16:32:31+09:00",
+  "requirement": "맑은 한낮 baseline — 정상 산악 작전 환경에서 침입자 식별",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "옅은 안개 · 흐림",
+      "fog": 35.0,
+      "ill": 6000.0,
+      "noi": 0.22,
+      "verdict": "FAIL",
+      "metric": 0.034,
+      "source_iter": 2,
+      "selection_reason": "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 표지)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.034,
+      "metric_min": 0.029,
+      "metric_max": 0.039,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "가장 낮은 mAP를 기록하여 비인가 침입자 식별 실패의 위험이 큽니다."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 5.0,
+      "ill": 12000.0,
+      "noi": 0.02,
+      "verdict": "PASS",
+      "metric": 0.849,
+      "source_iter": 1,
+      "selection_reason": "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 기준)",
+      "coverage_category": "회귀",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.849,
+      "metric_min": 0.722,
+      "metric_max": 0.976,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "최고의 mAP로 임무가 성공적으로 수행되어 안전성이 확보되었습니다."
+    },
+    {
+      "label": "옅은 안개 · 정오 광량",
+      "fog": 27.5,
+      "ill": 7503.0,
+      "noi": 0.17,
+      "verdict": "FAIL",
+      "metric": 0.246,
+      "source_iter": 10,
+      "selection_reason": "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.246,
+      "metric_min": 0.209,
+      "metric_max": 0.283,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "PASS 임계에 근접하나 여전히 비인가 침입자 식별 실패 가능성이 존재합니다."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 12.5,
+      "ill": 10500.0,
+      "noi": 0.07,
+      "verdict": "PASS",
+      "metric": 0.798,
+      "source_iter": 3,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.798,
+      "metric_min": 0.678,
+      "metric_max": 0.918,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "안전 envelope 내에서 임무가 성공적으로 수행되어 신뢰성을 보장합니다."
+    }
+  ]
+}

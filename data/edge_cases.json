@@ -34,5 +34,41 @@
     "iter": 4,
     "mode": "llm_recover",
     "saved_at": "2026-05-12T17:09:49+09:00"
+  },
+  {
+    "fog": 35.0,
+    "ill": 6000.0,
+    "noi": 0.22,
+    "metric": 0.034482758620689655,
+    "metric_person": 0.06896551724137931,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 2,
+    "mode": "rule_push",
+    "saved_at": "2026-05-12T22:38:45+09:00"
+  },
+  {
+    "fog": 28.4047,
+    "ill": 7319.0625,
+    "noi": 0.176,
+    "metric": 0.20602409638554217,
+    "metric_person": 0.4,
+    "metric_vehicle": 0.012048192771084338,
+    "verdict": "FAIL",
+    "iter": 6,
+    "mode": "boundary_recover",
+    "saved_at": "2026-05-12T22:40:55+09:00"
+  },
+  {
+    "fog": 5.0,
+    "ill": 12000.0,
+    "noi": 0.02,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 2,
+    "mode": "manual",
+    "saved_at": "2026-05-13T16:23:20+09:00"
   }
 ]
