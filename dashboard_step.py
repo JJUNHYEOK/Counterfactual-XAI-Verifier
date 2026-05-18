@@ -973,22 +973,24 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
     if not history:
         # Seed cases — used when there's no session data yet. Each has an
         # explicit selection_reason so the output is consistent.
+        # Boundary-first ordering matches the system's primary purpose:
+        # the cases nearest the PASS↔FAIL boundary appear first.
         seeds = [
-            ("BASELINE",        "맑은 한낮 baseline (정상 작전)",
-             5,  12000, 0.02, "PASS",
-             "임무 기본 통과 조건 (baseline 회귀 테스트)."),
-            ("SAFE_ENVELOPE",   "옅은 안개 + 흐린 한낮",
-             25, 6000,  0.05, "PASS",
-             "일상적 한국 산악 시계 — REQ-1 안전선 내부."),
-            ("BOUNDARY_FAIL",   "짙은 안개 + 부분 흐림",
+            ("MARGINAL_BOUNDARY", "임계 안개 + 흐린 한낮 (경계)",
+             35, 4500,  0.08, "MARGINAL",
+             "REQ-1 임계 부근 — PASS↔FAIL 경계 직접 검증."),
+            ("BOUNDARY_FAIL",   "짙은 안개 + 부분 흐림 (실패 경계)",
              60, 3000,  0.10, "FAIL",
-             "색 대비 손실 — 침입자 식별 신뢰도 임계 미달."),
-            ("STRESS_NIGHT",    "야간 작전 + 옅은 잡음",
-             15, 600,   0.20, "FAIL",
-             "저조도 + 잡음 결합 → 보고 누락 위험 구간."),
-            ("WORST_CASE",      "극단 환경 (최악)",
+             "색 대비 손실 — 침입자 식별 신뢰도 임계 미달 (실패측 경계)."),
+            ("BOUNDARY_PASS",   "옅은 안개 + 흐린 한낮 (통과 경계)",
+             25, 6000,  0.05, "PASS",
+             "일상적 한국 산악 시계 — REQ-1 안전선 내부 (통과측 경계)."),
+            ("WORST_CASE",      "극단 환경 (운용 한계 anchor)",
              90, 300,   0.55, "FAIL",
              "운용 한계 — 임무 수행 불가 마지노선."),
+            ("BASELINE",        "맑은 한낮 baseline (정상 anchor)",
+             5,  12000, 0.02, "PASS",
+             "임무 기본 통과 조건 (baseline 회귀 테스트)."),
         ]
         out = []
         for kind, lab, f, i, n, v, rat in seeds[:max_cases]:
@@ -1060,32 +1062,48 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
         })
         return True
 
-    # 1. Worst FAIL — the deepest failure observed, defines the operating-edge
-    if fail_cases:
-        _add(min(fail_cases, key=lambda r: float(r.get("metric", 1))),
-             "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 표지)")
+    # BOUNDARY-FIRST PRIORITY ORDER
+    # ------------------------------
+    # Boundary-search is the system's primary purpose, so cases that
+    # directly verify boundary location come FIRST. Extreme anchors
+    # (WORST_FAIL / BEST_PASS) are used as secondary regression anchors.
+    #
+    # Rationale: with N requested cases, this ordering gives the operator
+    # the most boundary information per case. e.g.
+    #   N=1 → MARGINAL (the case riding the boundary itself)
+    #   N=3 → MARGINAL + BOUNDARY_FAIL + BOUNDARY_PASS (triangulate boundary)
+    #   N=5 → above + WORST_FAIL + BEST_PASS (add operational anchors)
+    #   N=10 → fill remaining with DIVERSITY for stress-axis coverage
 
-    # 2. Best PASS — the cleanest known-good condition, baseline for regression
-    if pass_cases:
-        _add(max(pass_cases, key=lambda r: float(r.get("metric", 0))),
-             "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 기준)")
+    # 1. MARGINAL cases — literally on the boundary (highest boundary info)
+    # Sort by mAP closest to the PASS threshold (0.50) so the most
+    # boundary-relevant MARGINAL appears first when multiple exist.
+    marg_sorted = sorted(marg_cases, key=lambda r: abs(float(r.get("metric", 0)) - 0.50))
+    for r in marg_sorted:
+        _add(r, "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)")
 
-    # 3. Boundary-adjacent FAIL — the FAIL closest to PASS, the "almost passed" case
+    # 2. BOUNDARY_FAIL — FAIL closest to PASS threshold (실패 측 경계 인접)
     if fail_cases:
         _add(max(fail_cases, key=lambda r: float(r.get("metric", 0))),
              "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)")
 
-    # 4. Boundary-adjacent PASS — the PASS closest to FAIL, the "almost failed" case
+    # 3. BOUNDARY_PASS — PASS closest to FAIL threshold (통과 측 경계 인접)
     if pass_cases:
         _add(min(pass_cases, key=lambda r: float(r.get("metric", 1))),
              "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)")
 
-    # 5. MARGINAL cases — literally on the boundary, highest information density
-    for r in marg_cases:
-        _add(r, "MARGINAL — PASS/FAIL 경계 위에 정확히 위치")
+    # 4. WORST_FAIL — operational-limit anchor (secondary)
+    if fail_cases:
+        _add(min(fail_cases, key=lambda r: float(r.get("metric", 1))),
+             "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 anchor)")
 
-    # 6. Diversity fill — remaining cases, prefer high-info first (by |metric − 0.5|
-    #    ascending, since cases near the PASS/FAIL threshold ≈ 0.5 are most useful)
+    # 5. BEST_PASS — baseline anchor (secondary)
+    if pass_cases:
+        _add(max(pass_cases, key=lambda r: float(r.get("metric", 0))),
+             "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 anchor)")
+
+    # 6. Diversity fill — remaining cases, prefer high-info first (by
+    #    |metric − 0.5| ascending — closer to boundary still prioritised)
     rest = sorted(history, key=lambda r: abs(float(r.get("metric", 0)) - 0.5))
     for r in rest:
         if len(picked) >= max_cases:
@@ -1094,7 +1112,7 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
         tag = ("DIVERSITY_FAIL" if v == "FAIL"
                else "DIVERSITY_PASS" if v == "PASS"
                else "DIVERSITY_MARG")
-        _add(r, tag + " — 다양성 확보 (경계 인접 mAP 우선)")
+        _add(r, tag + " — 다양성 확보 (다른 stress 축 cover)")
 
     return picked
 
@@ -1296,13 +1314,17 @@ def _dominant_from_payload(payload) -> str:
 
 
 def save_edge_case(record_json: str, edge_cases_path: str = "data/edge_cases.json",
-                   min_distance: float = 0.12) -> dict:
+                   min_distance: float = 0.15) -> dict:
     """Persist a FAIL/MARGINAL case to data/edge_cases.json (project-relative).
 
     Implements an "optimal edge cases only" filter: a new case is appended
     only if its L1 distance in normalized (fog, ill, noi) space exceeds
     `min_distance` from every previously-saved edge case. Returns a dict
     with {saved: bool, n_total: int, reason: str}.
+
+    Default 0.15 — validated as the centre of the empirical stability plateau
+    (suite_size invariant for theta in [0.10, 0.20] over 101 raw cases).
+    See experiments/threshold_analysis/ for the sensitivity analysis.
 
     record_json schema (sent from MATLAB):
         {fog, ill, noi, metric, metric_person, metric_vehicle, verdict,

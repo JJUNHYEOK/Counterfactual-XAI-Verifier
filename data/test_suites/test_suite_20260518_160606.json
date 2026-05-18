@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-18T16:06:06+09:00",
+  "requirement": "맑은 한낮 baseline — 정상 산악 작전 환경에서 침입자 식별",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "옅은 안개 · 정오 광량",
+      "fog": 27.1,
+      "ill": 7575.0,
+      "noi": 0.168,
+      "verdict": "MARGINAL",
+      "metric": 0.258,
+      "source_iter": 4,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.258,
+      "metric_min": 0.219,
+      "metric_max": 0.297,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "경계 조건에서의 성능 저하가 우려되며, 추가 악화 시 운용 불가."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 12.5,
+      "ill": 10500.0,
+      "noi": 0.07,
+      "verdict": "PASS",
+      "metric": 0.798,
+      "source_iter": 3,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.798,
+      "metric_min": 0.678,
+      "metric_max": 0.918,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "임무 수행에 적합한 조건으로, 안정적인 식별 성능을 보장."
+    },
+    {
+      "label": "옅은 안개 · 흐림",
+      "fog": 35.0,
+      "ill": 6000.0,
+      "noi": 0.22,
+      "verdict": "FAIL",
+      "metric": 0.034,
+      "source_iter": 2,
+      "selection_reason": "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 anchor)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.034,
+      "metric_min": 0.029,
+      "metric_max": 0.039,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "침입자 식별 실패로 인한 보고 누락 위험이 매우 높음."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 5.0,
+      "ill": 12000.0,
+      "noi": 0.02,
+      "verdict": "PASS",
+      "metric": 0.849,
+      "source_iter": 1,
+      "selection_reason": "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 anchor)",
+      "coverage_category": "회귀",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.849,
+      "metric_min": 0.722,
+      "metric_max": 0.976,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "정상 작전 환경에서 최상의 성능을 발휘하여 임무 수행에 적합."
+    }
+  ]
+}

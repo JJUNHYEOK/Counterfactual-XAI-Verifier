@@ -169,11 +169,11 @@ tab4 = uitab(tabGroup, "Title", "④ LLM 요약");
 % Preset scenario constants — used by Tab 1 dropdown + auto-loop env init.
 % =========================================================================
 SCENARIO_NAMES = [ ...
-    "① 맑은 한낮 baseline (정상 작전)", ...
-    "② 봄·가을 옅은 시계", ...
-    "③ 옅은 산 안개 + 부분 흐림", ...
-    "④ 부분 흐림 정오 (광량 양호)", ...
-    "⑤ 이른 오후 옅은 안개 (센서 약간 노후)"];
+    "① 맑은 한낮 baseline (정상 작전) — fog 5%·ill 12000lx·noi 0.02", ...
+    "② 봄·가을 옅은 시계 (일상 작전) — fog 10%·ill 10000lx·noi 0.03", ...
+    "③ 옅은 산 안개 (시계 제한 작전) — fog 18%·ill 9000lx·noi 0.04", ...
+    "④ 정오 부분 흐림 (광량 양호 작전) — fog 12%·ill 7500lx·noi 0.05", ...
+    "⑤ 이른 오후 옅은 안개 (센서 약간 노후) — fog 15%·ill 8500lx·noi 0.06"];
 SCENARIO_FOG = [  5,   10,   18,   12,   15];
 SCENARIO_ILL = [12000, 10000, 9000, 7500, 8500];
 SCENARIO_NOI = [ 0.02, 0.03, 0.04, 0.05, 0.06];
@@ -295,37 +295,64 @@ frameLbl = uilabel(pb, ...
 frameLbl.Layout.Row = 2; frameLbl.Layout.Column = 5;
 
 % =========================================================================
-% TAB 3 — ③ Replay (정규화 테스트 케이스 + replay controls)
+% TAB 3 — ③ Replay (정규화 테스트 케이스 + per-case replay controls)
 % =========================================================================
 tab3Grid = uigridlayout(tab3, [3, 1], ...
-    "RowHeight", {'1x', 50, 130}, ...
+    "RowHeight", {'1x', 50, 170}, ...
     "Padding", [10 10 10 10], "RowSpacing", 8);
 
 % Top — normalized test cases panel (the deliverable)
 testCasesPanel = uipanel(tab3Grid, ...
-    "Title", "🧪 정규화된 테스트 케이스 (옵티마이저 결과 · 1~10건)", ...
+    "Title", "🧪 정규화된 테스트 케이스 (옵티마이저 결과)", ...
     "BackgroundColor", [0.96 1.00 0.96], "FontWeight", "bold");
 testCasesInner = uigridlayout(testCasesPanel, [1, 1], "Padding", [8 6 8 6]);
 lblTestCases = uitextarea(testCasesInner, ...
-    "Value",      "  ② 시뮬레이션 탭에서 boundary search를 마친 뒤 아래 '🧪 정규화된 테스트 케이스 생성' 버튼을 눌러 1~10건의 케이스를 산출하세요.", ...
+    "Value",      "  ② 시뮬레이션 탭에서 boundary search를 마친 뒤 아래 '🧪 정규화된 테스트 케이스 생성' 버튼을 눌러 케이스를 산출하세요.", ...
     "Editable",   "off", ...
     "FontSize",   12, "FontName", "Malgun Gothic", ...
     "BackgroundColor", [0.96 1.00 0.96]);
 
-% Middle — Generate button (full width, large)
-btnGenerateTests = uibutton(tab3Grid, "Text", "🧪 정규화된 테스트 케이스 생성", ...
+% Middle — case count input + Generate button
+genRow = uigridlayout(tab3Grid, [1, 4], ...
+    "ColumnWidth", {180, 90, '1x', 280}, ...
+    "Padding", [0 0 0 0], "ColumnSpacing", 8);
+
+uilabel(genRow, "Text", "산출할 케이스 개수:", ...
+    "FontWeight", "bold", "FontSize", 12, ...
+    "HorizontalAlignment", "right");
+
+caseCountSpinner = uispinner(genRow, ...
+    "Limits", [0 10], "Value", 0, "Step", 1, ...
+    "ValueDisplayFormat", "%d", ...
+    "Tooltip", "0 = 기본 스위트(최대 10건, 우선순위순) / 1~10 = 정확히 N건만 산출");
+
+uilabel(genRow, "Text", "  (0 = 기본 스위트 · 1~10 = 우선순위 상위 N건만)", ...
+    "FontSize", 11, "FontColor", [0.35 0.35 0.45]);
+
+btnGenerateTests = uibutton(genRow, "Text", "🧪 정규화된 테스트 케이스 생성", ...
     "BackgroundColor", [0.20 0.55 0.30], "FontColor", "w", ...
     "FontWeight", "bold", "FontSize", 13, ...
-    "Tooltip", "지금까지 수집된 case에서 1~10건의 정규화된 회귀 테스트 케이스를 산출");
+    "Tooltip", "지금까지 수집된 case에서 정규화된 회귀 테스트 케이스를 산출");
 
-% Bottom — Replay controls (drop down + buttons + status)
+% Bottom — Replay controls (suite + per-case selection + replay)
 replayInnerPanel = uipanel(tab3Grid, ...
-    "Title", "📂 이전 테스트 재현 (Replay) — 저장된 스위트 그대로 다시 실행", ...
+    "Title", "📂 이전 테스트 재현 (Replay) — 스위트에서 개별 케이스 선택 후 재실행", ...
     "BackgroundColor", [1.00 0.97 0.93], "FontWeight", "bold");
-replayInnerGrid = uigridlayout(replayInnerPanel, [2, 4], ...
-    "RowHeight",   {32, 22}, ...
-    "ColumnWidth", {'1x', 100, 110, 120}, ...
+replayInnerGrid = uigridlayout(replayInnerPanel, [4, 3], ...
+    "RowHeight",   {28, 32, 32, 22}, ...
+    "ColumnWidth", {90, '1x', 130}, ...
     "Padding", [10 6 10 6], "RowSpacing", 6, "ColumnSpacing", 8);
+
+% Row 1 of replay panel — header labels for columns
+uilabel(replayInnerGrid, "Text", "", "FontWeight", "bold");
+uilabel(replayInnerGrid, "Text", "선택", "FontWeight", "bold", "FontSize", 12);
+uilabel(replayInnerGrid, "Text", "동작", "FontWeight", "bold", "FontSize", 12, ...
+    "HorizontalAlignment", "center");
+
+% Row 2 — suite selector
+lblSuiteLabel = uilabel(replayInnerGrid, "Text", "스위트:", ...
+    "FontWeight", "bold", "FontSize", 12, "HorizontalAlignment", "right");
+lblSuiteLabel.Layout.Row = 2; lblSuiteLabel.Layout.Column = 1;
 
 replayDropdown = uidropdown(replayInnerGrid, ...
     "Items",     {'  (테스트 스위트 없음 — 먼저 🧪 생성 버튼을 사용하세요)'}, ...
@@ -333,24 +360,42 @@ replayDropdown = uidropdown(replayInnerGrid, ...
     "Value",     '', ...
     "FontSize",  12, ...
     "Tooltip",   "data/test_suites/ 에 저장된 이전 세션의 정규화 케이스 파일 목록");
-replayDropdown.Layout.Row = 1; replayDropdown.Layout.Column = 1;
+replayDropdown.Layout.Row = 2; replayDropdown.Layout.Column = 2;
 
 btnRefreshSuites = uibutton(replayInnerGrid, "Text", "🔄 새로고침", ...
     "BackgroundColor", [0.70 0.70 0.75], "FontColor", "w");
-btnRefreshSuites.Layout.Row = 1; btnRefreshSuites.Layout.Column = 2;
+btnRefreshSuites.Layout.Row = 2; btnRefreshSuites.Layout.Column = 3;
 
-btnReplay = uibutton(replayInnerGrid, "Text", "▶ Replay", ...
+% Row 3 — individual case selector + Replay button
+lblCaseLabel = uilabel(replayInnerGrid, "Text", "케이스:", ...
+    "FontWeight", "bold", "FontSize", 12, "HorizontalAlignment", "right");
+lblCaseLabel.Layout.Row = 3; lblCaseLabel.Layout.Column = 1;
+
+caseDropdown = uidropdown(replayInnerGrid, ...
+    "Items",     {'  (스위트 선택 후 표시됨)'}, ...
+    "ItemsData", {0}, ...
+    "Value",     0, ...
+    "FontSize",  12, ...
+    "Tooltip",   "선택한 스위트의 개별 케이스 — 우선순위 순으로 정렬");
+caseDropdown.Layout.Row = 3; caseDropdown.Layout.Column = 2;
+
+btnReplay = uibutton(replayInnerGrid, "Text", "▶ 이 케이스 Replay", ...
     "BackgroundColor", [0.50 0.30 0.70], "FontColor", "w", "FontWeight", "bold");
-btnReplay.Layout.Row = 1; btnReplay.Layout.Column = 3;
+btnReplay.Layout.Row = 3; btnReplay.Layout.Column = 3;
 
-btnReplayStop = uibutton(replayInnerGrid, "Text", "⏹ Replay 중단", ...
-    "BackgroundColor", [0.70 0.30 0.30], "FontColor", "w", "Enable", "off");
-btnReplayStop.Layout.Row = 1; btnReplayStop.Layout.Column = 4;
+% Hidden — kept for backward compatibility with existing callbacks/state.
+% replay-flow now runs ONE case at a time; the stop button is not needed
+% (single-case replays auto-finish in ~38s) but we leave the handle alive
+% so onReplayStopClicked / state.replayActive logic can still reference it.
+btnReplayStop = uibutton(replayInnerGrid, "Text", "⏹ 중단", ...
+    "BackgroundColor", [0.70 0.30 0.30], "FontColor", "w", "Enable", "off", ...
+    "Visible", "off");
 
+% Row 4 — status spanning columns
 lblReplayStatus = uilabel(replayInnerGrid, ...
-    "Text", "  대기 — 스위트 선택 후 ▶ Replay 를 누르세요.", ...
+    "Text", "  대기 — 스위트 + 케이스 선택 후 ▶ Replay 를 누르세요.", ...
     "FontSize", 11, "FontColor", [0.30 0.25 0.15]);
-lblReplayStatus.Layout.Row = 2; lblReplayStatus.Layout.Column = [1 4];
+lblReplayStatus.Layout.Row = 4; lblReplayStatus.Layout.Column = [1 3];
 
 % =========================================================================
 % TAB 4 — ④ LLM 임무 종합 요약
@@ -517,6 +562,7 @@ btnGenerateTests.ButtonPushedFcn = @(~,~) onGenerateTestsClicked();
 btnRefreshSuites.ButtonPushedFcn = @(~,~) onRefreshSuites();
 btnReplay.ButtonPushedFcn        = @(~,~) onReplayClicked();
 btnReplayStop.ButtonPushedFcn    = @(~,~) onReplayStopClicked();
+replayDropdown.ValueChangedFcn   = @(s,~) onSuiteSelected(s);
 autoToggle.ValueChangedFcn = @(s,~) onAutoToggle(s);
 scenarioDropdown.ValueChangedFcn = @(s,~) onScenarioChanged(s);
 
@@ -1653,8 +1699,18 @@ start(tmr);
                 "metric",          h.metric, ...
                 "verdict",         char(h.verdict)), ...
                 state.history, "UniformOutput", false));
+            % Read desired count: 0 = 기본(10) / 1~10 = 정확히 N건
+            userCount = round(caseCountSpinner.Value);
+            if userCount <= 0
+                maxCases = 10;   % default suite
+                fprintf("[Gen] user count = 0 → 기본 스위트 (최대 10건)\n");
+            else
+                maxCases = min(10, max(1, userCount));
+                fprintf("[Gen] user count = %d → 우선순위 상위 %d건 산출\n", ...
+                    userCount, maxCases);
+            end
             res = py.dashboard_step.generate_normalized_test_cases( ...
-                histJson, string(nl), int32(10));
+                histJson, string(nl), int32(maxCases));
             d = struct(res);
             txt = string(char(d.text));
             lines = splitlines(txt);
@@ -1749,11 +1805,73 @@ start(tmr);
             replayDropdown.Items     = namesCell;
             replayDropdown.ItemsData = pathsCell;
             replayDropdown.Value     = pathsCell{1};
-            lblReplayStatus.Text = sprintf("  %d개의 스위트 발견 — 선택 후 ▶ Replay 를 누르세요.", nFound);
+            lblReplayStatus.Text = sprintf("  %d개의 스위트 발견 — 케이스 선택 후 ▶ Replay 를 누르세요.", nFound);
             fprintf("[Refresh] data/test_suites/ 스캔 → %d건 발견.\n", nFound);
+            % Auto-populate case dropdown for the first suite so user can
+            % replay immediately without having to re-click the suite dropdown.
+            onSuiteSelected([]);
         catch ME
             lblReplayStatus.Text = sprintf("  새로고침 실패: %s", ME.message);
             fprintf("[Refresh] 실패: %s\n", ME.message);
+        end
+    end
+
+    function onSuiteSelected(~)
+        % Suite dropdown changed → load that suite's cases into caseDropdown.
+        % Cases are listed in PRIORITY order as stored in the JSON (already
+        % sorted by the optimizer: WORST_FAIL → BEST_PASS → BOUNDARY_* →
+        % MARGINAL → DIVERSITY).
+        try
+            selPath = string(replayDropdown.Value);
+            if strlength(selPath) == 0
+                caseDropdown.Items     = {'  (스위트 선택 후 표시됨)'};
+                caseDropdown.ItemsData = {0};
+                caseDropdown.Value     = 0;
+                return;
+            end
+            pyPayload = py.dashboard_step.load_test_suite(selPath);
+            payload   = struct(pyPayload);
+            if isfield(payload, "error")
+                caseDropdown.Items     = {sprintf('  (로드 실패: %s)', string(char(payload.error)))};
+                caseDropdown.ItemsData = {0};
+                caseDropdown.Value     = 0;
+                return;
+            end
+            cases = cell(payload.cases);
+            if isempty(cases)
+                caseDropdown.Items     = {'  (스위트에 case 없음)'};
+                caseDropdown.ItemsData = {0};
+                caseDropdown.Value     = 0;
+                return;
+            end
+            % Build display labels — show case # + verdict + label
+            namesCell = cell(1, numel(cases));
+            idxData   = cell(1, numel(cases));
+            for k = 1:numel(cases)
+                c = struct(cases{k});
+                lbl = "(unnamed)";
+                if isfield(c, "label"), lbl = string(char(c.label)); end
+                vd  = "?";
+                if isfield(c, "verdict"), vd = string(char(c.verdict)); end
+                cat = "";
+                if isfield(c, "coverage_category")
+                    cat = " [" + string(char(c.coverage_category)) + "]";
+                end
+                namesCell{k} = char(sprintf('Case %d%s — %s → 예상: %s', ...
+                    k, cat, lbl, vd));
+                idxData{k} = k;
+            end
+            caseDropdown.Items     = namesCell;
+            caseDropdown.ItemsData = idxData;
+            caseDropdown.Value     = idxData{1};
+            fprintf("[Suite] '%s' 로드 → %d 케이스 목록 채움\n", ...
+                replayDropdown.Items{find(cellfun(@(p) strcmp(p, char(selPath)), replayDropdown.ItemsData), 1)}, ...
+                numel(cases));
+        catch ME
+            caseDropdown.Items     = {sprintf('  (로드 실패: %s)', ME.message)};
+            caseDropdown.ItemsData = {0};
+            caseDropdown.Value     = 0;
+            fprintf("[Suite] 로드 실패: %s\n", ME.message);
         end
     end
 
@@ -1788,6 +1906,13 @@ start(tmr);
             lblReplayStatus.Text = "  스위트가 선택되지 않았습니다. 🔄 새로고침 후 드롭다운에서 선택하세요.";
             return;
         end
+        % Read which individual case the user picked
+        caseIdx = double(caseDropdown.Value);
+        if isempty(caseIdx) || caseIdx < 1
+            lblReplayStatus.Text = "  케이스가 선택되지 않았습니다. 위 드롭다운에서 케이스 하나를 선택하세요.";
+            fprintf("[Replay]   no case selected (caseIdx=%g)\n", caseIdx);
+            return;
+        end
         try
             fprintf("[Replay]   .. step 1: calling py.dashboard_step.load_test_suite\n");
             pyPayload = py.dashboard_step.load_test_suite(selPath);
@@ -1801,21 +1926,23 @@ start(tmr);
             end
             fprintf("[Replay]   .. step 3: extracting cases list\n");
             cases = cell(payload.cases);
-            fprintf("[Replay]   .. step 4: %d case(s) found in suite\n", numel(cases));
-            if isempty(cases)
-                lblReplayStatus.Text = "  스위트에 case가 없습니다.";
+            fprintf("[Replay]   .. step 4: %d case(s) in suite, user picked #%d\n", ...
+                numel(cases), caseIdx);
+            if isempty(cases) || caseIdx > numel(cases)
+                lblReplayStatus.Text = sprintf("  선택된 케이스 인덱스 %d 가 스위트 범위(%d)를 벗어남.", ...
+                    caseIdx, numel(cases));
                 return;
             end
-            fprintf("[Replay]   .. step 5: converting py.dict cases to MATLAB struct\n");
-            caseStructs = cell(1, numel(cases));
-            for k = 1:numel(cases)
-                caseStructs{k} = struct(cases{k});
-            end
-            state.replaySuite   = caseStructs;
+            fprintf("[Replay]   .. step 5: extracting only case #%d (single-case replay mode)\n", caseIdx);
+            % Single-case replay — state.replaySuite contains ONLY the
+            % chosen case. advanceReplay will run it once, finalizeRun will
+            % call recordReplayResult → cooldown → advanceReplay sees idx
+            % == length and calls finishReplay.
+            state.replaySuite   = { struct(cases{caseIdx}) };
             state.replayIdx     = 0;
             state.replayResults = {};
             state.replayActive  = true;
-            fprintf("[Replay]   .. step 6: state.replayActive=true, suite cached\n");
+            fprintf("[Replay]   .. step 6: state.replayActive=true, single case cached\n");
             % Disable auto-loop during replay (they conflict)
             if autoToggle.Value
                 fprintf("[Replay]   .. step 7: disabling auto-loop\n");
@@ -1826,9 +1953,10 @@ start(tmr);
             btnReplayStop.Enable = "on";
             btnRefreshSuites.Enable = "off";
             replayDropdown.Enable = "off";
+            caseDropdown.Enable   = "off";
             % Show banner in the test-cases panel
-            lblTestCases.Value = sprintf("[Replay] 시작 (%d cases) ...", numel(cases));
-            fprintf("[Replay]   .. step 8: calling advanceReplay() for case 1\n");
+            lblTestCases.Value = sprintf("[Replay] Case %d 단독 재실행 중 ...", caseIdx);
+            fprintf("[Replay]   .. step 8: calling advanceReplay() for the single picked case\n");
             advanceReplay();
         catch ME
             lblReplayStatus.Text = sprintf("  로드 실패: %s", ME.message);
@@ -1845,6 +1973,7 @@ start(tmr);
             btnReplayStop.Enable    = "off";
             btnRefreshSuites.Enable = "on";
             replayDropdown.Enable   = "on";
+            caseDropdown.Enable     = "on";
         end
     end
 
@@ -1856,6 +1985,7 @@ start(tmr);
         btnReplayStop.Enable    = "off";
         btnRefreshSuites.Enable = "on";
         replayDropdown.Enable   = "on";
+        caseDropdown.Enable     = "on";
         lblReplayStatus.Text = sprintf("  중단됨 — %d/%d case 완료.", ...
             state.replayIdx, numel(state.replaySuite));
         finishReplay();
@@ -1979,6 +2109,7 @@ start(tmr);
         btnReplayStop.Enable    = "off";
         btnRefreshSuites.Enable = "on";
         replayDropdown.Enable   = "on";
+        caseDropdown.Enable     = "on";
 
         if isempty(results)
             lblTestCases.Value = "  (Replay 결과 없음)";
