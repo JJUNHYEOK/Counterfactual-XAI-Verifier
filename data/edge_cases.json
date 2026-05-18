@@ -70,5 +70,53 @@
     "iter": 2,
     "mode": "manual",
     "saved_at": "2026-05-13T16:23:20+09:00"
+  },
+  {
+    "fog": 25.0,
+    "ill": 6000.0,
+    "noi": 0.05,
+    "metric": 0.37486497714997924,
+    "metric_person": 0.593103448275862,
+    "metric_vehicle": 0.1566265060240964,
+    "verdict": "MARGINAL",
+    "iter": 6,
+    "mode": "replay_2_of_5",
+    "saved_at": "2026-05-13T19:45:42+09:00"
+  },
+  {
+    "fog": 60.0,
+    "ill": 3000.0,
+    "noi": 0.1,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 7,
+    "mode": "replay_3_of_5",
+    "saved_at": "2026-05-13T19:46:14+09:00"
+  },
+  {
+    "fog": 15.0,
+    "ill": 600.0,
+    "noi": 0.2,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 8,
+    "mode": "replay_4_of_5",
+    "saved_at": "2026-05-13T19:46:46+09:00"
+  },
+  {
+    "fog": 90.0,
+    "ill": 300.0,
+    "noi": 0.55,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 9,
+    "mode": "replay_5_of_5",
+    "saved_at": "2026-05-13T19:47:18+09:00"
   }
 ]
