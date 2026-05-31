@@ -36,28 +36,28 @@
     "saved_at": "2026-05-12T17:09:49+09:00"
   },
   {
-    "fog": 35.0,
-    "ill": 6000.0,
-    "noi": 0.22,
-    "metric": 0.034482758620689655,
-    "metric_person": 0.06896551724137931,
-    "metric_vehicle": 0.0,
+    "fog": 40.125,
+    "ill": 5681.25,
+    "noi": 0.1875,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
     "verdict": "FAIL",
-    "iter": 2,
-    "mode": "rule_push",
-    "saved_at": "2026-05-12T22:38:45+09:00"
+    "iter": 4,
+    "mode": "boundary_push",
+    "saved_at": "2026-05-31T22:46:43+09:00"
   },
   {
-    "fog": 28.4047,
-    "ill": 7319.0625,
-    "noi": 0.176,
-    "metric": 0.20602409638554217,
-    "metric_person": 0.4,
-    "metric_vehicle": 0.012048192771084338,
+    "fog": 29.1562,
+    "ill": 7326.5625,
+    "noi": 0.1144,
+    "metric": 0.1896551724137931,
+    "metric_person": 0.3793103448275862,
+    "metric_vehicle": 0,
     "verdict": "FAIL",
-    "iter": 6,
+    "iter": 5,
     "mode": "boundary_recover",
-    "saved_at": "2026-05-12T22:40:55+09:00"
+    "saved_at": "2026-05-31T22:47:15+09:00"
   },
   {
     "fog": 5.0,
@@ -118,5 +118,29 @@
     "iter": 9,
     "mode": "replay_5_of_5",
     "saved_at": "2026-05-13T19:47:18+09:00"
+  },
+  {
+    "fog": 48.0,
+    "ill": 4500.0,
+    "noi": 0.24,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 2,
+    "mode": "rule_push",
+    "saved_at": "2026-05-31T22:45:38+09:00"
+  },
+  {
+    "fog": 25.5,
+    "ill": 7875.0,
+    "noi": 0.09,
+    "metric": 0.34902368093061903,
+    "metric_person": 0.5655172413793104,
+    "metric_vehicle": 0.13253012048192772,
+    "verdict": "MARGINAL",
+    "iter": 3,
+    "mode": "boundary_recover",
+    "saved_at": "2026-05-31T22:46:10+09:00"
   }
 ]

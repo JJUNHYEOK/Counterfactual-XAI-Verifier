@@ -951,20 +951,33 @@ def _tolerance_for(verdict: str, metric: float) -> dict:
 
 
 def _rule_select_cases(history: list, max_cases: int) -> list:
-    """Principled boundary-search case selector.
+    """Principled boundary-search case selector (boundary-first priority).
 
     Selection priority (in order — each case is tagged with the rule that
     chose it so the output can show *why* it was selected):
 
-        1. WORST_FAIL       — lowest-mAP FAIL case  (worst-case envelope)
-        2. BEST_PASS        — highest-mAP PASS case (regression baseline)
-        3. BOUNDARY_FAIL    — highest-mAP FAIL case (just past failure line)
-        4. BOUNDARY_PASS    — lowest-mAP PASS case  (just inside safe line)
-        5. MARGINAL_*       — every MARGINAL case   (literally on the boundary)
-        6. DIVERSITY_*      — remaining PASS / FAIL spread across the envelope
-                              (sorted by mAP, kept only if L1 distance to
-                              already-selected cases ≥ 0.15 in normalised
-                              (fog/100, ill/15000, noi) space)
+        1. MARGINAL_*       — every MARGINAL case (literally on the boundary,
+                              sorted by |metric - 0.5| ascending so the most
+                              boundary-relevant appears first)
+        2. BOUNDARY_FAIL    — highest-mAP FAIL case (just past failure line)
+                              *skip_dedup* — boundary roles must survive even
+                              when adjacent to a MARGINAL anchor in L1 space
+        3. BOUNDARY_PASS    — lowest-mAP PASS case (just inside safe line)
+                              *skip_dedup* — same rationale as BOUNDARY_FAIL
+        4. WORST_FAIL       — lowest-mAP FAIL case (operational-limit anchor)
+        5. BEST_PASS        — highest-mAP PASS case (regression baseline)
+        6. DIVERSITY_*      — remaining PASS / FAIL / MARGINAL spread across
+                              the envelope (sorted by |mAP - 0.5|, kept only
+                              if L1 distance to already-selected cases
+                              ≥ 0.15 in normalised (fog/100, ill/15000, noi)
+                              space)
+
+    Dedup note: primary boundary roles (steps 2 and 3) bypass the L1 < 0.15
+    near-duplicate check. The boundary-search algorithm intrinsically
+    produces MARGINAL / BOUNDARY_FAIL / BOUNDARY_PASS cases very close to
+    each other in normalised space (often L1 < 0.05), so applying dedup
+    would silently drop the most informative boundary anchors. Dedup is
+    still applied to secondary anchors (steps 4-6) for archival diversity.
 
     Returns a list of dicts:
         {label, fog, ill, noi, verdict, metric, source_iter,
@@ -1032,11 +1045,11 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
                 return True
         return False
 
-    def _add(r, reason):
+    def _add(r, reason, skip_dedup: bool = False):
         if len(picked) >= max_cases:
             return False
         c = _norm(r)
-        if _too_close(c):
+        if (not skip_dedup) and _too_close(c):
             return False
         seen.append(c)
         v = r.get("verdict", "PASS")
@@ -1083,14 +1096,18 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
         _add(r, "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)")
 
     # 2. BOUNDARY_FAIL — FAIL closest to PASS threshold (실패 측 경계 인접)
+    #    skip_dedup: boundary roles must survive proximity to MARGINAL
     if fail_cases:
         _add(max(fail_cases, key=lambda r: float(r.get("metric", 0))),
-             "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)")
+             "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+             skip_dedup=True)
 
     # 3. BOUNDARY_PASS — PASS closest to FAIL threshold (통과 측 경계 인접)
+    #    skip_dedup: same rationale as BOUNDARY_FAIL
     if pass_cases:
         _add(min(pass_cases, key=lambda r: float(r.get("metric", 1))),
-             "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)")
+             "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+             skip_dedup=True)
 
     # 4. WORST_FAIL — operational-limit anchor (secondary)
     if fail_cases:
