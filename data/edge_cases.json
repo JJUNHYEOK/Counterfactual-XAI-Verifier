@@ -144,15 +144,15 @@
     "saved_at": "2026-06-01T14:38:42+09:00"
   },
   {
-    "fog": 0.0,
-    "ill": 13500.0,
-    "noi": 0.0,
-    "metric": 0.03361030328209389,
-    "metric_person": 0.05517241379310345,
-    "metric_vehicle": 0.012048192771084338,
+    "fog": 0,
+    "ill": 15000,
+    "noi": 0,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
     "verdict": "FAIL",
     "iter": 2,
     "mode": "rule_relax",
-    "saved_at": "2026-06-01T14:39:15+09:00"
+    "saved_at": "2026-06-01T14:53:28+09:00"
   }
 ]

@@ -500,7 +500,7 @@ zlim(ax3, [0 max(Zg(:))+30]);
 % =========================================================================
 % Camera image init
 % =========================================================================
-img0 = render_camera_image(uav_xyz(1,:), obs_xyz, obs_rh, ...
+img0 = render_eo_image(uav_xyz(1,:), obs_xyz, obs_rh, ...
     fog0, illum0, noise0, camIntrin, [camW camH]);
 imHandle = imagesc(ax2, img0);
 set(ax2, "YDir", "reverse");
@@ -1198,8 +1198,8 @@ start(tmr);
                 "ZData", [uav(3) fcorn(ll,3)]);
         end
 
-        % --- Re-render synthetic camera image with CURRENT weather ---
-        img = render_camera_image(uav, obs_xyz, obs_rh, ...
+        % --- Re-render EO camera image (3D 1st-person via dispatcher) ---
+        img = render_eo_image(uav, obs_xyz, obs_rh, ...
             fog, ill, noi, camIntrin, [camW camH]);
         set(imHandle, "CData", img);
 
