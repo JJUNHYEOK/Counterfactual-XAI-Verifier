@@ -40,6 +40,12 @@ if size(img, 1) ~= H || size(img, 2) ~= W
     img = imresize(img, [H W]);
 end
 
+% MATLAB's 3D camera handedness puts world +y to image LEFT, but the
+% pinhole projector that computes GT bboxes (project_cylinder in
+% render_camera_image.m) puts +y to image RIGHT. Flip horizontally so
+% the 3D capture geometrically aligns with the GT bbox overlay.
+img = img(:, end:-1:1, :);
+
 % Weather post-processing — same as render_camera_image
 img = apply_weather(img, fog, illum, noise);
 end
@@ -63,19 +69,49 @@ axis(eo3d.ax, "off");
 % Sky-tinted background by clearing to a gradient via patch
 set(eo3d.ax, "Color", "none");
 
-% --- Terrain ---
+% --- Terrain (mountain-style coloring + strong shading + far-field peaks) ---
+eo3d.terrain = [];
 try
     Xg = evalin("base", "TERRAIN_X");
     Yg = evalin("base", "TERRAIN_Y");
     Zg = evalin("base", "TERRAIN_Z");
-    eo3d.terrain = surf(eo3d.ax, Xg, Yg, Zg, ...
+    % Far-field mountain boost — only away from the UAV flight corridor
+    % (|y| > 25 m) so intruders/UAV near the path stay on the original
+    % terrain elevation and project to the same GT bbox as the 2D model.
+    dist_from_path = max(0, abs(Yg) - 25);   % 0 within corridor, grows outside
+    far_x = max(0, abs(Xg) - 70);            % extra peaks beyond x = ±70
+    mtn_boost = 0.45 * dist_from_path.^1.25 + 0.30 * far_x.^1.10 ...
+              + 1.8 * sin(0.07 * Xg) .* cos(0.05 * Yg) .* (dist_from_path > 10);
+    Zr = Zg + mtn_boost;
+
+    eo3d.terrain = surf(eo3d.ax, Xg, Yg, Zr, Zr, ...   % CData = Zr → color by height
         "EdgeColor", "none", ...
-        "FaceColor", [0.42 0.50 0.30], ...
         "FaceLighting", "gouraud", ...
-        "AmbientStrength", 0.55, ...
-        "DiffuseStrength", 0.65);
+        "AmbientStrength", 0.35, ...
+        "DiffuseStrength", 0.85, ...
+        "SpecularStrength", 0.05);
+    % Mountain colormap: grass(low) → tan(mid) → rock(high) → snow(peak)
+    mtn_cmap = [
+        0.18 0.40 0.16;    % deep grass valley
+        0.28 0.50 0.20;
+        0.38 0.55 0.25;    % alpine meadow
+        0.52 0.52 0.30;
+        0.62 0.50 0.32;    % tan / dry slope
+        0.58 0.45 0.35;
+        0.52 0.42 0.36;    % rocky brown
+        0.50 0.42 0.40;
+        0.55 0.50 0.48;    % grey rocks
+        0.70 0.68 0.65;
+        0.85 0.85 0.88;    % near-peak rocks
+        0.95 0.95 0.97;    % snow cap
+    ];
+    colormap(eo3d.ax, mtn_cmap);
+    caxis(eo3d.ax, [0 max(Zr(:))]);
+    xlim(eo3d.ax, [min(Xg(:)) max(Xg(:))]);
+    ylim(eo3d.ax, [min(Yg(:)) max(Yg(:))]);
+    zlim(eo3d.ax, [0 max(Zr(:)) + 80]);
 catch
-    eo3d.terrain = [];
+    xlim(eo3d.ax, [-100 100]); ylim(eo3d.ax, [-100 100]); zlim(eo3d.ax, [0 80]);
 end
 
 % --- Scenery (trees, rocks — non-targets, background clutter) ---
@@ -168,39 +204,165 @@ end
 
 
 % =========================================================================
-% Person 3D model: body cylinder + head sphere (similar to mountain_visualizer)
+% Person 3D model: humanoid figure
+%   legs (2 cylinders) + torso (tapered cylinder) + arms (2 cylinders) +
+%   head (sphere) + hair cap. Proportions chosen so the silhouette reads
+%   as "human" even when viewed from above at 60° pitch.
 % =========================================================================
 function handles = draw_person_3d(ax, base, r, h)
-color = [0.20 0.50 0.95];
-% Body cylinder
-[xc, yc, zc] = cylinder(r, 12);
-zc = zc * h;  xc = xc + base(1);  yc = yc + base(2);  zc = zc + base(3);
-b = surf(ax, xc, yc, zc, "EdgeColor", "none", "FaceColor", color);
-% Head sphere
-[sx, sy, sz] = sphere(10);
-sx = sx * (r*1.1) + base(1);
-sy = sy * (r*1.1) + base(2);
-sz = sz * (r*1.0) + base(3) + h;
-hd = surf(ax, sx, sy, sz, "EdgeColor", "none", "FaceColor", color*0.85);
-handles = [b; hd];
+shirt_color = [0.20 0.50 0.95];   % blue shirt (matches old 2D person color)
+pants_color = [0.15 0.20 0.50];   % darker blue pants
+skin_color  = [0.92 0.78 0.62];   % light skin
+hair_color  = [0.28 0.18 0.12];   % dark brown
+
+leg_h   = h * 0.48;
+torso_h = h * 0.32;
+head_h  = h * 0.20;
+leg_top   = base(3) + leg_h;
+torso_top = leg_top + torso_h;
+
+handles = gobjects(0);
+
+% --- Legs: two parallel cylinders ---
+leg_r   = r * 0.20;
+leg_sep = r * 0.30;
+[xc, yc, zc] = cylinder(leg_r, 10);
+zc = zc * leg_h;
+for sgn = [-1, +1]
+    h_leg = surf(ax, xc + base(1), yc + base(2) + sgn*leg_sep, zc + base(3), ...
+        "EdgeColor", "none", "FaceColor", pants_color);
+    handles = [handles; h_leg]; %#ok<AGROW>
+end
+
+% --- Torso: tapered cylinder (wide shoulders → narrow waist top→bottom flip)
+torso_r_bot = r * 0.32;
+torso_r_top = r * 0.45;       % shoulders wider than waist for clear silhouette
+[xt, yt, zt] = cylinder([torso_r_bot, torso_r_top], 14);
+zt = zt * torso_h + leg_top;
+h_torso = surf(ax, xt + base(1), yt + base(2), zt, ...
+    "EdgeColor", "none", "FaceColor", shirt_color);
+handles = [handles; h_torso];
+
+% --- Arms: 2 cylinders along sides of torso ---
+arm_r = r * 0.12;
+arm_h = torso_h * 0.95;
+[xa, ya, za] = cylinder(arm_r, 8);
+za = za * arm_h + leg_top + torso_h * 0.05;
+for sgn = [-1, +1]
+    h_arm = surf(ax, xa + base(1), ya + base(2) + sgn * torso_r_top, za, ...
+        "EdgeColor", "none", "FaceColor", shirt_color * 0.85);
+    handles = [handles; h_arm];
+end
+
+% --- Head: sphere ---
+head_r = r * 0.30;
+[sx, sy, sz] = sphere(12);
+h_head = surf(ax, sx*head_r + base(1), sy*head_r + base(2), ...
+    sz*head_r + torso_top + head_r, ...
+    "EdgeColor", "none", "FaceColor", skin_color);
+handles = [handles; h_head];
+
+% --- Hair: smaller sphere offset to top of head, only top half visible ---
+hr = head_r * 1.05;
+[hx, hy, hz] = sphere(10);
+% Top-hemisphere by clamping bottom: set CData / use alpha — simpler:
+% Draw a slightly raised dark sphere; the body sphere covers the bottom.
+h_hair = surf(ax, hx*hr + base(1), hy*hr + base(2), ...
+    hz*hr*0.85 + torso_top + head_r + head_r*0.25, ...
+    "EdgeColor", "none", "FaceColor", hair_color);
+handles = [handles; h_hair];
 end
 
 
 % =========================================================================
-% Vehicle 3D model: wider squat cylinder + dome on top (simplified)
+% Vehicle 3D model: SUV silhouette
+%   lower chassis box + upper cabin box + 4 black wheel cylinders + windshield.
+%   Oriented along +x (assumes UAV flies +x; intruder vehicles parked or
+%   moving along corridor). Patch faces with vertex colors → clear body /
+%   window contrast.
 % =========================================================================
 function handles = draw_vehicle_3d(ax, base, r, h)
-color = [0.95 0.55 0.10];
-% Body cylinder (wider, shorter)
-[xc, yc, zc] = cylinder(r, 16);
-zc = zc * (h * 0.55);  xc = xc + base(1);  yc = yc + base(2);  zc = zc + base(3);
-b = surf(ax, xc, yc, zc, "EdgeColor", [0.30 0.30 0.30], "FaceColor", color);
-% Roof / cabin — smaller cylinder stacked on top
-[xc2, yc2, zc2] = cylinder(r * 0.55, 16);
-zc2 = zc2 * (h * 0.45) + base(3) + h * 0.55;
-xc2 = xc2 + base(1);  yc2 = yc2 + base(2);
-c = surf(ax, xc2, yc2, zc2, "EdgeColor", "none", "FaceColor", color*0.75);
-handles = [b; c];
+body_color   = [0.95 0.55 0.10];   % orange body
+roof_color   = body_color * 0.75;
+window_color = [0.18 0.25 0.40];   % dark blue-grey glass
+wheel_color  = [0.10 0.10 0.10];   % black tire
+hub_color    = [0.55 0.55 0.55];   % grey hub
+
+% Approximate SUV dimensions (longer-than-wide)
+L = max(3.6, r * 2.3);    % length (along x)
+W = max(2.0, r * 1.25);   % width (along y)
+chassis_h = h * 0.55;
+cabin_h   = h * 0.45;
+
+handles = gobjects(0);
+
+% --- Chassis (lower box) ---
+hC = draw_box(ax, base(1), base(2), base(3), L, W, chassis_h, body_color);
+handles = [handles; hC];
+
+% --- Cabin (upper box, narrower & shorter, slightly toward back) ---
+cabin_L = L * 0.65;
+cabin_W = W * 0.92;
+cabin_x = base(1) - L * 0.05;          % cabin slightly toward back (visual hint)
+cabin_z0 = base(3) + chassis_h;
+hCab = draw_box(ax, cabin_x, base(2), cabin_z0, cabin_L, cabin_W, cabin_h, ...
+    window_color);
+handles = [handles; hCab];
+
+% --- Roof (thin coloured plate on top of cabin so cabin doesn't look like
+%     pure glass when viewed from above) ---
+roof_z = cabin_z0 + cabin_h * 0.85;
+hRoof = draw_box(ax, cabin_x, base(2), roof_z, cabin_L * 0.95, cabin_W * 0.95, ...
+    cabin_h * 0.18, roof_color);
+handles = [handles; hRoof];
+
+% --- 4 wheels: cylinders rotated to lie horizontally with axis along y ---
+wheel_r = 0.42;
+wheel_w = 0.30;
+wx_off = L * 0.32;                     % front/rear axle offset
+wy_off = W * 0.50 + wheel_w * 0.10;    % outside body
+[cx, cy, cz] = cylinder(wheel_r, 14);
+% Rotate so axis lies along y: cylinder length cz → y direction
+xL = cx;
+yL = (cz - 0.5) * wheel_w;             % centred wheel width on y
+zL = cy + wheel_r;                     % wheel touches ground at base(3)
+for sx = [-wx_off, +wx_off]
+    for sy = [-wy_off, +wy_off]
+        h_wheel = surf(ax, xL + base(1) + sx, yL + base(2) + sy, zL + base(3), ...
+            "EdgeColor", "none", "FaceColor", wheel_color);
+        handles = [handles; h_wheel];
+        % Small hub disc (centre of wheel)
+        [hubx, huby, hubz] = cylinder(wheel_r * 0.35, 12);
+        hubx2 = hubx;
+        huby2 = (hubz - 0.5) * (wheel_w * 1.05);
+        hubz2 = huby + wheel_r;
+        h_hub = surf(ax, hubx2 + base(1) + sx, huby2 + base(2) + sy, hubz2 + base(3), ...
+            "EdgeColor", "none", "FaceColor", hub_color);
+        handles = [handles; h_hub];
+    end
+end
+end
+
+
+% =========================================================================
+% Axis-aligned box helper using patch — accepts (cx, cy, z0, Lx, Ly, Lz, color)
+% =========================================================================
+function h = draw_box(ax, cx, cy, z0, Lx, Ly, Lz, color)
+hx = Lx / 2; hy = Ly / 2;
+verts = [
+    cx - hx, cy - hy, z0;
+    cx + hx, cy - hy, z0;
+    cx + hx, cy + hy, z0;
+    cx - hx, cy + hy, z0;
+    cx - hx, cy - hy, z0 + Lz;
+    cx + hx, cy - hy, z0 + Lz;
+    cx + hx, cy + hy, z0 + Lz;
+    cx - hx, cy + hy, z0 + Lz;
+];
+faces = [1 2 3 4; 5 6 7 8; 1 2 6 5; 2 3 7 6; 3 4 8 7; 4 1 5 8];
+h = patch("Parent", ax, "Vertices", verts, "Faces", faces, ...
+    "FaceColor", color, "EdgeColor", "none", ...
+    "FaceLighting", "gouraud", "AmbientStrength", 0.45);
 end
 
 
@@ -208,26 +370,44 @@ end
 % Tree / rock helpers (scenery only — no per-frame update needed)
 % =========================================================================
 function h = draw_tree(ax, base, r)
-% Trunk
-[xc, yc, zc] = cylinder(r*0.18, 10);
-zc = zc * (r*1.4);  xc = xc + base(1);  yc = yc + base(2);  zc = zc + base(3);
-t = surf(ax, xc, yc, zc, "EdgeColor", "none", "FaceColor", [0.45 0.30 0.20]);
-% Canopy
-[sx, sy, sz] = sphere(8);
-sx = sx * r + base(1);
-sy = sy * r + base(2);
-sz = sz * (r * 0.8) + base(3) + r * 1.2;
-c = surf(ax, sx, sy, sz, "EdgeColor", "none", "FaceColor", [0.12 0.40 0.18]);
-h = [t; c];
+% Distinct tree silhouette: tall thick brown trunk + bushy green canopy stack.
+% Multi-layer canopy makes it readable as "tree" even at distance.
+trunk_h = r * 2.2;                      % taller trunk so canopy clears ground
+trunk_r = max(0.20, r * 0.28);
+[xc, yc, zc] = cylinder(trunk_r, 12);
+zc = zc * trunk_h;
+xc = xc + base(1);  yc = yc + base(2);  zc = zc + base(3);
+t = surf(ax, xc, yc, zc, "EdgeColor", "none", "FaceColor", [0.42 0.27 0.16]);
+
+% Lower canopy ball
+[sx, sy, sz] = sphere(10);
+lc = surf(ax, sx*r*1.05 + base(1), sy*r*1.05 + base(2), sz*r*0.9 + base(3) + trunk_h*0.85, ...
+    "EdgeColor", "none", "FaceColor", [0.15 0.42 0.18]);
+% Mid canopy ball (slightly higher and offset)
+mc = surf(ax, sx*r*0.85 + base(1), sy*r*0.85 + base(2), sz*r*0.8 + base(3) + trunk_h*1.15, ...
+    "EdgeColor", "none", "FaceColor", [0.18 0.50 0.22]);
+% Top tip (smaller, brighter green) — gives clear pine-tree silhouette
+tc = surf(ax, sx*r*0.55 + base(1), sy*r*0.55 + base(2), sz*r*0.6 + base(3) + trunk_h*1.45, ...
+    "EdgeColor", "none", "FaceColor", [0.22 0.58 0.25]);
+h = [t; lc; mc; tc];
 end
 
 function h = draw_rock(ax, base, r)
-[sx, sy, sz] = sphere(8);
-sx = sx * r + base(1);
-sy = sy * r + base(2);
-sz = sz * (r * 0.5) + base(3) + r * 0.3;
-h = surf(ax, sx, sy, sz, "EdgeColor", "none", ...
-    "FaceColor", [0.50 0.45 0.40]);
+% Irregular rocky look: cluster of 2-3 grey spheres with mottled colors
+% so it doesn't read as a perfect ball.
+[sx, sy, sz] = sphere(10);
+% Main rock body
+b1 = surf(ax, sx*r + base(1), sy*r + base(2), sz*r*0.55 + base(3) + r*0.30, ...
+    "EdgeColor", "none", "FaceColor", [0.55 0.50 0.45]);
+% Adjacent smaller bump (offset for irregularity)
+b2 = surf(ax, sx*r*0.65 + base(1) + r*0.45, sy*r*0.65 + base(2) - r*0.30, ...
+    sz*r*0.45 + base(3) + r*0.20, ...
+    "EdgeColor", "none", "FaceColor", [0.45 0.40 0.36]);
+% Small chip (darker — moss/shadow shading)
+b3 = surf(ax, sx*r*0.35 + base(1) - r*0.40, sy*r*0.35 + base(2) + r*0.20, ...
+    sz*r*0.30 + base(3) + r*0.10, ...
+    "EdgeColor", "none", "FaceColor", [0.38 0.36 0.32]);
+h = [b1; b2; b3];
 end
 
 
