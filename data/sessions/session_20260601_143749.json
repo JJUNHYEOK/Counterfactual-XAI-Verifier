@@ -1,0 +1,34 @@
+[
+  {
+    "iter": 1,
+    "fog": 18,
+    "ill": 7500,
+    "noi": 0.08,
+    "metric": 0.023265475695886995,
+    "metric_person": 0.034482758620689655,
+    "metric_vehicle": 0.012048192771084338,
+    "verdict": "FAIL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 4,
+    "n_intruders_missed": 1,
+    "mode": "seed",
+    "analysis": "Initial seed — user-defined operating baseline"
+  },
+  {
+    "iter": 2,
+    "fog": 0,
+    "ill": 13500,
+    "noi": 0,
+    "metric": 0.033610303282093891,
+    "metric_person": 0.055172413793103448,
+    "metric_vehicle": 0.012048192771084338,
+    "verdict": "FAIL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 4,
+    "n_intruders_missed": 1,
+    "mode": "rule_relax",
+    "analysis": "FAIL / no PASS anchor yet → relax to discover safe side"
+  }
+]

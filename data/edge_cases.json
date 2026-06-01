@@ -132,15 +132,27 @@
     "saved_at": "2026-05-31T22:45:38+09:00"
   },
   {
-    "fog": 25.5,
-    "ill": 7875.0,
-    "noi": 0.09,
-    "metric": 0.34902368093061903,
-    "metric_person": 0.5655172413793104,
-    "metric_vehicle": 0.13253012048192772,
-    "verdict": "MARGINAL",
-    "iter": 3,
-    "mode": "boundary_recover",
-    "saved_at": "2026-05-31T22:46:10+09:00"
+    "fog": 18,
+    "ill": 7500,
+    "noi": 0.08,
+    "metric": 0.023265475695886995,
+    "metric_person": 0.034482758620689655,
+    "metric_vehicle": 0.012048192771084338,
+    "verdict": "FAIL",
+    "iter": 1,
+    "mode": "seed",
+    "saved_at": "2026-06-01T14:38:42+09:00"
+  },
+  {
+    "fog": 0.0,
+    "ill": 13500.0,
+    "noi": 0.0,
+    "metric": 0.03361030328209389,
+    "metric_person": 0.05517241379310345,
+    "metric_vehicle": 0.012048192771084338,
+    "verdict": "FAIL",
+    "iter": 2,
+    "mode": "rule_relax",
+    "saved_at": "2026-06-01T14:39:15+09:00"
   }
 ]
