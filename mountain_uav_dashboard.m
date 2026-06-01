@@ -162,27 +162,27 @@ tabGroup.Layout.Row = 2; tabGroup.Layout.Column = 1;
 
 tab1 = uitab(tabGroup, "Title", "① 요구사항 입력");
 tab2 = uitab(tabGroup, "Title", "② 시뮬레이션");
-tab3 = uitab(tabGroup, "Title", "③ Replay");
+tab3 = uitab(tabGroup, "Title", "③ 테스트 케이스");
 tab4 = uitab(tabGroup, "Title", "④ LLM 요약");
 
 % =========================================================================
 % Preset scenario constants — used by Tab 1 dropdown + auto-loop env init.
 % =========================================================================
 SCENARIO_NAMES = [ ...
-    "① 맑은 한낮 baseline (정상 작전) — fog 5%·ill 12000lx·noi 0.02", ...
-    "② 봄·가을 옅은 시계 (일상 작전) — fog 10%·ill 10000lx·noi 0.03", ...
-    "③ 옅은 산 안개 (시계 제한 작전) — fog 18%·ill 9000lx·noi 0.04", ...
-    "④ 정오 부분 흐림 (광량 양호 작전) — fog 12%·ill 7500lx·noi 0.05", ...
-    "⑤ 이른 오후 옅은 안개 (센서 약간 노후) — fog 15%·ill 8500lx·noi 0.06"];
-SCENARIO_FOG = [  5,   10,   18,   12,   15];
-SCENARIO_ILL = [12000, 10000, 9000, 7500, 8500];
-SCENARIO_NOI = [ 0.02, 0.03, 0.04, 0.05, 0.06];
+    "[REQ-1] 표준 작전 환경 (fog 5%·ill 12000lx·noi 0.02) — 침입자 5명 모두 식별", ...
+    "[REQ-2] 저조도 정찰 작전 (fog 5%·ill 6000lx·noi 0.03) — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-3] 안개 침투 작전 (fog 22%·ill 10000lx·noi 0.02) — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-4] 노후 센서 운용 (fog 5%·ill 10000lx·noi 0.12) — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-5] 복합 한계 작전 (fog 18%·ill 7500lx·noi 0.08) — 침입자 5명 중 3명 이상 식별"];
+SCENARIO_FOG = [   5,    5,   22,    5,   18];
+SCENARIO_ILL = [12000, 6000, 10000, 10000, 7500];
+SCENARIO_NOI = [ 0.02, 0.03, 0.02, 0.12, 0.08];
 SCENARIO_NL = [ ...
-    "맑은 한낮 baseline — 정상 산악 작전 환경에서 침입자 식별",
-    "봄·가을의 옅은 시계 — 일반적 한국 산악 일상 작전",
-    "옅은 산 안개와 부분 흐림 — 시계가 약간 제한된 상태",
-    "부분 흐림 정오 — 광량은 충분하나 약간의 안개",
-    "이른 오후 옅은 안개 — 노후 센서로 약간의 잡음 누적"];
+    "표준 작전 환경 — 청명 한낮·정상 센서 baseline 에서 침입자 5명 모두 식별 보장",
+    "저조도 정찰 작전 — 조도 6000 lx 한낮 환경에서 침입자 4명 이상 식별 (광량 강건성 검증)",
+    "안개 침투 작전 — 안개 22% 시계 제한 환경에서 침입자 4명 이상 식별 (시계 강건성 검증)",
+    "노후 센서 운용 — 센서 노이즈 0.12 환경에서 침입자 4명 이상 식별 (센서 열화 강건성 검증)",
+    "복합 한계 작전 — 안개·광량·노이즈 3축 동시 스트레스 환경에서 침입자 3명 이상 식별 (운용 envelope 한계 검증)"];
 
 % =========================================================================
 % TAB 1 — ① 요구사항 입력
@@ -196,7 +196,7 @@ uilabel(tab1Grid, ...
     "Text", "검증 요구사항 입력  -  본 시스템은 PASS/FAIL 경계를 자율 탐색하여 1~10건의 정규화된 회귀 테스트 스위트를 산출합니다. 아래에서 시작 시나리오를 선택한 뒤 [시뮬레이션 시작] 버튼을 누르세요.", ...
     "FontSize", 13, "WordWrap", "on", "VerticalAlignment", "top");
 
-uilabel(tab1Grid, "Text", "▣ 사전 정의 시나리오 (5건 · 모두 PASS 예상)", ...
+uilabel(tab1Grid, "Text", "▣ 사전 정의 요구사항 (5건 · 작전 환경 다양화 — 각각 다른 스트레스 축)", ...
     "FontWeight", "bold", "FontSize", 13);
 
 % Preset selector — dropdown + parsed env display
@@ -312,9 +312,9 @@ lblTestCases = uitextarea(testCasesInner, ...
     "FontSize",   12, "FontName", "Malgun Gothic", ...
     "BackgroundColor", [0.96 1.00 0.96]);
 
-% Middle — case count input + Generate button
-genRow = uigridlayout(tab3Grid, [1, 4], ...
-    "ColumnWidth", {180, 90, '1x', 280}, ...
+% Middle — case count input + Generate button + Download button
+genRow = uigridlayout(tab3Grid, [1, 5], ...
+    "ColumnWidth", {180, 90, '1x', 280, 150}, ...
     "Padding", [0 0 0 0], "ColumnSpacing", 8);
 
 uilabel(genRow, "Text", "산출할 케이스 개수:", ...
@@ -333,6 +333,12 @@ btnGenerateTests = uibutton(genRow, "Text", "🧪 정규화된 테스트 케이�
     "BackgroundColor", [0.20 0.55 0.30], "FontColor", "w", ...
     "FontWeight", "bold", "FontSize", 13, ...
     "Tooltip", "지금까지 수집된 case에서 정규화된 회귀 테스트 케이스를 산출");
+
+btnDownloadTests = uibutton(genRow, "Text", "💾 다운로드", ...
+    "BackgroundColor", [0.20 0.40 0.70], "FontColor", "w", ...
+    "FontWeight", "bold", "FontSize", 13, ...
+    "Enable", "off", ...
+    "Tooltip", "가장 최근에 생성된 테스트 케이스 JSON을 원하는 위치로 저장 (저장한 파일은 Replay에서도 그대로 재현 가능)");
 
 % Bottom — Replay controls (suite + per-case selection + replay)
 replayInnerPanel = uipanel(tab3Grid, ...
@@ -521,6 +527,7 @@ state.history       = struct( ...      % counterfactual run history
 state.iterCount     = 0;
 state.maxIter       = 10;
 state.cooldownTimer = [];
+state.lastSuitePath = "";    % populated after Generate; used by 💾 다운로드
 % --- Replay-mode state (drives Row 5's "이전 테스트 재현" workflow) -----
 %   replayActive : true while a saved suite is being re-run sequentially.
 %   replaySuite  : full payload dict loaded from data/test_suites/*.json.
@@ -559,6 +566,7 @@ btnStop.ButtonPushedFcn  = @(~,~) stopRun();
 btnReset.ButtonPushedFcn = @(~,~) doReset();
 btnSummary.ButtonPushedFcn = @(~,~) onSummaryClicked();
 btnGenerateTests.ButtonPushedFcn = @(~,~) onGenerateTestsClicked();
+btnDownloadTests.ButtonPushedFcn = @(~,~) onDownloadTestsClicked();
 btnRefreshSuites.ButtonPushedFcn = @(~,~) onRefreshSuites();
 btnReplay.ButtonPushedFcn        = @(~,~) onReplayClicked();
 btnReplayStop.ButtonPushedFcn    = @(~,~) onReplayStopClicked();
@@ -1715,6 +1723,16 @@ start(tmr);
             txt = string(char(d.text));
             lines = splitlines(txt);
             lblTestCases.Value = cellstr(lines);
+            % Remember the freshly-exported suite path so the 💾 다운로드
+            % button can copy it to a user-chosen location on demand.
+            try
+                state.lastSuitePath = string(char(d.export_path));
+                if strlength(state.lastSuitePath) > 0
+                    btnDownloadTests.Enable = "on";
+                end
+            catch
+                state.lastSuitePath = "";
+            end
             % Auto-refresh replay dropdown so the freshly-exported suite
             % shows up without the user having to click 🔄 새로고침.
             onRefreshSuites();
@@ -1726,6 +1744,45 @@ start(tmr);
         % We're already on Tab 3 (since the Generate button is here). No
         % auto-switch needed, but ensure the panel is visible.
         try, tabGroup.SelectedTab = tab3; catch, end
+    end
+
+    function onDownloadTestsClicked()
+        % Copy the most recently generated test-suite JSON to a user-chosen
+        % location via uiputfile. The source file always lives in
+        % data/test_suites/ (auto-saved by generate_normalized_test_cases),
+        % so the dashboard's Replay dropdown continues to see it after
+        % download. The downloaded copy is therefore both portable
+        % (carry to another machine) and replayable in-place.
+        if ~isfield(state, "lastSuitePath") || strlength(state.lastSuitePath) == 0
+            uialert(fig, "먼저 🧪 생성 버튼으로 테스트 케이스를 만든 뒤 다운로드하세요.", ...
+                "다운로드 불가");
+            return;
+        end
+        srcPath = char(state.lastSuitePath);
+        if ~isfile(srcPath)
+            uialert(fig, sprintf("원본 파일이 존재하지 않습니다:\n%s", srcPath), ...
+                "다운로드 실패");
+            return;
+        end
+        [~, srcName, srcExt] = fileparts(srcPath);
+        defaultName = [srcName srcExt];
+        % Default destination: user's Downloads folder if it exists, else home.
+        homeDir = char(java.lang.System.getProperty("user.home"));
+        downloads = fullfile(homeDir, "Downloads");
+        if ~isfolder(downloads), downloads = homeDir; end
+        [file, path] = uiputfile({'*.json', 'JSON 테스트 슈트 (*.json)'}, ...
+            "테스트 케이스 다운로드 위치 선택", fullfile(downloads, defaultName));
+        if isequal(file, 0)
+            return;   % user cancelled
+        end
+        dstPath = fullfile(path, file);
+        try
+            copyfile(srcPath, dstPath);
+            uialert(fig, sprintf("저장 완료:\n%s\n\n(원본도 data/test_suites/에 유지되어 Replay 가능)", ...
+                dstPath), "다운로드 성공", "Icon", "success");
+        catch ME
+            uialert(fig, sprintf("저장 실패: %s", ME.message), "다운로드 오류");
+        end
     end
 
     function autoSaveSession()

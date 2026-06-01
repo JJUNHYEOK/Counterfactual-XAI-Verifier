@@ -1,0 +1,18 @@
+[
+  {
+    "iter": 1,
+    "fog": 25.5,
+    "ill": 7875,
+    "noi": 0.09,
+    "metric": 0.34902368093061903,
+    "metric_person": 0.56551724137931036,
+    "metric_vehicle": 0.13253012048192772,
+    "verdict": "MARGINAL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 5,
+    "n_intruders_missed": 0,
+    "mode": "replay_1_of_1",
+    "analysis": "Replay: 옅은 안개 · 정오 광량"
+  }
+]
