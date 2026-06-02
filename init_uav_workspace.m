@@ -38,19 +38,19 @@ assignin('base', 'TERRAIN_Z', Zg);
 %   vehicle : r=1.60,  h=1.80   (≈ 3.2 m diameter cylinder ~ small SUV)
 
 intruderXY = [
-    -35,  4;     % person 1
-     -8, -6;     % person 2
-     12,  9;     % person 3
-     28, -8;     % vehicle 1
-     48,  6      % vehicle 2
-];
+     -7,  3;     % person 1
+     -3, -3;     % person 2   (~4 m gap)
+      1,  4;     % person 3   (~4 m gap)
+      5, -3;     % vehicle 1  (~4 m gap)
+      9,  3;     % vehicle 2  (~4 m gap)
+];   % full span: 16 m — all intruders fit in a single camera FOV pass
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person dims (r, h)
     0.50, 1.80;
     0.50, 1.80;
-    1.60, 1.80;   % vehicle dims
-    1.60, 1.80
+    1.20, 1.60;   % vehicle dims — r=1.2 so bbox tightly matches SUV L=2r=2.4m
+    1.20, 1.60;
 ];
 
 N = size(intruderXY, 1);
@@ -79,7 +79,7 @@ assignin('base', 'SCENERY_OBJECTS', SCENERY_OBJECTS);
 % Lower altitude than first attempt; gives larger projected bboxes
 % (10-25 px) which are still "small-object" but actually detectable.
 uavZ0 = max(Zg(:)) + 15;
-assignin('base', 'UAV_X0_VEC', [-80.0, 0.0, uavZ0]);
+assignin('base', 'UAV_X0_VEC', [-15.0, 0.0, uavZ0]);   % tight to compressed scene (16m intruder span)
 assignin('base', 'UAV_V_VEC',  [3.0,   0.0, 0.0]);
 
 % ── Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ──────────────────
@@ -96,36 +96,42 @@ end
 % Local helper: mountain terrain (must match build_mountain_uav_model.m)
 % =========================================================================
 function S = make_scenery_(Xg, Yg, Zg)
-% Generates ~80 procedural background objects on the mountainside:
+% Generates ~80 procedural background objects DENSELY clustered around the
+% UAV flight corridor (intruder x∈[-7,9], y∈[-3,4]).
 %   type 1 = tree   (radius 0.6~1.5 m, taller)
 %   type 2 = rock   (radius 0.7~2.0 m, low/flat)
 % Output: Mx5 array [x, y, z, radius, type]
-% Avoids placing scenery within 5 m of any intruder so they don't collide
-% visually with the detection targets.
-intruderXY = [-35,4; -8,-6; 12,9; 28,-8; 48,6];
+% Avoids placing scenery within 2 m of any intruder.
+intruderXY = [-7,3; -3,-3; 1,4; 5,-3; 9,3];
+
+% Tight spawn area — keeps every scenery item inside the camera's
+% per-frame footprint during the entire 12 s sim. Density is now
+% ~1 object / 12 sq.m, ~10× denser than the original.
+X_RANGE = [-20, 25];     % was [-90, 90]
+Y_RANGE = [-15, 15];     % was [-90, 90]
+M       = 110;           % more objects in smaller area
+EXCL_R  = 2.0;           % allows scenery closer to intruders
 
 S = zeros(0, 5);
-% Deterministic pseudo-random pattern (no rng for codegen safety)
-M = 80;
 for k = 1:M
-    seed = mod(k * 12.9898 + 78.233, 1.0);
+    seed  = mod(k * 12.9898 + 78.233, 1.0);
     seed2 = mod(k * 39.346 + 11.135, 1.0);
     seed3 = mod(k * 67.123 + 53.842, 1.0);
     seed4 = mod(k * 29.478 + 91.231, 1.0);
 
-    x = -90 + 180 * seed;
-    y = -90 + 180 * seed2;
+    x = X_RANGE(1) + (X_RANGE(2) - X_RANGE(1)) * seed;
+    y = Y_RANGE(1) + (Y_RANGE(2) - Y_RANGE(1)) * seed2;
     z = interp2(Xg, Yg, Zg, x, y, 'linear', 0);
 
     % Skip if too close to any intruder
     d = min(sqrt((intruderXY(:,1)-x).^2 + (intruderXY(:,2)-y).^2));
-    if d < 5.0, continue; end
+    if d < EXCL_R, continue; end
 
     if seed3 < 0.7
-        type = 1;                 % tree
+        type = 1;                 % tree / bush (decided in renderer)
         r    = 0.6 + 0.9 * seed4;
     else
-        type = 2;                 % rock
+        type = 2;                 % rock / fallen log (decided in renderer)
         r    = 0.7 + 1.3 * seed4;
     end
     S(end+1, :) = [x, y, z, r, type]; %#ok<AGROW>

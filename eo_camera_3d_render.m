@@ -84,11 +84,17 @@ try
               + 1.8 * sin(0.07 * Xg) .* cos(0.05 * Yg) .* (dist_from_path > 10);
     Zr = Zg + mtn_boost;
 
-    eo3d.terrain = surf(eo3d.ax, Xg, Yg, Zr, Zr, ...   % CData = Zr → color by height
+    % Upsample grid 2x for smoother shading (less polygon-edge banding).
+    Xf = linspace(min(Xg(:)), max(Xg(:)), size(Xg, 2)*2 - 1);
+    Yf = linspace(min(Yg(:)), max(Yg(:)), size(Yg, 1)*2 - 1);
+    [Xff, Yff] = meshgrid(Xf, Yf);
+    Zff = interp2(Xg, Yg, Zr, Xff, Yff, "spline");
+    eo3d.terrain = surf(eo3d.ax, Xff, Yff, Zff, Zff, ...   % CData = Zff → color by height
         "EdgeColor", "none", ...
+        "FaceColor", "interp", ...   % smooth color across faces (no blocky bands)
         "FaceLighting", "gouraud", ...
-        "AmbientStrength", 0.35, ...
-        "DiffuseStrength", 0.85, ...
+        "AmbientStrength", 0.40, ...
+        "DiffuseStrength", 0.80, ...
         "SpecularStrength", 0.05);
     % Mountain colormap: grass(low) → tan(mid) → rock(high) → snow(peak)
     mtn_cmap = [
@@ -114,19 +120,31 @@ catch
     xlim(eo3d.ax, [-100 100]); ylim(eo3d.ax, [-100 100]); zlim(eo3d.ax, [0 80]);
 end
 
-% --- Scenery (trees, rocks — non-targets, background clutter) ---
+% --- Scenery (trees, rocks, bushes, logs, snow patches — non-targets) ---
+% Variety within each type is chosen via a deterministic position hash, so
+% the same scenery item always renders as the same sub-variant across runs.
 eo3d.scenery = [];
 try
     scenery = evalin("base", "SCENERY_OBJECTS");   % Mx5: [x, y, z, r, type]
     for k = 1:size(scenery, 1)
         x = scenery(k,1); y = scenery(k,2); z = scenery(k,3);
         r = scenery(k,4); t = scenery(k,5);
+        % Deterministic [0,1) hash from position
+        seed = mod(abs(x * 7.31 + y * 5.13 + r * 11.7), 1.0);
         if t == 1
-            % Tree: green canopy sphere + brown trunk cylinder
-            h = draw_tree(eo3d.ax, [x y z], r);
+            % Vegetation: pine tree (60%) or bush (40%)
+            if seed < 0.60
+                h = draw_tree(eo3d.ax, [x y z], r);
+            else
+                h = draw_bush(eo3d.ax, [x y z], r);
+            end
         else
-            % Rock: low grey blob
-            h = draw_rock(eo3d.ax, [x y z], r);
+            % Ground feature: rock (65%) or fallen log (35%)
+            if seed < 0.65
+                h = draw_rock(eo3d.ax, [x y z], r);
+            else
+                h = draw_log(eo3d.ax, [x y z], r);
+            end
         end
         eo3d.scenery = [eo3d.scenery; h];
     end
@@ -288,9 +306,11 @@ window_color = [0.18 0.25 0.40];   % dark blue-grey glass
 wheel_color  = [0.10 0.10 0.10];   % black tire
 hub_color    = [0.55 0.55 0.55];   % grey hub
 
-% Approximate SUV dimensions (longer-than-wide)
-L = max(3.6, r * 2.3);    % length (along x)
-W = max(2.0, r * 1.25);   % width (along y)
+% Visual SUV dimensions matched to the F_detector box-projected bbox:
+% L = 2r (length along x, exact match with bbox vertical extent),
+% W < 2r (narrower for SUV silhouette, fits inside bbox width).
+L = 2 * r;                          % full bbox length match
+W = r * 1.30;                       % narrower (typical SUV W/L ≈ 0.65)
 chassis_h = h * 0.55;
 cabin_h   = h * 0.45;
 
@@ -393,21 +413,202 @@ h = [t; lc; mc; tc];
 end
 
 function h = draw_rock(ax, base, r)
-% Irregular rocky look: cluster of 2-3 grey spheres with mottled colors
-% so it doesn't read as a perfect ball.
+% Angular rocky boulder — low-poly polyhedron via patch (sharp edges read
+% clearly as "rock" from camera distance, unlike a smooth sphere).
+% Build a 10-vertex random polyhedron seeded by position for determinism.
+seed1 = mod(abs(base(1)*0.731 + base(2)*0.519), 1.0);
+seed2 = mod(abs(base(1)*1.137 + base(2)*0.913), 1.0);
+
+% 7 top vertices on an irregular dome + 1 base ring of 6
+n_top = 6;
+theta_top = linspace(0, 2*pi, n_top + 1); theta_top(end) = [];
+% slight angular jitter so faces aren't symmetric
+theta_top = theta_top + 0.25 * sin(seed1 * 6.28 + (1:n_top));
+% radius jitter per vertex
+rj = r * (0.75 + 0.45 * (mod(seed2 * 100 + (1:n_top), 1)));
+top_x = rj .* cos(theta_top);
+top_y = rj .* sin(theta_top);
+top_z = r * (0.55 + 0.25 * sin(seed1 * 4 + (1:n_top)));   % bumpy top
+
+n_bot = 6;
+theta_bot = linspace(0, 2*pi, n_bot + 1); theta_bot(end) = [];
+rb = r * (0.95 + 0.10 * cos(seed2 * 5 + (1:n_bot)));
+bot_x = rb .* cos(theta_bot);
+bot_y = rb .* sin(theta_bot);
+bot_z = zeros(1, n_bot) + 0.05 * r;
+
+apex_z = r * 0.85;     % single top point
+
+verts = [top_x' top_y' top_z';                  % 1..6 (top ring)
+         bot_x' bot_y' bot_z';                  % 7..12 (bottom ring)
+         0 0 apex_z];                           % 13 (apex)
+verts = verts + base;
+
+% Faces — top ring to apex (triangle fan), then side quads ring-to-ring
+faces_top = [(1:n_top)'  circshift((1:n_top)', -1)  repmat(13, n_top, 1)];
+faces_side = zeros(n_top, 4);
+for k = 1:n_top
+    k_next = mod(k, n_top) + 1;
+    faces_side(k,:) = [k, k_next, k_next + n_top, k + n_top];
+end
+
+% Mottled rocky colors
+c_top  = [0.60 0.56 0.50];
+c_side = [0.48 0.44 0.40];
+
+h1 = patch("Parent", ax, "Vertices", verts, "Faces", faces_top, ...
+    "FaceColor", c_top, "EdgeColor", "none", ...
+    "FaceLighting", "gouraud", "AmbientStrength", 0.45);
+h2 = patch("Parent", ax, "Vertices", verts, "Faces", faces_side, ...
+    "FaceColor", c_side, "EdgeColor", "none", ...
+    "FaceLighting", "gouraud", "AmbientStrength", 0.40);
+
+% A smaller satellite chip beside the main boulder for irregularity
+[sx, sy, sz] = sphere(8);
+chip_r = r * 0.40;
+ox = 0.55 * r * cos(seed1 * 6.28);
+oy = 0.55 * r * sin(seed2 * 6.28);
+h3 = surf(ax, sx*chip_r + base(1) + ox, sy*chip_r + base(2) + oy, ...
+    sz*chip_r*0.50 + base(3) + chip_r*0.25, ...
+    "EdgeColor", "none", "FaceColor", [0.40 0.36 0.32]);
+
+h = [h1; h2; h3];
+end
+
+
+% =========================================================================
+% Bush — dense low shrub: stem + cluster of green puffs with brown twig hints
+% =========================================================================
+function h = draw_bush(ax, base, r)
 [sx, sy, sz] = sphere(10);
-% Main rock body
-b1 = surf(ax, sx*r + base(1), sy*r + base(2), sz*r*0.55 + base(3) + r*0.30, ...
-    "EdgeColor", "none", "FaceColor", [0.55 0.50 0.45]);
-% Adjacent smaller bump (offset for irregularity)
-b2 = surf(ax, sx*r*0.65 + base(1) + r*0.45, sy*r*0.65 + base(2) - r*0.30, ...
-    sz*r*0.45 + base(3) + r*0.20, ...
-    "EdgeColor", "none", "FaceColor", [0.45 0.40 0.36]);
-% Small chip (darker — moss/shadow shading)
-b3 = surf(ax, sx*r*0.35 + base(1) - r*0.40, sy*r*0.35 + base(2) + r*0.20, ...
-    sz*r*0.30 + base(3) + r*0.10, ...
-    "EdgeColor", "none", "FaceColor", [0.38 0.36 0.32]);
-h = [b1; b2; b3];
+green_main  = [0.18 0.40 0.18];
+green_light = [0.30 0.55 0.28];
+green_dark  = [0.13 0.32 0.16];
+twig_color  = [0.30 0.20 0.12];
+
+handles = gobjects(0);
+
+% Hidden brown stem at base (only ~30% protrudes from foliage)
+stem_h = r * 0.55;
+stem_r = r * 0.10;
+[cx, cy, cz] = cylinder(stem_r, 8);
+cz = cz * stem_h;
+h_stem = surf(ax, cx + base(1), cy + base(2), cz + base(3), ...
+    "EdgeColor","none", "FaceColor", twig_color);
+handles = [handles; h_stem];
+
+% Central dense puff (largest)
+b1 = surf(ax, sx*r + base(1), sy*r + base(2), ...
+    sz*r*0.65 + base(3) + r*0.45, ...
+    "EdgeColor","none", "FaceColor", green_main);
+% 4 surrounding puffs at slightly varying heights — leafy clustering
+seed = mod(abs(base(1)*0.7 + base(2)*0.5), 1.0);
+puffs = [
+    +0.55, +0.10, 0.50, 0.35,  1;   % dx_frac, dy_frac, size_frac, h_offset_frac, color_idx
+    -0.35, -0.45, 0.45, 0.40,  2;
+    +0.10, -0.50, 0.50, 0.30,  1;
+    -0.45, +0.40, 0.40, 0.45,  2;
+];
+for k = 1:size(puffs, 1)
+    dx = puffs(k,1) * r * (0.9 + 0.2*sin(seed*5 + k));
+    dy = puffs(k,2) * r * (0.9 + 0.2*cos(seed*5 + k));
+    sr = puffs(k,3) * r;
+    sh = puffs(k,4) * r;
+    cidx = puffs(k,5);
+    if cidx == 1, col = green_light; else, col = green_dark; end
+    bb = surf(ax, sx*sr + base(1) + dx, sy*sr + base(2) + dy, ...
+        sz*sr*0.55 + base(3) + r*0.45 + sh, ...
+        "EdgeColor","none", "FaceColor", col);
+    handles = [handles; bb];
+end
+handles = [handles; b1];
+h = handles;
+end
+
+
+% =========================================================================
+% Fallen log — horizontal brown cylinder + bark texture stripe + end grain
+% =========================================================================
+function h = draw_log(ax, base, r)
+log_r = r * 0.40;
+log_L = r * 2.8;
+seed = mod(abs(base(1)*0.7 + base(2)*0.5), 1.0);
+yaw  = (seed - 0.5) * 0.7;       % slight rotation in xy so logs don't all align with y-axis
+
+% Cylinder body — generate axis along z, then re-axis to lie horizontally
+[cx, cy, cz] = cylinder(log_r, 16);
+xL_local = cx;
+yL_local = (cz - 0.5) * log_L;
+zL_local = cy + log_r;            % cylinder centre at z = log_r (touches ground)
+
+% Apply yaw rotation about z-axis
+cs = cos(yaw); sn = sin(yaw);
+xL = cs * xL_local - sn * yL_local + base(1);
+yL = sn * xL_local + cs * yL_local + base(2);
+zL = zL_local + base(3);
+
+bark_color = [0.40 0.26 0.16];
+b = surf(ax, xL, yL, zL, "EdgeColor", "none", "FaceColor", bark_color);
+
+% End caps — concentric brown rings to suggest end-grain
+theta = linspace(0, 2*pi, 24);
+end_color_outer = [0.32 0.20 0.12];
+end_color_inner = [0.55 0.40 0.28];
+e_handles = gobjects(0);
+for end_sign = [-1 +1]
+    cap_y_local = end_sign * 0.5 * log_L;
+    % Outer disc
+    cap_x_local = log_r * cos(theta);
+    cap_z_local = log_r * sin(theta) + log_r;
+    cap_x = cs * cap_x_local - sn * cap_y_local + base(1);
+    cap_y = sn * cap_x_local + cs * cap_y_local + base(2);
+    cap_z = cap_z_local + base(3);
+    e = patch("Parent", ax, "XData", cap_x, "YData", cap_y, "ZData", cap_z, ...
+        "FaceColor", end_color_outer, "EdgeColor", "none");
+    e_handles = [e_handles; e];
+    % Inner disc (smaller, lighter — heartwood)
+    cap_x_local = log_r * 0.45 * cos(theta);
+    cap_z_local = log_r * 0.45 * sin(theta) + log_r;
+    cap_x = cs * cap_x_local - sn * cap_y_local + base(1);
+    cap_y = sn * cap_x_local + cs * cap_y_local + base(2);
+    cap_z = cap_z_local + base(3);
+    e2 = patch("Parent", ax, "XData", cap_x, "YData", cap_y, "ZData", cap_z, ...
+        "FaceColor", end_color_inner, "EdgeColor", "none");
+    e_handles = [e_handles; e2];
+end
+
+% Bark texture: a darker stripe along the log length
+stripe_color = [0.28 0.18 0.10];
+sx_stripe = log_r * cos(theta(1:end-1)) * 0.05 + log_r * 0.95;
+% This is getting complex; just draw a thin dark line via a small thin cylinder
+[tx, ty, tz] = cylinder(log_r * 0.06, 4);
+tx_l = tx + log_r * 0.85;        % offset to side of log so it's visible
+ty_l = (tz - 0.5) * log_L * 0.95;
+tz_l = ty + log_r;
+tx2 = cs * tx_l - sn * ty_l + base(1);
+ty2 = sn * tx_l + cs * ty_l + base(2);
+tz2 = tz_l + base(3);
+e3 = surf(ax, tx2, ty2, tz2, "EdgeColor", "none", "FaceColor", stripe_color);
+
+h = [b; e_handles; e3];
+end
+
+
+% =========================================================================
+% Snow patch — low flat white ellipsoid sitting on the ground
+% =========================================================================
+function h = draw_snowpatch(ax, base, r)
+[sx, sy, sz] = sphere(12);
+% Wide, flat dome
+b1 = surf(ax, sx*r*1.10 + base(1), sy*r*0.85 + base(2), ...
+    sz*r*0.18 + base(3) + r*0.05, ...
+    "EdgeColor", "none", "FaceColor", [0.95 0.96 0.98], ...
+    "AmbientStrength", 0.65, "DiffuseStrength", 0.40);
+% Smaller adjacent patch for irregularity
+b2 = surf(ax, sx*r*0.55 + base(1) + r*0.50, sy*r*0.40 + base(2) - r*0.30, ...
+    sz*r*0.12 + base(3) + r*0.03, ...
+    "EdgeColor", "none", "FaceColor", [0.92 0.93 0.95]);
+h = [b1; b2];
 end
 
 

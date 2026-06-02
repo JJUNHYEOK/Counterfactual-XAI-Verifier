@@ -2271,34 +2271,36 @@ end
 function simOut = run_sim_for_dashboard()
 mdl = "mountain_uav_model";
 
-% Seed base workspace so all nine Constant blocks
-% (C_FOG, C_ILLUM, C_NOISE, C_OBS_XYZ, C_OBS_RH, C_UAV_X0, C_UAV_V,
-% C_CAM, C_IMG) have valid variables. Defaults match scenario_iter_001.
-needsSeed = ~all_base_vars_present({"TERRAIN_X","TERRAIN_Y","TERRAIN_Z", ...
-    "OBSTACLES_XYZ","OBSTACLES_RH","UAV_X0_VEC","UAV_V_VEC", ...
-    "CAM_INTRIN","IMG_SIZE","FOG_DENSITY_PERCENT", ...
-    "ILLUMINATION_LUX","CAMERA_NOISE_LEVEL"});
-if needsSeed
-    fprintf("[DASHBOARD] Seeding base workspace via init_uav_workspace()...\n");
-    init_uav_workspace();
+% ALWAYS re-seed base workspace via init_uav_workspace() so any change in
+% intruder positions / UAV start / camera intrinsics is picked up on every
+% dashboard launch. Skipping this when vars exist (old behaviour) caused
+% stale cached positions to silently override new layouts.
+fprintf("[DASHBOARD] Re-seeding base workspace via init_uav_workspace()...\n");
+init_uav_workspace();
+
+% Also clear persistent variables in the 3D camera renderer so the hidden
+% scene (terrain + scenery + intruder handles) is rebuilt with the new
+% obstacle/scenery data — otherwise the offscreen figure keeps drawing
+% the OLD scene from a previous dashboard launch.
+try
+    clear render_eo_image eo_camera_3d_render
+catch
 end
 
-if ~bdIsLoaded(mdl)
-    if ~isfile(mdl + ".slx")
-        build_mountain_uav_model(false);
-    else
-        load_system(mdl);
-    end
+% ALWAYS rebuild so any change in F_detector / intruder layout / sim params
+% is reflected. Close cached model + delete .slx, then build fresh.
+if bdIsLoaded(mdl)
+    try, close_system(mdl, 0); catch, end
 end
-% Sim length is tuned so the UAV's forward-tilted camera (pitch 60° from
-% horizontal → optical axis hits ground ~26 m ahead) captures all 5 targets
-% by t=StopTime, without an excessively long playback. UAV starts at x=-80
-% with vx=3 m/s and the furthest intruder is at x=48. StopTime=38 puts the
-% UAV at x = -80 + 3*38 = 34 m, with the camera looking ~60 m ahead — well
-% past intruder 5. 380 frames (= 38 s / 0.1 s FixedStep) keeps the dashboard
-% playback under ~30 s of wall time.
+if isfile(mdl + ".slx")
+    try, delete(mdl + ".slx"); catch, end
+end
+build_mountain_uav_model(false);
+% Sim length tuned for the very compressed scene: UAV starts at -15,
+% intruders span -7..+9 (16 m). 12 s × 3 m/s = 36 m flight → UAV ends at
+% x=21, well past the final intruder. 120 frames total.
 try
-    set_param(mdl, "StopTime", "38");
+    set_param(mdl, "StopTime", "12");
 catch ME
     fprintf("[DASHBOARD] StopTime override skipped: %s\n", ME.message);
 end

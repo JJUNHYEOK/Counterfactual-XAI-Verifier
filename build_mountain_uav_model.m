@@ -39,7 +39,7 @@ set_param(mdl, ...
     "SolverType", "Fixed-step", ...
     "Solver", "FixedStepDiscrete", ...
     "FixedStep", "0.1", ...
-    "StopTime", "38", ...
+    "StopTime", "12", ...
     "SaveOutput", "on", ...
     "SignalLogging", "on");
 
@@ -165,19 +165,19 @@ assignin("base", "TERRAIN_Z", Zg);
 % Mission = unauthorized-intruder detection on a border mountain. Only
 % people and vehicles are detection targets; trees / shrubs are NOT.
 intruderXY = [
-    -35,  4;     % person 1
-     -8, -6;     % person 2
-     12,  9;     % person 3
-     28, -8;     % vehicle 1
-     48,  6      % vehicle 2
-];
+     -7,  3;     % person 1
+     -3, -3;     % person 2   (~4 m gap)
+      1,  4;     % person 3   (~4 m gap)
+      5, -3;     % vehicle 1  (~4 m gap)
+      9,  3;     % vehicle 2  (~4 m gap)
+];   % full span: 16 m
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person r, h
     0.50, 1.80;
     0.50, 1.80;
-    1.60, 1.80;   % vehicle r, h
-    1.60, 1.80
+    1.20, 1.60;   % vehicle r, h — r=1.2 so bbox tightly matches SUV L=2r
+    1.20, 1.60;
 ];
 
 N = size(intruderXY, 1);
@@ -199,7 +199,7 @@ assignin("base", "SCENERY_OBJECTS", SCENERY);
 
 % --- UAV initial state and constant velocity ---
 % Surveillance overflight at moderate altitude (~45 m AGL).
-uavX0 = -80; uavY0 = 0;
+uavX0 = -15; uavY0 = 0;     % tight start matching compressed scene
 uavZ0 = max(Zg(:)) + 15;
 assignin("base", "UAV_X0_VEC", [uavX0, uavY0, uavZ0]);
 assignin("base", "UAV_V_VEC",  [3.0, 0.0, 0.0]);   % m/s along +X
@@ -253,22 +253,27 @@ end
 % Scenery generator (mirror of init_uav_workspace.make_scenery_)
 % =========================================================================
 function S = make_scenery_for_build(Xg, Yg, Zg, intruderXY)
+% Mirror of init_uav_workspace.make_scenery_ — must stay in sync.
+% Dense compact layout: 110 objects in 45x30 m → ~1 per 12 sq.m.
 S = zeros(0, 5);
-M = 80;
+M       = 110;
+X_RANGE = [-20, 25];
+Y_RANGE = [-15, 15];
+EXCL_R  = 2.0;
 for k = 1:M
     seed  = mod(k * 12.9898 + 78.233, 1.0);
     seed2 = mod(k * 39.346  + 11.135, 1.0);
     seed3 = mod(k * 67.123  + 53.842, 1.0);
     seed4 = mod(k * 29.478  + 91.231, 1.0);
-    x = -90 + 180 * seed;
-    y = -90 + 180 * seed2;
+    x = X_RANGE(1) + (X_RANGE(2) - X_RANGE(1)) * seed;
+    y = Y_RANGE(1) + (Y_RANGE(2) - Y_RANGE(1)) * seed2;
     z = interp2(Xg, Yg, Zg, x, y, "linear", 0);
     d = min(sqrt((intruderXY(:,1) - x).^2 + (intruderXY(:,2) - y).^2));
-    if d < 5.0, continue; end
+    if d < EXCL_R, continue; end
     if seed3 < 0.7
-        type = 1;  r = 0.6 + 0.9 * seed4;       % tree
+        type = 1;  r = 0.6 + 0.9 * seed4;       % tree / bush
     else
-        type = 2;  r = 0.7 + 1.3 * seed4;       % rock
+        type = 2;  r = 0.7 + 1.3 * seed4;       % rock / log
     end
     S(end+1, :) = [x, y, z, r, type]; %#ok<AGROW>
 end
@@ -444,8 +449,12 @@ lines = [
 ""
 "    cam_x_left  = dy - r;"
 "    cam_x_right = dy + r;"
-"    cam_y_top   = -dx*sp - dz_top *cp;"
-"    cam_y_bot   = -dx*sp - dz_base*cp;"
+"    % Box-shaped bbox: include along-x extent (length L = 2r) in vertical"
+"    % projection so the bbox tightly encloses elongated objects (vehicles)"
+"    % at high pitch. Front-top corner = smallest v (highest in image);"
+"    % back-bot corner = largest v (lowest in image)."
+"    cam_y_top   = -dx*sp - r*sp - dz_top *cp;   % front-top corner"
+"    cam_y_bot   = -dx*sp + r*sp - dz_base*cp;   % back-bot corner"
 ""
 "    u_left  = fx * cam_x_left  / cz_avg + cx0;"
 "    u_right = fx * cam_x_right / cz_avg + cx0;"
