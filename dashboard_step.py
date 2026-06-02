@@ -739,18 +739,49 @@ def generate_normalized_test_cases(history_json: str,
     except Exception:                                # noqa: BLE001
         pass
 
-    # Auto-export to disk so the suite can be replayed on a future system
-    # version. Returned dict carries the path so the dashboard can surface
-    # it to the operator.
-    export_path = _export_test_suite(cases, requirement_text, len(history), method)
+    # DO NOT auto-save — the dashboard's 💾 다운로드 button calls
+    # save_last_test_suite() to persist explicitly. We cache the generated
+    # suite at module level so the download handler can pick it up later
+    # without the dashboard having to pass the case array back to Python.
+    global _last_generated_suite
+    _last_generated_suite = {
+        "cases":       cases,
+        "requirement": requirement_text,
+        "method":      method,
+        "n_source":    len(history),
+    }
 
     return {
         "cases":       cases,
-        "text":        _format_test_cases_text(cases, requirement_text, method, export_path),
+        "text":        _format_test_cases_text(cases, requirement_text, method, ""),
         "method":      method,
         "n_source":    len(history),
-        "export_path": export_path,
+        "export_path": "",
     }
+
+
+# Module-level cache of the most recently generated test suite. Populated by
+# generate_normalized_test_cases(), consumed by save_last_test_suite().
+_last_generated_suite = None
+
+
+def save_last_test_suite() -> dict:
+    """Persist the most recently generated normalized test suite to
+    data/test_suites/test_suite_<timestamp>.json. Called by the dashboard's
+    💾 다운로드 button.
+
+    Returns:
+        {saved: bool, path: str, message: str}
+    """
+    global _last_generated_suite
+    if _last_generated_suite is None:
+        return {"saved": False, "path": "", "message": "먼저 테스트 케이스를 생성하세요."}
+    s = _last_generated_suite
+    path = _export_test_suite(s["cases"], s["requirement"], s["n_source"], s["method"])
+    if path:
+        return {"saved": True, "path": path,
+                "message": f"저장 완료: {path}"}
+    return {"saved": False, "path": "", "message": "저장 실패 (디스크 오류 가능)"}
 
 
 def list_test_suites() -> list:

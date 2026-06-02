@@ -154,5 +154,29 @@
     "iter": 2,
     "mode": "rule_relax",
     "saved_at": "2026-06-01T14:53:28+09:00"
+  },
+  {
+    "fog": 65.0,
+    "ill": 3000.0,
+    "noi": 0.42,
+    "metric": 0.24358974358974358,
+    "metric_person": 0.48717948717948717,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 3,
+    "mode": "rule_push",
+    "saved_at": "2026-06-02T14:01:34+09:00"
+  },
+  {
+    "fog": 57.125,
+    "ill": 3787.5,
+    "noi": 0.3675,
+    "metric": 0.2948717948717949,
+    "metric_person": 0.5897435897435898,
+    "metric_vehicle": 0.0,
+    "verdict": "MARGINAL",
+    "iter": 5,
+    "mode": "boundary_push",
+    "saved_at": "2026-06-02T14:02:25+09:00"
   }
 ]

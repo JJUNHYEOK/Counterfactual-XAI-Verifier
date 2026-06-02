@@ -84,6 +84,35 @@ try
               + 1.8 * sin(0.07 * Xg) .* cos(0.05 * Yg) .* (dist_from_path > 10);
     Zr = Zg + mtn_boost;
 
+    % Flatten terrain in a smooth disc around each intruder so vehicles /
+    % people sit cleanly on the ground instead of being buried by the
+    % surrounding mountain undulations. Inside R1 the terrain is hard-set
+    % to slightly below the intruder base z; from R1 to R2 it smoothstep-
+    % blends back to the natural undulating terrain.
+    try
+        obs_xyz_local = evalin("base", "OBSTACLES_XYZ");
+        obs_rh_local  = evalin("base", "OBSTACLES_RH");
+        for k = 1:size(obs_xyz_local, 1)
+            cxi = obs_xyz_local(k, 1);
+            cyi = obs_xyz_local(k, 2);
+            czi = obs_xyz_local(k, 3);
+            r_obj = obs_rh_local(k, 1);
+            R1 = max(2.0, r_obj * 2.0);    % full flatten radius
+            R2 = R1 + 3.0;                 % blend out to here
+            d = sqrt((Xg - cxi).^2 + (Yg - cyi).^2);
+            flat_z = czi - 0.10;           % 10 cm below intruder base
+            in_flat  = d < R1;
+            in_blend = (d >= R1) & (d < R2);
+            Zr(in_flat) = flat_z;
+            if any(in_blend(:))
+                t = (d(in_blend) - R1) / (R2 - R1);
+                s = 3*t.^2 - 2*t.^3;        % smoothstep
+                Zr(in_blend) = (1 - s) .* flat_z + s .* Zr(in_blend);
+            end
+        end
+    catch
+    end
+
     % Upsample grid 2x for smoother shading (less polygon-edge banding).
     Xf = linspace(min(Xg(:)), max(Xg(:)), size(Xg, 2)*2 - 1);
     Yf = linspace(min(Yg(:)), max(Yg(:)), size(Yg, 1)*2 - 1);
@@ -228,6 +257,8 @@ end
 %   as "human" even when viewed from above at 60° pitch.
 % =========================================================================
 function handles = draw_person_3d(ax, base, r, h)
+% Small z lift to keep feet clearly above the (flattened) terrain.
+base(3) = base(3) + 0.05;
 shirt_color = [0.20 0.50 0.95];   % blue shirt (matches old 2D person color)
 pants_color = [0.15 0.20 0.50];   % darker blue pants
 skin_color  = [0.92 0.78 0.62];   % light skin
@@ -300,6 +331,9 @@ end
 %   window contrast.
 % =========================================================================
 function handles = draw_vehicle_3d(ax, base, r, h)
+% Small z lift to keep the chassis bottom clearly above the (flattened)
+% terrain and avoid z-fighting / visual burial on slight slopes.
+base(3) = base(3) + 0.05;
 body_color   = [0.95 0.55 0.10];   % orange body
 roof_color   = body_color * 0.75;
 window_color = [0.18 0.25 0.40];   % dark blue-grey glass

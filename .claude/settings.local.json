@@ -12,7 +12,11 @@
       "Bash(ls \"C:/Program Files/MATLAB/R2025b/toolbox/\" 2>&1 | grep -iE \"sl3d|simulink3d|vrml|virtual|3dani\" | head -10)",
       "Read(//c/Program Files/MATLAB/R2025b/toolbox/**)",
       "Bash(\"/c/Program Files/MATLAB/R2025b/bin/matlab.exe\" -batch \"try; checkcode\\('eo_camera_3d_render.m'\\); checkcode\\('render_eo_image.m'\\); fprintf\\('SYNTAX_OK\\\\n'\\); catch ME; fprintf\\('SYNTAX_ERR: %s\\\\n', ME.message\\); end\")",
-      "Bash('/c/Program Files/MATLAB/R2025b/bin/matlab.exe' -batch ' *)"
+      "Bash('/c/Program Files/MATLAB/R2025b/bin/matlab.exe' -batch ' *)",
+      "Bash(rm -f data/test_suites/*.json && ls data/test_suites/ 2>&1)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\data\\test_suites"
     ]
   }
 }

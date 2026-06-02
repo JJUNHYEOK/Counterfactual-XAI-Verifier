@@ -1,0 +1,18 @@
+[
+  {
+    "iter": 1,
+    "fog": 5,
+    "ill": 12000,
+    "noi": 0.02,
+    "metric": 0.67301239029426951,
+    "metric_person": 0.63461538461538458,
+    "metric_vehicle": 0.71140939597315433,
+    "verdict": "PASS",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 5,
+    "n_intruders_missed": 0,
+    "mode": "seed",
+    "analysis": "Initial seed — user-defined operating baseline"
+  }
+]
