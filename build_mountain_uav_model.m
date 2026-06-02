@@ -39,7 +39,7 @@ set_param(mdl, ...
     "SolverType", "Fixed-step", ...
     "Solver", "FixedStepDiscrete", ...
     "FixedStep", "0.1", ...
-    "StopTime", "12", ...
+    "StopTime", "25", ...
     "SaveOutput", "on", ...
     "SignalLogging", "on");
 
@@ -165,12 +165,12 @@ assignin("base", "TERRAIN_Z", Zg);
 % Mission = unauthorized-intruder detection on a border mountain. Only
 % people and vehicles are detection targets; trees / shrubs are NOT.
 intruderXY = [
-     -7,  3;     % person 1
-     -3, -3;     % person 2   (~4 m gap)
-      1,  4;     % person 3   (~4 m gap)
-      5, -3;     % vehicle 1  (~4 m gap)
-      9,  3;     % vehicle 2  (~4 m gap)
-];   % full span: 16 m
+      4,  2;     % person 1  (UAV starts at -22 → 26 m ahead, ~2 s empty start)
+     16, -1;     % person 2  (~12 m gap)
+     28,  3;     % person 3  (~12 m gap)
+     40, -2;     % vehicle 1 (~12 m gap)
+     52,  2;     % vehicle 2 (~12 m gap) — last intruder, near end of flight
+];   % span 48 m, spacing ~12 m → 1 intruder per frame
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person r, h
@@ -199,7 +199,7 @@ assignin("base", "SCENERY_OBJECTS", SCENERY);
 
 % --- UAV initial state and constant velocity ---
 % Surveillance overflight at moderate altitude (~45 m AGL).
-uavX0 = -15; uavY0 = 0;     % tight start matching compressed scene
+uavX0 = -22; uavY0 = 0;     % ~2 s empty start before first intruder enters FOV
 uavZ0 = max(Zg(:)) + 15;
 assignin("base", "UAV_X0_VEC", [uavX0, uavY0, uavZ0]);
 assignin("base", "UAV_V_VEC",  [3.0, 0.0, 0.0]);   % m/s along +X
@@ -256,10 +256,10 @@ function S = make_scenery_for_build(Xg, Yg, Zg, intruderXY)
 % Mirror of init_uav_workspace.make_scenery_ — must stay in sync.
 % Dense compact layout: 110 objects in 45x30 m → ~1 per 12 sq.m.
 S = zeros(0, 5);
-M       = 110;
-X_RANGE = [-20, 25];
+M       = 130;
+X_RANGE = [-25, 60];
 Y_RANGE = [-15, 15];
-EXCL_R  = 2.0;
+EXCL_R  = 2.5;
 for k = 1:M
     seed  = mod(k * 12.9898 + 78.233, 1.0);
     seed2 = mod(k * 39.346  + 11.135, 1.0);

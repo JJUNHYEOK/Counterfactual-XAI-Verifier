@@ -38,12 +38,12 @@ assignin('base', 'TERRAIN_Z', Zg);
 %   vehicle : r=1.60,  h=1.80   (≈ 3.2 m diameter cylinder ~ small SUV)
 
 intruderXY = [
-     -7,  3;     % person 1
-     -3, -3;     % person 2   (~4 m gap)
-      1,  4;     % person 3   (~4 m gap)
-      5, -3;     % vehicle 1  (~4 m gap)
-      9,  3;     % vehicle 2  (~4 m gap)
-];   % full span: 16 m — all intruders fit in a single camera FOV pass
+      4,  2;     % person 1  (UAV starts at -22 → 26 m ahead, ~2 s empty start)
+     16, -1;     % person 2  (~12 m gap)
+     28,  3;     % person 3  (~12 m gap)
+     40, -2;     % vehicle 1 (~12 m gap)
+     52,  2;     % vehicle 2 (~12 m gap) — last intruder, near end of flight
+];   % span 48 m, spacing ~12 m → 1 intruder per frame (no overlap)
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person dims (r, h)
@@ -79,7 +79,7 @@ assignin('base', 'SCENERY_OBJECTS', SCENERY_OBJECTS);
 % Lower altitude than first attempt; gives larger projected bboxes
 % (10-25 px) which are still "small-object" but actually detectable.
 uavZ0 = max(Zg(:)) + 15;
-assignin('base', 'UAV_X0_VEC', [-15.0, 0.0, uavZ0]);   % tight to compressed scene (16m intruder span)
+assignin('base', 'UAV_X0_VEC', [-22.0, 0.0, uavZ0]);   % ~2 s empty start before first intruder enters FOV
 assignin('base', 'UAV_V_VEC',  [3.0,   0.0, 0.0]);
 
 % ── Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ──────────────────
@@ -102,15 +102,13 @@ function S = make_scenery_(Xg, Yg, Zg)
 %   type 2 = rock   (radius 0.7~2.0 m, low/flat)
 % Output: Mx5 array [x, y, z, radius, type]
 % Avoids placing scenery within 2 m of any intruder.
-intruderXY = [-7,3; -3,-3; 1,4; 5,-3; 9,3];
+intruderXY = [4,2; 16,-1; 28,3; 40,-2; 52,2];
 
-% Tight spawn area — keeps every scenery item inside the camera's
-% per-frame footprint during the entire 12 s sim. Density is now
-% ~1 object / 12 sq.m, ~10× denser than the original.
-X_RANGE = [-20, 25];     % was [-90, 90]
-Y_RANGE = [-15, 15];     % was [-90, 90]
-M       = 110;           % more objects in smaller area
-EXCL_R  = 2.0;           % allows scenery closer to intruders
+% Scenery covers the full flight corridor with comfortable density.
+X_RANGE = [-25, 60];     % spans UAV start (-22) through past last intruder (52)
+Y_RANGE = [-15, 15];
+M       = 130;
+EXCL_R  = 2.5;
 
 S = zeros(0, 5);
 for k = 1:M

@@ -2296,11 +2296,12 @@ if isfile(mdl + ".slx")
     try, delete(mdl + ".slx"); catch, end
 end
 build_mountain_uav_model(false);
-% Sim length tuned for the very compressed scene: UAV starts at -15,
-% intruders span -7..+9 (16 m). 12 s × 3 m/s = 36 m flight → UAV ends at
-% x=21, well past the final intruder. 120 frames total.
+% Sim tuned for paced reveal: UAV starts at -22, intruders at +4..+52
+% with ~12 m spacing. 25 s × 3 m/s = 75 m flight → UAV ends at x=53, just
+% past last intruder. 250 frames total. ~2 s empty before first intruder,
+% then 1 intruder per frame, last appearing near end of sim.
 try
-    set_param(mdl, "StopTime", "12");
+    set_param(mdl, "StopTime", "25");
 catch ME
     fprintf("[DASHBOARD] StopTime override skipped: %s\n", ME.message);
 end
