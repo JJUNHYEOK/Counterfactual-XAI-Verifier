@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-02T14:31:40+09:00",
+  "requirement": "표준 작전 환경 — 청명 한낮·정상 센서 baseline 에서 침입자 5명 모두 식별 보장",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "옅은 안개 · 흐림",
+      "fog": 35.0,
+      "ill": 6000.0,
+      "noi": 0.22,
+      "verdict": "MARGINAL",
+      "metric": 0.423,
+      "source_iter": 2,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.423,
+      "metric_min": 0.36,
+      "metric_max": 0.486,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "MARGINAL 판정으로, 추가 악화 시 침입자 식별 실패 가능성이 높아 안보 위협이 발생할 수 있습니다."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 65.0,
+      "ill": 3000.0,
+      "noi": 0.42,
+      "verdict": "MARGINAL",
+      "metric": 0.269,
+      "source_iter": 3,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.269,
+      "metric_min": 0.229,
+      "metric_max": 0.309,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "MARGINAL 판정으로, 환경이 더욱 악화될 경우 비인가 침입자 식별이 불가능해질 위험이 있습니다."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 66.4,
+      "ill": 2931.0,
+      "noi": 0.428,
+      "verdict": "FAIL",
+      "metric": 0.247,
+      "source_iter": 8,
+      "selection_reason": "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.247,
+      "metric_min": 0.21,
+      "metric_max": 0.284,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "FAIL 판정으로, 비인가 침입자 식별이 전혀 이루어지지 않아 심각한 안보 위협이 발생할 수 있습니다."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 5.0,
+      "ill": 12000.0,
+      "noi": 0.02,
+      "verdict": "PASS",
+      "metric": 0.668,
+      "source_iter": 1,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.668,
+      "metric_min": 0.568,
+      "metric_max": 0.768,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "PASS 판정으로, 안전한 환경에서 비인가 침입자를 효과적으로 식별할 수 있어 임무 수행이 가능합니다."
+    },
+    {
+      "label": "짙은 안개 · 야간 · 센서 노후",
+      "fog": 95.0,
+      "ill": 1500.0,
+      "noi": 0.6,
+      "verdict": "FAIL",
+      "metric": 0.0,
+      "source_iter": 4,
+      "selection_reason": "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 anchor)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.0,
+      "metric_min": 0.0,
+      "metric_max": 0.0,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "FAIL 판정으로, 비인가 침입자 식별이 불가능하여 심각한 안보 위협이 존재합니다."
+    }
+  ]
+}

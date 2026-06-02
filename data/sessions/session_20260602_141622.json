@@ -1,0 +1,50 @@
+[
+  {
+    "iter": 1,
+    "fog": 5,
+    "ill": 12000,
+    "noi": 0.02,
+    "metric": 0.67301239029426951,
+    "metric_person": 0.63461538461538458,
+    "metric_vehicle": 0.71140939597315433,
+    "verdict": "PASS",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 5,
+    "n_intruders_missed": 0,
+    "mode": "seed",
+    "analysis": "Initial seed — user-defined operating baseline"
+  },
+  {
+    "iter": 2,
+    "fog": 35,
+    "ill": 6000,
+    "noi": 0.22,
+    "metric": 0.427787816210635,
+    "metric_person": 0.78846153846153844,
+    "metric_vehicle": 0.067114093959731544,
+    "verdict": "MARGINAL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 5,
+    "n_intruders_missed": 0,
+    "mode": "rule_push",
+    "analysis": "PASS / no FAIL anchor yet → push to discover failure side"
+  },
+  {
+    "iter": 3,
+    "fog": 65,
+    "ill": 3000,
+    "noi": 0.42,
+    "metric": 0.26923076923076922,
+    "metric_person": 0.53846153846153844,
+    "metric_vehicle": 0,
+    "verdict": "MARGINAL",
+    "n_intruders_total": 5,
+    "n_intruders_seen": 5,
+    "n_intruders_detected": 3,
+    "n_intruders_missed": 2,
+    "mode": "rule_push",
+    "analysis": "PASS / no FAIL anchor yet → push to discover failure side"
+  }
+]

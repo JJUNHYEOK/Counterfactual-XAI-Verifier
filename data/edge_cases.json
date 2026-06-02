@@ -156,27 +156,63 @@
     "saved_at": "2026-06-01T14:53:28+09:00"
   },
   {
-    "fog": 65.0,
-    "ill": 3000.0,
-    "noi": 0.42,
-    "metric": 0.24358974358974358,
-    "metric_person": 0.48717948717948717,
-    "metric_vehicle": 0.0,
+    "fog": 72.5,
+    "ill": 2625,
+    "noi": 0.465,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
     "verdict": "FAIL",
-    "iter": 3,
-    "mode": "rule_push",
-    "saved_at": "2026-06-02T14:01:34+09:00"
+    "iter": 5,
+    "mode": "boundary_recover",
+    "saved_at": "2026-06-02T14:11:56+09:00"
   },
   {
-    "fog": 57.125,
-    "ill": 3787.5,
-    "noi": 0.3675,
-    "metric": 0.2948717948717949,
-    "metric_person": 0.5897435897435898,
-    "metric_vehicle": 0.0,
-    "verdict": "MARGINAL",
-    "iter": 5,
+    "fog": 60.9,
+    "ill": 2841.6602,
+    "noi": 0.4926,
+    "metric": 0.2403846153846154,
+    "metric_person": 0.4807692307692308,
+    "metric_vehicle": 0,
+    "verdict": "FAIL",
+    "iter": 8,
     "mode": "boundary_push",
-    "saved_at": "2026-06-02T14:02:25+09:00"
+    "saved_at": "2026-06-02T14:23:31+09:00"
+  },
+  {
+    "fog": 95.0,
+    "ill": 1500.0,
+    "noi": 0.6,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 4,
+    "mode": "rule_push",
+    "saved_at": "2026-06-02T14:11:32+09:00"
+  },
+  {
+    "fog": 35.0,
+    "ill": 5000.0,
+    "noi": 0.32,
+    "metric": 0.37009550851832734,
+    "metric_person": 0.6730769230769231,
+    "metric_vehicle": 0.06711409395973154,
+    "verdict": "MARGINAL",
+    "iter": 2,
+    "mode": "rule_push",
+    "saved_at": "2026-06-02T14:21:02+09:00"
+  },
+  {
+    "fog": 42.5,
+    "ill": 4375.0,
+    "noi": 0.37,
+    "metric": 0.3441533298915849,
+    "metric_person": 0.6346153846153846,
+    "metric_vehicle": 0.053691275167785234,
+    "verdict": "MARGINAL",
+    "iter": 4,
+    "mode": "boundary_recover",
+    "saved_at": "2026-06-02T14:21:53+09:00"
   }
 ]

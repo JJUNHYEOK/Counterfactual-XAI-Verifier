@@ -169,11 +169,11 @@ tab4 = uitab(tabGroup, "Title", "④ LLM 요약");
 % Preset scenario constants — used by Tab 1 dropdown + auto-loop env init.
 % =========================================================================
 SCENARIO_NAMES = [ ...
-    "[REQ-1] 표준 작전 환경 (fog 5%·ill 12000lx·noi 0.02) — 침입자 5명 모두 식별", ...
-    "[REQ-2] 저조도 정찰 작전 (fog 5%·ill 6000lx·noi 0.03) — 침입자 5명 중 4명 이상 식별", ...
-    "[REQ-3] 안개 침투 작전 (fog 22%·ill 10000lx·noi 0.02) — 침입자 5명 중 4명 이상 식별", ...
-    "[REQ-4] 노후 센서 운용 (fog 5%·ill 10000lx·noi 0.12) — 침입자 5명 중 4명 이상 식별", ...
-    "[REQ-5] 복합 한계 작전 (fog 18%·ill 7500lx·noi 0.08) — 침입자 5명 중 3명 이상 식별"];
+    "[REQ-1] 표준 작전 환경 — 침입자 5명 모두 식별", ...
+    "[REQ-2] 저조도 정찰 작전 — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-3] 안개 침투 작전 — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-4] 노후 센서 운용 — 침입자 5명 중 4명 이상 식별", ...
+    "[REQ-5] 복합 한계 작전 — 침입자 5명 중 3명 이상 식별"];
 SCENARIO_FOG = [   5,    5,   22,    5,   18];
 SCENARIO_ILL = [12000, 6000, 10000, 10000, 7500];
 SCENARIO_NOI = [ 0.02, 0.03, 0.02, 0.12, 0.08];
@@ -187,8 +187,8 @@ SCENARIO_NL = [ ...
 % =========================================================================
 % TAB 1 — ① 요구사항 입력
 % =========================================================================
-tab1Grid = uigridlayout(tab1, [4, 1], ...
-    "RowHeight", {80, 30, 130, '1x'}, ...
+tab1Grid = uigridlayout(tab1, [5, 1], ...
+    "RowHeight", {80, 30, 130, 50, '1x'}, ...   % row 4 = compact button row
     "Padding", [40 30 40 30], "RowSpacing", 16);
 
 % Intro / instructions (single string, no array/sprintf to avoid parse edge-cases)
@@ -196,7 +196,7 @@ uilabel(tab1Grid, ...
     "Text", "검증 요구사항 입력  -  본 시스템은 PASS/FAIL 경계를 자율 탐색하여 1~10건의 정규화된 회귀 테스트 스위트를 산출합니다. 아래에서 시작 시나리오를 선택한 뒤 [시뮬레이션 시작] 버튼을 누르세요.", ...
     "FontSize", 13, "WordWrap", "on", "VerticalAlignment", "top");
 
-uilabel(tab1Grid, "Text", "▣ 사전 정의 요구사항 (5건 · 작전 환경 다양화 — 각각 다른 스트레스 축)", ...
+uilabel(tab1Grid, "Text", "▣ 사전 정의 요구사항", ...
     "FontWeight", "bold", "FontSize", 13);
 
 % Preset selector — dropdown + parsed env display
@@ -216,14 +216,17 @@ lblParsedEnvVisible = uilabel(presetGrid, ...
         SCENARIO_FOG(1), SCENARIO_ILL(1), SCENARIO_NOI(1)), ...
     "FontSize", 12, "FontColor", [0.30 0.30 0.40]);
 
-% Run button (large, centered) — switches to Tab 2 + starts boundary search
+% Run button — centered, fixed compact size (width preserved, height reduced)
 runRow = uigridlayout(tab1Grid, [1, 3], ...
     "ColumnWidth", {'1x', 280, '1x'}, "Padding", [0 0 0 0]);
 btnRun = uibutton(runRow, "Text", "▶ 시뮬레이션 시작 (boundary search)", ...
     "BackgroundColor", [0.20 0.65 0.30], "FontColor", "w", ...
-    "FontWeight", "bold", "FontSize", 14, ...
+    "FontWeight", "bold", "FontSize", 13, ...
     "Tooltip", "선택된 프리셋에서 출발해 PASS↔FAIL 경계를 자동 탐색 (최대 10 iter).");
 btnRun.Layout.Column = 2;
+
+% Spacer row to absorb remaining vertical space (keeps button compact)
+uilabel(tab1Grid, "Text", "");
 
 % =========================================================================
 % TAB 2 — ② 시뮬레이션 (3D scene + EO camera + history + playback controls)
@@ -245,7 +248,7 @@ title(ax2, "EO Camera  +  detection (live re-rendered)");
 
 % Middle — Case history (full width, scrollable)
 histPanel = uipanel(tab2Grid, ...
-    "Title", "📑 Case history (전체 · 스크롤)", ...
+    "Title", "📑 Case history", ...
     "BackgroundColor", [0.97 0.97 0.99], "FontWeight", "bold");
 histPanel.Layout.Row = 2; histPanel.Layout.Column = [1 2];
 histInner = uigridlayout(histPanel, [1, 1], "Padding", [8 4 8 4]);
@@ -301,16 +304,14 @@ tab3Grid = uigridlayout(tab3, [3, 1], ...
     "RowHeight", {'1x', 50, 170}, ...
     "Padding", [10 10 10 10], "RowSpacing", 8);
 
-% Top — normalized test cases panel (the deliverable)
+% Top — test cases panel (the deliverable)
 testCasesPanel = uipanel(tab3Grid, ...
-    "Title", "🧪 정규화된 테스트 케이스 (옵티마이저 결과)", ...
+    "Title", "🧪 테스트 케이스", ...
     "BackgroundColor", [0.96 1.00 0.96], "FontWeight", "bold");
 testCasesInner = uigridlayout(testCasesPanel, [1, 1], "Padding", [8 6 8 6]);
-lblTestCases = uitextarea(testCasesInner, ...
-    "Value",      "  ② 시뮬레이션 탭에서 boundary search를 마친 뒤 아래 '🧪 정규화된 테스트 케이스 생성' 버튼을 눌러 케이스를 산출하세요.", ...
-    "Editable",   "off", ...
-    "FontSize",   12, "FontName", "Malgun Gothic", ...
-    "BackgroundColor", [0.96 1.00 0.96]);
+% uihtml so we can bold case headers and use larger body font
+lblTestCases = uihtml(testCasesInner, ...
+    "HTMLSource", testCasesPlaceholderHtml());
 
 % Middle — case count input + Generate button + Download button
 genRow = uigridlayout(tab3Grid, [1, 5], ...
@@ -326,13 +327,12 @@ caseCountSpinner = uispinner(genRow, ...
     "ValueDisplayFormat", "%d", ...
     "Tooltip", "0 = 기본 스위트(최대 10건, 우선순위순) / 1~10 = 정확히 N건만 산출");
 
-uilabel(genRow, "Text", "  (0 = 기본 스위트 · 1~10 = 우선순위 상위 N건만)", ...
-    "FontSize", 11, "FontColor", [0.35 0.35 0.45]);
+uilabel(genRow, "Text", "");   % spacer
 
-btnGenerateTests = uibutton(genRow, "Text", "🧪 정규화된 테스트 케이스 생성", ...
+btnGenerateTests = uibutton(genRow, "Text", "🧪 테스트 케이스 생성", ...
     "BackgroundColor", [0.20 0.55 0.30], "FontColor", "w", ...
     "FontWeight", "bold", "FontSize", 13, ...
-    "Tooltip", "지금까지 수집된 case에서 정규화된 회귀 테스트 케이스를 산출");
+    "Tooltip", "지금까지 수집된 case에서 회귀 테스트 케이스를 산출");
 
 btnDownloadTests = uibutton(genRow, "Text", "💾 다운로드", ...
     "BackgroundColor", [0.20 0.40 0.70], "FontColor", "w", ...
@@ -342,40 +342,34 @@ btnDownloadTests = uibutton(genRow, "Text", "💾 다운로드", ...
 
 % Bottom — Replay controls (suite + per-case selection + replay)
 replayInnerPanel = uipanel(tab3Grid, ...
-    "Title", "📂 이전 테스트 재현 (Replay) — 스위트에서 개별 케이스 선택 후 재실행", ...
+    "Title", "📂 이전 테스트 재현", ...
     "BackgroundColor", [1.00 0.97 0.93], "FontWeight", "bold");
-replayInnerGrid = uigridlayout(replayInnerPanel, [4, 3], ...
-    "RowHeight",   {28, 32, 32, 22}, ...
+replayInnerGrid = uigridlayout(replayInnerPanel, [3, 3], ...
+    "RowHeight",   {32, 32, 22}, ...
     "ColumnWidth", {90, '1x', 130}, ...
-    "Padding", [10 6 10 6], "RowSpacing", 6, "ColumnSpacing", 8);
+    "Padding", [10 8 10 6], "RowSpacing", 6, "ColumnSpacing", 8);
 
-% Row 1 of replay panel — header labels for columns
-uilabel(replayInnerGrid, "Text", "", "FontWeight", "bold");
-uilabel(replayInnerGrid, "Text", "선택", "FontWeight", "bold", "FontSize", 12);
-uilabel(replayInnerGrid, "Text", "동작", "FontWeight", "bold", "FontSize", 12, ...
-    "HorizontalAlignment", "center");
-
-% Row 2 — suite selector
+% Row 1 — suite selector
 lblSuiteLabel = uilabel(replayInnerGrid, "Text", "스위트:", ...
     "FontWeight", "bold", "FontSize", 12, "HorizontalAlignment", "right");
-lblSuiteLabel.Layout.Row = 2; lblSuiteLabel.Layout.Column = 1;
+lblSuiteLabel.Layout.Row = 1; lblSuiteLabel.Layout.Column = 1;
 
 replayDropdown = uidropdown(replayInnerGrid, ...
     "Items",     {'  (테스트 스위트 없음 — 먼저 🧪 생성 버튼을 사용하세요)'}, ...
     "ItemsData", {''}, ...
     "Value",     '', ...
     "FontSize",  12, ...
-    "Tooltip",   "data/test_suites/ 에 저장된 이전 세션의 정규화 케이스 파일 목록");
-replayDropdown.Layout.Row = 2; replayDropdown.Layout.Column = 2;
+    "Tooltip",   "data/test_suites/ 에 저장된 이전 세션의 테스트 케이스 파일 목록");
+replayDropdown.Layout.Row = 1; replayDropdown.Layout.Column = 2;
 
 btnRefreshSuites = uibutton(replayInnerGrid, "Text", "🔄 새로고침", ...
     "BackgroundColor", [0.70 0.70 0.75], "FontColor", "w");
-btnRefreshSuites.Layout.Row = 2; btnRefreshSuites.Layout.Column = 3;
+btnRefreshSuites.Layout.Row = 1; btnRefreshSuites.Layout.Column = 3;
 
-% Row 3 — individual case selector + Replay button
+% Row 2 — individual case selector + Replay button
 lblCaseLabel = uilabel(replayInnerGrid, "Text", "케이스:", ...
     "FontWeight", "bold", "FontSize", 12, "HorizontalAlignment", "right");
-lblCaseLabel.Layout.Row = 3; lblCaseLabel.Layout.Column = 1;
+lblCaseLabel.Layout.Row = 2; lblCaseLabel.Layout.Column = 1;
 
 caseDropdown = uidropdown(replayInnerGrid, ...
     "Items",     {'  (스위트 선택 후 표시됨)'}, ...
@@ -383,25 +377,22 @@ caseDropdown = uidropdown(replayInnerGrid, ...
     "Value",     0, ...
     "FontSize",  12, ...
     "Tooltip",   "선택한 스위트의 개별 케이스 — 우선순위 순으로 정렬");
-caseDropdown.Layout.Row = 3; caseDropdown.Layout.Column = 2;
+caseDropdown.Layout.Row = 2; caseDropdown.Layout.Column = 2;
 
 btnReplay = uibutton(replayInnerGrid, "Text", "▶ 이 케이스 Replay", ...
     "BackgroundColor", [0.50 0.30 0.70], "FontColor", "w", "FontWeight", "bold");
-btnReplay.Layout.Row = 3; btnReplay.Layout.Column = 3;
+btnReplay.Layout.Row = 2; btnReplay.Layout.Column = 3;
 
 % Hidden — kept for backward compatibility with existing callbacks/state.
-% replay-flow now runs ONE case at a time; the stop button is not needed
-% (single-case replays auto-finish in ~38s) but we leave the handle alive
-% so onReplayStopClicked / state.replayActive logic can still reference it.
 btnReplayStop = uibutton(replayInnerGrid, "Text", "⏹ 중단", ...
     "BackgroundColor", [0.70 0.30 0.30], "FontColor", "w", "Enable", "off", ...
     "Visible", "off");
 
-% Row 4 — status spanning columns
+% Row 3 — status spanning columns
 lblReplayStatus = uilabel(replayInnerGrid, ...
     "Text", "  대기 — 스위트 + 케이스 선택 후 ▶ Replay 를 누르세요.", ...
     "FontSize", 11, "FontColor", [0.30 0.25 0.15]);
-lblReplayStatus.Layout.Row = 4; lblReplayStatus.Layout.Column = [1 3];
+lblReplayStatus.Layout.Row = 3; lblReplayStatus.Layout.Column = [1 3];
 
 % =========================================================================
 % TAB 4 — ④ LLM 임무 종합 요약
@@ -411,14 +402,12 @@ tab4Grid = uigridlayout(tab4, [2, 1], ...
     "Padding", [10 10 10 10], "RowSpacing", 8);
 
 mainSummaryPanel = uipanel(tab4Grid, ...
-    "Title", "📋 LLM 임무 종합 요약 (전체 case 누적 분석)", ...
+    "Title", "📋 LLM 임무 종합 요약", ...
     "BackgroundColor", [0.94 0.96 1.00], "FontWeight", "bold");
 mainSummaryInner = uigridlayout(mainSummaryPanel, [1, 1], "Padding", [10 8 10 8]);
-lblSummaryLLM = uitextarea(mainSummaryInner, ...
-    "Value",      "  📋 아래 'LLM 임무 요약 생성' 버튼을 눌러 지금까지의 전체 case에 대한 종합 보고서를 생성하세요.", ...
-    "Editable",   "off", ...
-    "FontSize",   12, "FontName", "Malgun Gothic", ...
-    "BackgroundColor", [0.94 0.96 1.00]);
+% uihtml so we can bold/size section headers and use larger body font
+lblSummaryLLM = uihtml(mainSummaryInner, ...
+    "HTMLSource", llmSummaryPlaceholderHtml());
 
 btnSummary = uibutton(tab4Grid, "Text", "📋 LLM 임무 요약 생성", ...
     "BackgroundColor", [0.30 0.40 0.65], "FontColor", "w", ...
@@ -1550,9 +1539,12 @@ start(tmr);
             return;
         end
         lines = strings(0, 1);
-        lines(end+1) = "  iter  verdict    fog %  illum lx  noise   mAP    사람   차량   mode";
-        lines(end+1) = "  ----  ---------  -----  --------  -----   -----  -----  -----  -----------";
+        lines(end+1) = "  iter  verdict    fog %  illum lx  noise   mAP    사람   차량";
+        lines(end+1) = "  ----  ---------  -----  --------  -----   -----  -----  -----";
         % All entries (no 5-case cap) — uitextarea provides scroll for us.
+        % mode column intentionally hidden: it duplicates `analysis` /
+        % `selection_reason` for user view and adds clutter. Still recorded
+        % in session JSON for debugging.
         for k = N : -1 : 1
             h = state.history(k);
             verdictTag = sprintf("[%s]", h.verdict);
@@ -1560,8 +1552,8 @@ start(tmr);
             mp = 0; mv = 0;
             if isfield(h, "metric_person"),  mp = h.metric_person;  end
             if isfield(h, "metric_vehicle"), mv = h.metric_vehicle; end
-            lines(end+1) = sprintf("  %3d   %s  %5.1f  %7.0f   %5.2f   %.3f  %.3f  %.3f  %s", ...
-                h.iter, verdictPad, h.fog, h.ill, h.noi, h.metric, mp, mv, h.mode); %#ok<AGROW>
+            lines(end+1) = sprintf("  %3d   %s  %5.1f  %7.0f   %5.2f   %.3f  %.3f  %.3f", ...
+                h.iter, verdictPad, h.fog, h.ill, h.noi, h.metric, mp, mv); %#ok<AGROW>
         end
         lblHistory.Value = cellstr(lines);
         %{
@@ -1694,7 +1686,8 @@ start(tmr);
         prevText = btnGenerateTests.Text;
         btnGenerateTests.Enable = "off";
         btnGenerateTests.Text   = "⏳ 옵티마이저 실행 중...";
-        lblTestCases.Value = "  ⏳ 정규화된 테스트 케이스 생성 중...";
+        lblTestCases.HTMLSource = testCasesMessageHtml( ...
+            "⏳ 테스트 케이스 생성 중...", false);
         drawnow;
         try
             nl = lblRequirement.Value;
@@ -1720,24 +1713,15 @@ start(tmr);
             res = py.dashboard_step.generate_normalized_test_cases( ...
                 histJson, string(nl), int32(maxCases));
             d = struct(res);
-            txt = string(char(d.text));
-            lines = splitlines(txt);
-            lblTestCases.Value = cellstr(lines);
-            % Remember the freshly-exported suite path so the 💾 다운로드
-            % button can copy it to a user-chosen location on demand.
-            try
-                state.lastSuitePath = string(char(d.export_path));
-                if strlength(state.lastSuitePath) > 0
-                    btnDownloadTests.Enable = "on";
-                end
-            catch
-                state.lastSuitePath = "";
-            end
-            % Auto-refresh replay dropdown so the freshly-exported suite
-            % shows up without the user having to click 🔄 새로고침.
-            onRefreshSuites();
+            lblTestCases.HTMLSource = string(char(d.html));
+            % Generated suite is now held in Python module memory, not on
+            % disk. Enable the download button so the user can save it
+            % explicitly to data/test_suites/.
+            btnDownloadTests.Enable = "on";
+            state.hasUnsavedSuite = true;
         catch ME
-            lblTestCases.Value = sprintf("정규화된 테스트 케이스 생성 실패: %s", ME.message);
+            lblTestCases.HTMLSource = testCasesMessageHtml( ...
+                sprintf("테스트 케이스 생성 실패: %s", ME.message), true);
         end
         btnGenerateTests.Enable = "on";
         btnGenerateTests.Text   = prevText;
@@ -1747,41 +1731,32 @@ start(tmr);
     end
 
     function onDownloadTestsClicked()
-        % Copy the most recently generated test-suite JSON to a user-chosen
-        % location via uiputfile. The source file always lives in
-        % data/test_suites/ (auto-saved by generate_normalized_test_cases),
-        % so the dashboard's Replay dropdown continues to see it after
-        % download. The downloaded copy is therefore both portable
-        % (carry to another machine) and replayable in-place.
-        if ~isfield(state, "lastSuitePath") || strlength(state.lastSuitePath) == 0
+        % Persist the most recently generated suite to
+        % data/test_suites/test_suite_<timestamp>.json (fixed path).
+        % Generation no longer writes to disk automatically — this button
+        % is the only path that creates a file. Replay dropdown is then
+        % auto-refreshed so the saved suite immediately appears there.
+        if ~isfield(state, "hasUnsavedSuite") || ~state.hasUnsavedSuite
             uialert(fig, "먼저 🧪 생성 버튼으로 테스트 케이스를 만든 뒤 다운로드하세요.", ...
                 "다운로드 불가");
             return;
         end
-        srcPath = char(state.lastSuitePath);
-        if ~isfile(srcPath)
-            uialert(fig, sprintf("원본 파일이 존재하지 않습니다:\n%s", srcPath), ...
-                "다운로드 실패");
-            return;
-        end
-        [~, srcName, srcExt] = fileparts(srcPath);
-        defaultName = [srcName srcExt];
-        % Default destination: user's Downloads folder if it exists, else home.
-        homeDir = char(java.lang.System.getProperty("user.home"));
-        downloads = fullfile(homeDir, "Downloads");
-        if ~isfolder(downloads), downloads = homeDir; end
-        [file, path] = uiputfile({'*.json', 'JSON 테스트 슈트 (*.json)'}, ...
-            "테스트 케이스 다운로드 위치 선택", fullfile(downloads, defaultName));
-        if isequal(file, 0)
-            return;   % user cancelled
-        end
-        dstPath = fullfile(path, file);
         try
-            copyfile(srcPath, dstPath);
-            uialert(fig, sprintf("저장 완료:\n%s\n\n(원본도 data/test_suites/에 유지되어 Replay 가능)", ...
-                dstPath), "다운로드 성공", "Icon", "success");
+            res = py.dashboard_step.save_last_test_suite();
+            d = struct(res);
+            if d.saved
+                pathStr = string(char(d.path));
+                uialert(fig, ...
+                    sprintf("테스트 케이스가 저장되었습니다.\n\n경로:\n%s", pathStr), ...
+                    "다운로드 성공", "Icon", "success");
+                % Refresh replay dropdown so the new suite appears there.
+                try, onRefreshSuites(); catch, end
+            else
+                uialert(fig, char(d.message), "다운로드 실패");
+            end
         catch ME
-            uialert(fig, sprintf("저장 실패: %s", ME.message), "다운로드 오류");
+            uialert(fig, sprintf("저장 중 오류 발생: %s", ME.message), ...
+                "다운로드 오류");
         end
     end
 
@@ -1839,7 +1814,7 @@ start(tmr);
                 replayDropdown.Items     = {'  (테스트 스위트 없음 — 먼저 🧪 생성 버튼을 사용하세요)'};
                 replayDropdown.ItemsData = {''};
                 replayDropdown.Value     = '';
-                lblReplayStatus.Text = "  대기 — 저장된 스위트가 없습니다. 시뮬레이션 후 🧪 정규화된 테스트 케이스 생성을 누르세요.";
+                lblReplayStatus.Text = "  대기 — 저장된 스위트가 없습니다. 시뮬레이션 후 🧪 테스트 케이스 생성을 누르세요.";
                 fprintf("[Refresh] data/test_suites/ 스캔 → 0건 (디스크에 파일 없거나 디렉터리 미존재).\n");
                 return;
             end
@@ -1862,7 +1837,7 @@ start(tmr);
             replayDropdown.Items     = namesCell;
             replayDropdown.ItemsData = pathsCell;
             replayDropdown.Value     = pathsCell{1};
-            lblReplayStatus.Text = sprintf("  %d개의 스위트 발견 — 케이스 선택 후 ▶ Replay 를 누르세요.", nFound);
+            lblReplayStatus.Text = "";
             fprintf("[Refresh] data/test_suites/ 스캔 → %d건 발견.\n", nFound);
             % Auto-populate case dropdown for the first suite so user can
             % replay immediately without having to re-click the suite dropdown.
@@ -2169,7 +2144,7 @@ start(tmr);
         caseDropdown.Enable     = "on";
 
         if isempty(results)
-            lblTestCases.Value = "  (Replay 결과 없음)";
+            lblTestCases.HTMLSource = testCasesMessageHtml("(Replay 결과 없음)", false);
             return;
         end
         nOK = 0; nDrift = 0; nReg = 0;
@@ -2180,22 +2155,7 @@ start(tmr);
             else,               nOK    = nOK + 1;
             end
         end
-        lines = strings(0, 1);
-        lines(end+1) = sprintf("▣ Replay 결과 — 총 %d cases", numel(results));
-        lines(end+1) = sprintf("  ✓ OK %d  ·  △ DRIFT %d  ·  ✗ REGRESSION %d", nOK, nDrift, nReg);
-        if nReg > 0
-            lines(end+1) = "  ⚠ Regression 발생 — 새 시스템에서 기대된 verdict 가 재현되지 않았습니다.";
-        elseif nDrift > 0
-            lines(end+1) = "  ⓘ Drift 감지 — verdict 는 유지되었으나 mAP 가 허용 범위를 벗어났습니다.";
-        else
-            lines(end+1) = "  ✓ 전체 회귀 통과 — 시스템 envelope 가 원본 세션과 일치합니다.";
-        end
-        lines(end+1) = "";
-        for k = 1:numel(results)
-            r = results{k};
-            lines(end+1) = sprintf("[Case %d] %s", r.idx, r.summary);  %#ok<AGROW>
-        end
-        lblTestCases.Value = cellstr(lines);
+        lblTestCases.HTMLSource = replayResultsHtml(results, nOK, nDrift, nReg);
         lblReplayStatus.Text = sprintf( ...
             "  Replay 완료 — OK %d / DRIFT %d / REGRESSION %d (결과는 위 패널에 표시)", ...
             nOK, nDrift, nReg);
@@ -2207,14 +2167,15 @@ start(tmr);
         % rendered inline in the right-side Operations-log panel
         % (lblSummaryLLM) — no modal dialog.
         if isempty(state.history)
-            lblSummaryLLM.Value = ...
-                "  임무 요약을 생성하려면 최소 1회 이상의 case 실행이 필요합니다.";
+            lblSummaryLLM.HTMLSource = llmSummaryMessageHtml( ...
+                "임무 요약을 생성하려면 최소 1회 이상의 case 실행이 필요합니다.", false);
             return;
         end
         prevText = btnSummary.Text;
         btnSummary.Enable = "off";
         btnSummary.Text   = "⏳ LLM 요약 생성 중...";
-        lblSummaryLLM.Value = "  ⏳ LLM이 전체 case 이력을 종합 분석 중 (10~30초)...";
+        lblSummaryLLM.HTMLSource = llmSummaryMessageHtml( ...
+            "⏳ LLM이 전체 case 이력을 종합 분석 중 (10~30초)...", false);
         drawnow;
         try
             histJson = jsonencode(arrayfun(@(h) struct( ...
@@ -2233,21 +2194,11 @@ start(tmr);
             boundTxt = string(char(d.failure_boundary));
             implTxt  = string(char(d.security_implications));
             recTxt   = string(char(d.recommendations));
-            lines = strings(0, 1);
-            lines(end+1) = "▣ 종합 요약";
-            lines(end+1) = execTxt;
-            lines(end+1) = "";
-            lines(end+1) = "▣ 실패 경계";
-            lines(end+1) = boundTxt;
-            lines(end+1) = "";
-            lines(end+1) = "▣ 안보 시사점";
-            lines(end+1) = implTxt;
-            lines(end+1) = "";
-            lines(end+1) = "▣ 운용 권고";
-            lines(end+1) = recTxt;
-            lblSummaryLLM.Value = cellstr(lines);
+            lblSummaryLLM.HTMLSource = llmSummaryReportHtml( ...
+                execTxt, boundTxt, implTxt, recTxt);
         catch ME
-            lblSummaryLLM.Value = sprintf("LLM 요약 생성 실패: %s", ME.message);
+            lblSummaryLLM.HTMLSource = llmSummaryMessageHtml( ...
+                sprintf("LLM 요약 생성 실패: %s", ME.message), true);
         end
         btnSummary.Enable = "on";
         btnSummary.Text   = prevText;
@@ -2260,6 +2211,109 @@ start(tmr);
         catch
         end
         delete(fig);
+    end
+
+    % =====================================================================
+    % LLM summary HTML rendering helpers (uihtml widget content)
+    % =====================================================================
+    function html = llmSummaryPlaceholderHtml()
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:14px; padding:14px; background:#F0F2FF; color:#444;">', ...
+                '<p>📋 아래 ''LLM 임무 요약 생성'' 버튼을 눌러 지금까지의 전체 case에 대한 종합 보고서를 생성하세요.</p>', ...
+                '</body></html>'];
+    end
+
+    function html = llmSummaryMessageHtml(msg, isError)
+        if isError
+            col = '#A02020';
+        else
+            col = '#444';
+        end
+        msgEsc = htmlEscape(msg);
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:14px; padding:14px; background:#F0F2FF; color:', col, ';">', ...
+                '<p>', msgEsc, '</p>', ...
+                '</body></html>'];
+    end
+
+    function html = llmSummaryReportHtml(execTxt, boundTxt, implTxt, recTxt)
+        h1 = sectionHtml('▣ 종합 요약',  execTxt);
+        h2 = sectionHtml('▣ 실패 경계',  boundTxt);
+        h3 = sectionHtml('▣ 안보 시사점', implTxt);
+        h4 = sectionHtml('▣ 운용 권고',  recTxt);
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:15px; line-height:1.65; padding:14px;', ...
+                'background:#F0F2FF; color:#222;">', ...
+                h1, h2, h3, h4, '</body></html>'];
+    end
+
+    function s = sectionHtml(title, body)
+        bodyEsc = htmlEscape(string(body));
+        bodyEsc = strrep(bodyEsc, char(10), '<br>');
+        s = ['<p style="margin:0 0 4px 0;"><b style="font-size:18px;color:#1A2A55;">', ...
+             title, '</b></p>', ...
+             '<p style="margin:0 0 14px 0;">', char(bodyEsc), '</p>'];
+    end
+
+    function s = htmlEscape(txt)
+        s = char(string(txt));
+        s = strrep(s, '&', '&amp;');
+        s = strrep(s, '<', '&lt;');
+        s = strrep(s, '>', '&gt;');
+    end
+
+    % =====================================================================
+    % Test-case panel HTML helpers (Tab 3 lblTestCases uihtml)
+    % =====================================================================
+    function html = testCasesPlaceholderHtml()
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:15px; line-height:1.6; padding:14px;', ...
+                'background:#F6FFF6; color:#444;">', ...
+                '<p>② 시뮬레이션 탭에서 boundary search를 마친 뒤 아래 ''🧪 테스트 케이스 생성'' 버튼을 눌러 케이스를 산출하세요.</p>', ...
+                '</body></html>'];
+    end
+
+    function html = testCasesMessageHtml(msg, isError)
+        if isError, col = '#A02020'; else, col = '#444'; end
+        msgEsc = htmlEscape(msg);
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:15px; line-height:1.6; padding:14px;', ...
+                'background:#F6FFF6; color:', col, ';">', ...
+                '<p>', msgEsc, '</p>', ...
+                '</body></html>'];
+    end
+
+    function html = replayResultsHtml(results, nOK, nDrift, nReg)
+        % Format batch replay comparison result as bold/sized HTML.
+        if nReg > 0
+            statusLine = '⚠ Regression 발생 — 새 시스템에서 기대된 verdict 가 재현되지 않았습니다.';
+            statusCol  = '#B5301A';
+        elseif nDrift > 0
+            statusLine = 'ⓘ Drift 감지 — verdict 는 유지되었으나 mAP 가 허용 범위를 벗어났습니다.';
+            statusCol  = '#A56A18';
+        else
+            statusLine = '✓ 전체 회귀 통과 — 시스템 envelope 가 원본 세션과 일치합니다.';
+            statusCol  = '#1A5028';
+        end
+        body = ['<p><b style="font-size:18px;color:#1A5028;">▣ Replay 결과 — 총 ', ...
+                num2str(numel(results)), ' cases</b></p>', ...
+                '<p style="margin:0 0 6px 0;font-size:15px;">', ...
+                '✓ OK ', num2str(nOK), '   ·   ', ...
+                '△ DRIFT ', num2str(nDrift), '   ·   ', ...
+                '✗ REGRESSION ', num2str(nReg), '</p>', ...
+                '<p style="margin:0 0 16px 0;color:', statusCol, ';">', ...
+                statusLine, '</p>'];
+        for k = 1:numel(results)
+            r = results{k};
+            body = [body, ...                                          %#ok<AGROW>
+                '<p style="margin:0 0 6px 0;"><b style="font-size:16px;color:#2A6E55;">', ...
+                '[Case ', num2str(r.idx), ']</b></p>', ...
+                '<p style="margin:0 0 12px 14px;">', ...
+                htmlEscape(char(r.summary)), '</p>'];
+        end
+        html = ['<html><body style="font-family: ''Malgun Gothic'', sans-serif;', ...
+                'font-size:15px; line-height:1.6; padding:14px;', ...
+                'background:#F6FFF6; color:#222;">', body, '</body></html>'];
     end
 end
 
@@ -2296,12 +2350,12 @@ if isfile(mdl + ".slx")
     try, delete(mdl + ".slx"); catch, end
 end
 build_mountain_uav_model(false);
-% Sim tuned for paced reveal: UAV starts at -22, intruders at +4..+52
-% with ~12 m spacing. 25 s × 3 m/s = 75 m flight → UAV ends at x=53, just
-% past last intruder. 250 frames total. ~2 s empty before first intruder,
-% then 1 intruder per frame, last appearing near end of sim.
+% Sim length 22 s (220 frames at 0.1 s step). UAV starts at -22, travels
+% 66 m → ends at x=44, ~8 m short of last intruder (vehicle 2 at x=52) so
+% the final frames capture the approach phase. Adjust intruder layout if
+% you want full coverage within this shorter sim.
 try
-    set_param(mdl, "StopTime", "25");
+    set_param(mdl, "StopTime", "22");
 catch ME
     fprintf("[DASHBOARD] StopTime override skipped: %s\n", ME.message);
 end

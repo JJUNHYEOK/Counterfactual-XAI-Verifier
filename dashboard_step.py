@@ -754,10 +754,69 @@ def generate_normalized_test_cases(history_json: str,
     return {
         "cases":       cases,
         "text":        _format_test_cases_text(cases, requirement_text, method, ""),
+        "html":        _format_test_cases_html(cases),
         "method":      method,
         "n_source":    len(history),
         "export_path": "",
     }
+
+
+def _format_test_cases_html(cases: list) -> str:
+    """HTML version of the test-case panel — bold/larger headers per case."""
+    if not cases:
+        body = ("<p style='color:#777;'>(테스트 케이스 없음 — 먼저 시뮬레이션을 실행하세요.)</p>")
+    else:
+        parts = [
+            f"<p><b style='font-size:18px;color:#1A5028;'>▣ 테스트 케이스 ({len(cases)}건)</b></p>"
+        ]
+        for i, c in enumerate(cases, 1):
+            verdict = c.get("verdict", "?")
+            metric  = c.get("metric")
+            metric_str = (f"  (mAP={metric:.3f})" if isinstance(metric, (int, float))
+                          else "")
+            cat = c.get("coverage_category", "다양성")
+            label = c.get("label", "(unnamed)")
+            header = f"[Case {i}] [{cat}] {label}  →  예상: {verdict}{metric_str}"
+            body_lines = []
+            body_lines.append(
+                f"환경: fog {c.get('fog', 0):.0f} %, "
+                f"illum {c.get('ill', 0):.0f} lx, "
+                f"noise {c.get('noi', 0):.2f}"
+            )
+            reason = (c.get("selection_reason") or "").strip()
+            if reason:
+                src = c.get("source_iter")
+                src_str = f" — iter {src}" if src else ""
+                body_lines.append(f"선정 기준: {reason}{src_str}")
+            accept = c.get("acceptable_verdicts", [verdict])
+            mn = c.get("metric_min"); mx = c.get("metric_max")
+            if isinstance(mn, (int, float)) and isinstance(mx, (int, float)):
+                body_lines.append(
+                    f"재실행 허용 범위: verdict ∈ {{{' / '.join(accept)}}}, "
+                    f"mAP ∈ [{mn:.2f}, {mx:.2f}]"
+                )
+            rationale = (c.get("rationale") or "").strip()
+            if rationale:
+                body_lines.append(f"임무 영향: {rationale}")
+            body_html = "<br>".join(_html_escape(l) for l in body_lines)
+            parts.append(
+                f"<p style='margin:0 0 4px 0;'>"
+                f"<b style='font-size:16px;color:#2A6E55;'>{_html_escape(header)}</b></p>"
+                f"<p style='margin:0 0 16px 14px;'>{body_html}</p>"
+            )
+        body = "".join(parts)
+    return (
+        "<html><body style=\"font-family: 'Malgun Gothic', sans-serif; "
+        "font-size:15px; line-height:1.6; padding:14px; "
+        "background:#F6FFF6; color:#222;\">"
+        + body +
+        "</body></html>"
+    )
+
+
+def _html_escape(txt: str) -> str:
+    s = "" if txt is None else str(txt)
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 # Module-level cache of the most recently generated test suite. Populated by
@@ -1196,7 +1255,7 @@ def _format_test_cases_text(cases: list, requirement: str, method: str,
     # coverage breakdown still exist in code (selection_reason +
     # coverage_category fields on each case dict, and the JSON export) but
     # are no longer dumped to the UI text panel.
-    lines.append(f"▣ 정규화된 테스트 케이스 ({len(cases)}건)")
+    lines.append(f"▣ 테스트 케이스 ({len(cases)}건)")
     lines.append("")
 
     for i, c in enumerate(cases, 1):

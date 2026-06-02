@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-02T14:25:44+09:00",
+  "requirement": "노후 센서 운용 — 센서 노이즈 0.12 환경에서 침입자 4명 이상 식별 (센서 열화 강건성 검증)",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "옅은 안개 · 흐림 · 센서 노후",
+      "fog": 35.0,
+      "ill": 5000.0,
+      "noi": 0.32,
+      "verdict": "MARGINAL",
+      "metric": 0.37,
+      "source_iter": 2,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.37,
+      "metric_min": 0.315,
+      "metric_max": 0.425,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "MARGINAL 상태로, 추가 악화 시 운용 불가 위험이 존재합니다."
+    },
+    {
+      "label": "옅은 안개 · 흐림 · 센서 노후",
+      "fog": 42.5,
+      "ill": 4375.0,
+      "noi": 0.37,
+      "verdict": "MARGINAL",
+      "metric": 0.344,
+      "source_iter": 4,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.344,
+      "metric_min": 0.292,
+      "metric_max": 0.396,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "MARGINAL 상태로, 추가 악화 시 운용 불가 위험이 존재합니다."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 57.1,
+      "ill": 3156.0,
+      "noi": 0.468,
+      "verdict": "MARGINAL",
+      "metric": 0.276,
+      "source_iter": 5,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.276,
+      "metric_min": 0.235,
+      "metric_max": 0.317,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "MARGINAL 상태로, 추가 악화 시 운용 불가 위험이 존재합니다."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 60.9,
+      "ill": 2842.0,
+      "noi": 0.493,
+      "verdict": "FAIL",
+      "metric": 0.24,
+      "source_iter": 8,
+      "selection_reason": "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.24,
+      "metric_min": 0.204,
+      "metric_max": 0.276,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "FAIL 상태로, 요구 성능 기준 미달로 보고 누락 위험이 큽니다."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 5.0,
+      "ill": 10000.0,
+      "noi": 0.12,
+      "verdict": "PASS",
+      "metric": 0.67,
+      "source_iter": 1,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.67,
+      "metric_min": 0.57,
+      "metric_max": 0.77,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "PASS 상태로, 임무 수행에 적합한 환경을 나타냅니다."
+    }
+  ]
+}
