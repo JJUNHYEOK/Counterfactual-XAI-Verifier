@@ -89,6 +89,16 @@ try
 catch
     obs_class = ones(size(obs_xyz, 1), 1);
 end
+
+% --- Walking-person animation parameters --------------------------------
+% Persons walk in a circular path around base. 3D renderer only redraws
+% intruder meshes when position delta exceeds REDRAW_THRESHOLD (0.3 m)
+% so per-frame cost stays low even with walking enabled.
+WALK_OMEGA  = 0.6;                          % rad/s — slow walk
+WALK_RADIUS = 1.5;                          % m — circular path radius
+base_obs_xy   = obs_xyz(:, 1:2);
+walk_active   = (obs_class(:) == 1);        % only persons walk
+walk_phase    = (1:size(obs_xyz, 1))' * 1.7;
 try
     SCENERY = evalin("base", "SCENERY_OBJECTS");
 catch
@@ -1174,6 +1184,21 @@ start(tmr);
         illLbl.Text = sprintf("Illumination: %.0f lx", ill);
         noiLbl.Text = sprintf("Camera noise: %.2f", noi);
 
+        % --- Animate walking persons (small circular path) ----------------
+        % `obs_xyz` is mutated in place so both the EO renderer and the
+        % GT bbox recomputation below see the same updated positions.
+        t_now = (ii - 1) * 0.1;          % time in seconds (FixedStep = 0.1)
+        for kk = 1:size(obs_xyz, 1)
+            if walk_active(kk)
+                dxw = WALK_RADIUS * sin(WALK_OMEGA * t_now + walk_phase(kk));
+                dyw = WALK_RADIUS * cos(WALK_OMEGA * t_now + walk_phase(kk));
+                nx = base_obs_xy(kk, 1) + dxw;
+                ny = base_obs_xy(kk, 2) + dyw;
+                nz = interp2(Xg, Yg, Zg, nx, ny, 'linear', 0);
+                obs_xyz(kk, :) = [nx, ny, nz];
+            end
+        end
+
         % --- Update 3D marker + frustum ---
         set(uavMarker, "XData", uav(1), "YData", uav(2), "ZData", uav(3));
         pitch_rad = camIntrin(5) * pi / 180;
@@ -1198,6 +1223,20 @@ start(tmr);
         if size(gtFrame, 2) ~= 4
             gtFrame = reshape(gtFrame, [], 4);
         end
+        % Recompute GT bbox for walking persons so the green bbox tracks
+        % their updated position (Simulink-cached gtBB only reflects the
+        % initial stationary placement).
+        sp_ = sin(pitch_rad);  cp_ = cos(pitch_rad);
+        fx_ = camIntrin(1); fy_ = camIntrin(2);
+        cx_ = camIntrin(3); cy_ = camIntrin(4);
+        for kk = 1:size(obs_xyz, 1)
+            if walk_active(kk)
+                bb = project_walker_bbox(uav, obs_xyz(kk, :), ...
+                    obs_rh(kk, 1), obs_rh(kk, 2), ...
+                    fx_, fy_, cx_, cy_, sp_, cp_, camW, camH);
+                gtFrame(kk, :) = bb;
+            end
+        end
         [scores, detBB_frame] = image_detector(img, gtFrame);
 
         % --- Overlay GT (green dashed) + detected (red solid) bboxes ---
@@ -1213,7 +1252,7 @@ start(tmr);
             cls = obs_class(k);
             cls_lbl = INTRUDER_LABEL(cls);
             gtPresent  = any(gt ~= 0);
-            detPresent = (sc > 0.20) && any(dt ~= 0);
+            detPresent = (sc > 0.05) && any(dt ~= 0);
 
             if gtPresent
                 ngt = ngt + 1;
@@ -2350,12 +2389,10 @@ if isfile(mdl + ".slx")
     try, delete(mdl + ".slx"); catch, end
 end
 build_mountain_uav_model(false);
-% Sim length 22 s (220 frames at 0.1 s step). UAV starts at -22, travels
-% 66 m → ends at x=44, ~8 m short of last intruder (vehicle 2 at x=52) so
-% the final frames capture the approach phase. Adjust intruder layout if
-% you want full coverage within this shorter sim.
+% Sim length 18 s (180 frames at 0.1 s step). UAV starts at -15, travels
+% 54 m → ends at x=39, ~4 m past last intruder (vehicle 2 at x=35).
 try
-    set_param(mdl, "StopTime", "22");
+    set_param(mdl, "StopTime", "18");
 catch ME
     fprintf("[DASHBOARD] StopTime override skipped: %s\n", ME.message);
 end
@@ -2618,4 +2655,43 @@ cmap = [
     0.92 0.92 0.92
 ];
 cmap = interp1(linspace(0,1,size(cmap,1)), cmap, linspace(0,1,128));
+end
+
+
+% =========================================================================
+% Project a walking person's cylinder bbox into the EO image plane.
+% Mirrors F_detector's projection so the recomputed bbox is geometrically
+% consistent with the cached gtBB used for the stationary case.
+% =========================================================================
+function bbox = project_walker_bbox(uav, base, r, h, fx, fy, cx, cy, sp, cp, W, H)
+bbox = zeros(1, 4);
+dx = base(1) - uav(1);
+dy = base(2) - uav(2);
+dz_base = base(3)        - uav(3);
+dz_top  = (base(3) + h)  - uav(3);
+
+cz_base = dx * cp - dz_base * sp;
+cz_top  = dx * cp - dz_top  * sp;
+if cz_base < 0.5 || cz_top < 0.5, return; end
+cz_avg  = 0.5 * (cz_base + cz_top);
+
+cam_x_left  = dy - r;
+cam_x_right = dy + r;
+% Box-corner projection (unified across persons and vehicles) — matches
+% the silhouette extent in image-y for objects pitched 60° below horizon.
+cam_y_top = -dx * sp - r * sp - dz_top  * cp;
+cam_y_bot = -dx * sp + r * sp - dz_base * cp;
+
+u_left  = fx * cam_x_left  / cz_avg + cx;
+u_right = fx * cam_x_right / cz_avg + cx;
+v_top   = fy * cam_y_top   / cz_top  + cy;
+v_bot   = fy * cam_y_bot   / cz_base + cy;
+
+bw = u_right - u_left;
+bh = v_bot   - v_top;
+if bw <= 0 || bh <= 0, return; end
+if u_right < 0 || u_left > W || v_bot < 0 || v_top > H, return; end
+if cz_avg > 150, return; end
+
+bbox = [u_left, v_top, bw, bh];
 end

@@ -20,11 +20,17 @@ if isempty(eo3d) || ~isgraphics(eo3d.fig)
     eo3d = setup_scene(W, H);
 end
 
-% Refresh intruders only when positions differ from the previously drawn
-% set (handles + position cache stored in eo3d.last_obs_xyz). Most of the
-% time the intruders are stationary so this is a no-op after first frame.
-if ~isfield(eo3d, "last_obs_xyz") || ~isequal(eo3d.last_obs_xyz, obs_xyz) ...
-        || ~isequal(eo3d.last_obs_rh, obs_rh)
+% Refresh intruders only when position delta exceeds 0.3 m so walking
+% persons get visible motion without paying the redraw cost every frame.
+needs_redraw = false;
+if ~isfield(eo3d, "last_obs_xyz") || ...
+        size(eo3d.last_obs_xyz, 1) ~= size(obs_xyz, 1) || ...
+        ~isequal(eo3d.last_obs_rh, obs_rh)
+    needs_redraw = true;
+elseif max(abs(eo3d.last_obs_xyz(:) - obs_xyz(:))) > 0.3
+    needs_redraw = true;
+end
+if needs_redraw
     eo3d = redraw_intruders(eo3d, obs_xyz, obs_rh);
 end
 
@@ -61,8 +67,13 @@ function eo3d = setup_scene(W, H)
 eo3d.fig = figure("Visible", "off", "Position", [-5000 -5000 W H], ...
     "Color", [0.55 0.70 0.85], "MenuBar", "none", "ToolBar", "none", ...
     "Renderer", "opengl");
-eo3d.ax = axes("Parent", eo3d.fig, "Units", "normalized", ...
-    "Position", [0 0 1 1]);
+eo3d.ax = axes("Parent", eo3d.fig, "Units", "pixels", ...
+    "Position", [1 1 W H]);
+% Pixel-exact viewport (W×H) with zero inset so the captured frame matches
+% the pinhole projection 1:1 — `LooseInset` zeroed prevents MATLAB from
+% reserving any decoration margin even after `axis off`.
+set(eo3d.ax, "LooseInset", [0 0 0 0]);
+set(eo3d.ax, "ActivePositionProperty", "position");
 hold(eo3d.ax, "on");
 axis(eo3d.ax, "off");
 
@@ -186,6 +197,11 @@ eo3d.intruders = [];          % cell array of patch/surface handles per intruder
 % Camera basics — perspective, decent FOV
 set(eo3d.ax, "Projection", "perspective");
 set(eo3d.ax, "DataAspectRatio", [1 1 1]);
+% Lock the plot box aspect to W:H:1 so the camva-determined vertical FOV
+% maps cleanly to image rows without any axes stretching (a mismatched
+% PlotBoxAspectRatio is the root cause of the GT bbox vs object offset).
+set(eo3d.ax, "PlotBoxAspectRatioMode", "manual");
+set(eo3d.ax, "PlotBoxAspectRatio", [W H 1]);
 set(eo3d.ax, "Clipping", "off");
 
 % Light source — sun-like
@@ -237,6 +253,10 @@ end
 % Configure camera = UAV 1st-person view (pitched down by pitch_deg)
 % =========================================================================
 function configure_camera(ax, uav, pitch_deg, fy, H)
+% No pitch bias — MATLAB perspective and pinhole projections cannot be
+% exactly matched (MATLAB uses data-extent based frustum, not focal
+% length). Residual offset is accepted; image_detector now samples a
+% wider interior to remain robust to loose bbox alignment.
 pitch = pitch_deg * pi/180;
 % UAV looks along +x in world frame, pitched down by `pitch` from horizontal.
 look_dir = [cos(pitch), 0, -sin(pitch)];

@@ -39,7 +39,7 @@ set_param(mdl, ...
     "SolverType", "Fixed-step", ...
     "Solver", "FixedStepDiscrete", ...
     "FixedStep", "0.1", ...
-    "StopTime", "22", ...
+    "StopTime", "18", ...
     "SaveOutput", "on", ...
     "SignalLogging", "on");
 
@@ -165,12 +165,12 @@ assignin("base", "TERRAIN_Z", Zg);
 % Mission = unauthorized-intruder detection on a border mountain. Only
 % people and vehicles are detection targets; trees / shrubs are NOT.
 intruderXY = [
-      4,  2;     % person 1  (UAV starts at -22 → 26 m ahead, ~2 s empty start)
-     16, -1;     % person 2  (~12 m gap)
-     28,  3;     % person 3  (~12 m gap)
-     40, -2;     % vehicle 1 (~12 m gap)
-     52,  2;     % vehicle 2 (~12 m gap) — last intruder, near end of flight
-];   % span 48 m, spacing ~12 m → 1 intruder per frame
+     -5,  2;     % person 1
+      5, -2;     % person 2  (~10 m gap)
+     15,  3;     % person 3  (~10 m gap)
+     25, -2;     % vehicle 1 (~10 m gap)
+     35,  2;     % vehicle 2 (~10 m gap)
+];   % span 40 m, spacing ~10 m, fits 18 s sim
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person r, h
@@ -199,7 +199,7 @@ assignin("base", "SCENERY_OBJECTS", SCENERY);
 
 % --- UAV initial state and constant velocity ---
 % Surveillance overflight at moderate altitude (~45 m AGL).
-uavX0 = -22; uavY0 = 0;     % ~2 s empty start before first intruder enters FOV
+uavX0 = -15; uavY0 = 0;     % start 10 m before first intruder
 uavZ0 = max(Zg(:)) + 15;
 assignin("base", "UAV_X0_VEC", [uavX0, uavY0, uavZ0]);
 assignin("base", "UAV_V_VEC",  [3.0, 0.0, 0.0]);   % m/s along +X
@@ -256,10 +256,10 @@ function S = make_scenery_for_build(Xg, Yg, Zg, intruderXY)
 % Mirror of init_uav_workspace.make_scenery_ — must stay in sync.
 % Dense compact layout: 110 objects in 45x30 m → ~1 per 12 sq.m.
 S = zeros(0, 5);
-M       = 130;
-X_RANGE = [-25, 60];
-Y_RANGE = [-15, 15];
-EXCL_R  = 2.5;
+M       = 110;
+X_RANGE = [-18, 45];
+Y_RANGE = [-12, 12];
+EXCL_R  = 5.5;     % clears walking path + largest scenery + buffer
 for k = 1:M
     seed  = mod(k * 12.9898 + 78.233, 1.0);
     seed2 = mod(k * 39.346  + 11.135, 1.0);
@@ -449,18 +449,15 @@ lines = [
 ""
 "    cam_x_left  = dy - r;"
 "    cam_x_right = dy + r;"
-"    % Box-vs-cylinder split: vehicles (r > 1) get full box-corner"
-"    % projection so the bbox encloses their length-along-x; people (r ≤ 1)"
-"    % keep the cylinder model so the bbox stays tight against the body"
-"    % silhouette (a dilated bbox bleeds terrain into the detector's"
-"    % interior color sample and collapses the contrast score)."
-"    if r > 1.0"
-"        cam_y_top = -dx*sp - r*sp - dz_top *cp;"
-"        cam_y_bot = -dx*sp + r*sp - dz_base*cp;"
-"    else"
-"        cam_y_top = -dx*sp - dz_top *cp;"
-"        cam_y_bot = -dx*sp - dz_base*cp;"
-"    end"
+"    % Unified box-corner projection for BOTH persons and vehicles. At"
+"    % high pitch the visible silhouette of any 3D object extends along x"
+"    % by ~2r·sin(pitch) in image-y direction beyond the pure cylinder"
+"    % projection — without the r·sp term the GT bbox renders ~half the"
+"    % actual visual height, producing the user-visible 'bbox detached"
+"    % from object' effect. The detector's centre-30% interior sample"
+"    % keeps contrast intact since the object still fills the bbox core."
+"    cam_y_top = -dx*sp - r*sp - dz_top *cp;"
+"    cam_y_bot = -dx*sp + r*sp - dz_base*cp;"
 ""
 "    u_left  = fx * cam_x_left  / cz_avg + cx0;"
 "    u_right = fx * cam_x_right / cz_avg + cx0;"

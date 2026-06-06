@@ -38,12 +38,12 @@ assignin('base', 'TERRAIN_Z', Zg);
 %   vehicle : r=1.60,  h=1.80   (≈ 3.2 m diameter cylinder ~ small SUV)
 
 intruderXY = [
-      4,  2;     % person 1  (UAV starts at -22 → 26 m ahead, ~2 s empty start)
-     16, -1;     % person 2  (~12 m gap)
-     28,  3;     % person 3  (~12 m gap)
-     40, -2;     % vehicle 1 (~12 m gap)
-     52,  2;     % vehicle 2 (~12 m gap) — last intruder, near end of flight
-];   % span 48 m, spacing ~12 m → 1 intruder per frame (no overlap)
+     -5,  2;     % person 1
+      5, -2;     % person 2  (~10 m gap)
+     15,  3;     % person 3  (~10 m gap)
+     25, -2;     % vehicle 1 (~10 m gap)
+     35,  2;     % vehicle 2 (~10 m gap)
+];   % span 40 m, spacing ~10 m, fits 18 s sim
 intruderClass = [1; 1; 1; 2; 2];        % 1=person, 2=vehicle
 intruderDims  = [
     0.50, 1.80;   % person dims (r, h)
@@ -79,7 +79,7 @@ assignin('base', 'SCENERY_OBJECTS', SCENERY_OBJECTS);
 % Lower altitude than first attempt; gives larger projected bboxes
 % (10-25 px) which are still "small-object" but actually detectable.
 uavZ0 = max(Zg(:)) + 15;
-assignin('base', 'UAV_X0_VEC', [-22.0, 0.0, uavZ0]);   % ~2 s empty start before first intruder enters FOV
+assignin('base', 'UAV_X0_VEC', [-15.0, 0.0, uavZ0]);   % start 10 m before first intruder
 assignin('base', 'UAV_V_VEC',  [3.0,   0.0, 0.0]);
 
 % ── Camera intrinsics: [fx, fy, cx, cy, pitch_down_deg] ──────────────────
@@ -102,13 +102,16 @@ function S = make_scenery_(Xg, Yg, Zg)
 %   type 2 = rock   (radius 0.7~2.0 m, low/flat)
 % Output: Mx5 array [x, y, z, radius, type]
 % Avoids placing scenery within 2 m of any intruder.
-intruderXY = [4,2; 16,-1; 28,3; 40,-2; 52,2];
+intruderXY = [-5,2; 5,-2; 15,3; 25,-2; 35,2];
 
-% Scenery covers the full flight corridor with comfortable density.
-X_RANGE = [-25, 60];     % spans UAV start (-22) through past last intruder (52)
-Y_RANGE = [-15, 15];
-M       = 130;
-EXCL_R  = 2.5;
+% Scenery covers the corridor with comfortable density.
+% EXCL_R sized to clear the WALKING PATH (radius 1.5 m) plus the largest
+% scenery footprint (rocks r≈2 m, trees r≈1.5 m) plus an extra buffer so
+% camera line-of-sight to intruders is never blocked by foreground meshes.
+X_RANGE = [-18, 45];
+Y_RANGE = [-12, 12];
+M       = 110;
+EXCL_R  = 5.5;
 
 S = zeros(0, 5);
 for k = 1:M

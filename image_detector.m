@@ -54,20 +54,8 @@ for k = 1:N
         continue;
     end
 
-    % --- Interior region statistics ---
-    % Sample only the CENTER ~30% of the bbox so the interior mean is
-    % dominated by the rendered object silhouette, not the empty space
-    % between bbox boundary and object surface. The cylinder bbox is
-    % deliberately a loose enclosure around a humanoid / SUV model — the
-    % object only fills ~40-60% of bbox area, so a full-bbox sample bleeds
-    % terrain colour into r_in and collapses the contrast signal.
-    cw = max(2, round(bw * 0.35));
-    ch = max(2, round(bh * 0.35));
-    u1c = u1 + cw; u2c = u2 - cw;
-    v1c = v1 + ch; v2c = v2 - ch;
-    if u2c <= u1c || v2c <= v1c
-        u1c = u1; u2c = u2; v1c = v1; v2c = v2;     % fallback to full bbox
-    end
+    % --- Interior region statistics: full bbox ---
+    u1c = u1; u2c = u2; v1c = v1; v2c = v2;
     r_in = mean(R(v1c:v2c, u1c:u2c), "all");
     g_in = mean(G(v1c:v2c, u1c:u2c), "all");
     b_in = mean(B(v1c:v2c, u1c:u2c), "all");

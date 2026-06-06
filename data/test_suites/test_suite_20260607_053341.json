@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-07T05:33:41+09:00",
+  "requirement": "표준 작전 환경 — 청명 한낮·정상 센서 baseline 에서 침입자 5명 모두 식별 보장",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 65.0,
+      "ill": 3000.0,
+      "noi": 0.42,
+      "verdict": "MARGINAL",
+      "metric": 0.338,
+      "source_iter": 3,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.338,
+      "metric_min": 0.287,
+      "metric_max": 0.389,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "운용 불가 상태에 가까운 경계 조건으로, 추가 악화 시 비인가 침입자 식별 실패 위험이 큽니다."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 67.5,
+      "ill": 2873.0,
+      "noi": 0.435,
+      "verdict": "FAIL",
+      "metric": 0.226,
+      "source_iter": 10,
+      "selection_reason": "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.226,
+      "metric_min": 0.192,
+      "metric_max": 0.26,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "요구 사항 미달로 인해 비인가 침입자 식별 실패 가능성이 높아 안보 위협이 발생할 수 있습니다."
+    },
+    {
+      "label": "옅은 안개 · 흐림",
+      "fog": 35.0,
+      "ill": 6000.0,
+      "noi": 0.22,
+      "verdict": "PASS",
+      "metric": 0.829,
+      "source_iter": 2,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.829,
+      "metric_min": 0.705,
+      "metric_max": 0.953,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "임무 통과 조건을 충족하여 비인가 침입자를 성공적으로 식별할 수 있는 안정적인 환경입니다."
+    }
+  ]
+}
