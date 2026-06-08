@@ -204,15 +204,39 @@
     "saved_at": "2026-06-02T14:21:02+09:00"
   },
   {
-    "fog": 42.5,
-    "ill": 4375.0,
-    "noi": 0.37,
-    "metric": 0.3441533298915849,
-    "metric_person": 0.6346153846153846,
-    "metric_vehicle": 0.053691275167785234,
-    "verdict": "MARGINAL",
-    "iter": 4,
-    "mode": "boundary_recover",
-    "saved_at": "2026-06-02T14:21:53+09:00"
+    "fog": 53.2859,
+    "ill": 4171.4062,
+    "noi": 0.3419,
+    "metric": 0,
+    "metric_person": 0,
+    "metric_vehicle": 0,
+    "verdict": "FAIL",
+    "iter": 7,
+    "mode": "boundary_push",
+    "saved_at": "2026-06-08T11:27:12+09:00"
+  },
+  {
+    "fog": 57.125,
+    "ill": 3787.5,
+    "noi": 0.3675,
+    "metric": 0.0,
+    "metric_person": 0.0,
+    "metric_vehicle": 0.0,
+    "verdict": "FAIL",
+    "iter": 5,
+    "mode": "boundary_push",
+    "saved_at": "2026-06-08T11:27:08+09:00"
+  },
+  {
+    "fog": 5.0,
+    "ill": 6000.0,
+    "noi": 0.03,
+    "metric": 0.06788312244024697,
+    "metric_person": 0.10569105691056911,
+    "metric_vehicle": 0.03007518796992481,
+    "verdict": "FAIL",
+    "iter": 11,
+    "mode": "manual",
+    "saved_at": "2026-06-08T13:38:06+09:00"
   }
 ]

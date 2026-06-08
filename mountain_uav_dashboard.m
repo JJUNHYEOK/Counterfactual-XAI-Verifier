@@ -2026,7 +2026,8 @@ start(tmr);
             replayDropdown.Enable = "off";
             caseDropdown.Enable   = "off";
             % Show banner in the test-cases panel
-            lblTestCases.Value = sprintf("[Replay] Case %d 단독 재실행 중 ...", caseIdx);
+            lblTestCases.HTMLSource = testCasesMessageHtml( ...
+                sprintf("[Replay] Case %d 단독 재실행 중 ...", caseIdx), false);
             fprintf("[Replay]   .. step 8: calling advanceReplay() for the single picked case\n");
             advanceReplay();
         catch ME
