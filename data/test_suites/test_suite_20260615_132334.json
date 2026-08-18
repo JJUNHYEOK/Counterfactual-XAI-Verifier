@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-15T13:23:34+09:00",
+  "requirement": "표준 작전 환경 — 청명 한낮·정상 센서 baseline 에서 침입자 5명 모두 식별 보장",
+  "method": "rule_based + llm_enrichment",
+  "n_source_runs": 10,
+  "tolerance_pct": 15.0,
+  "cases": [
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 65.0,
+      "ill": 3000.0,
+      "noi": 0.42,
+      "verdict": "MARGINAL",
+      "metric": 0.353,
+      "source_iter": 3,
+      "selection_reason": "MARGINAL — PASS/FAIL 경계 위에 정확히 위치 (boundary 직접 검증)",
+      "coverage_category": "경계",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.353,
+      "metric_min": 0.3,
+      "metric_max": 0.406,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "안개 밀도가 65%로 높아 탐지 성능이 경계선에 가까워, 추가 악화 시 운용 불가."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 66.9,
+      "ill": 2906.0,
+      "noi": 0.431,
+      "verdict": "MARGINAL",
+      "metric": 0.265,
+      "source_iter": 6,
+      "selection_reason": "DIVERSITY_MARG — 다양성 확보 (보충 슬롯)",
+      "coverage_category": "다양성",
+      "expected_verdict": "MARGINAL",
+      "expected_metric": 0.265,
+      "metric_min": 0.225,
+      "metric_max": 0.305,
+      "acceptable_verdicts": [
+        "PASS",
+        "MARGINAL",
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "안개 밀도가 66.9%로 탐지 성능이 경계선에 위치, 추가 악화 시 운용 불가."
+    },
+    {
+      "label": "맑음 · 정오 광량",
+      "fog": 5.0,
+      "ill": 12000.0,
+      "noi": 0.02,
+      "verdict": "PASS",
+      "metric": 0.851,
+      "source_iter": 1,
+      "selection_reason": "BOUNDARY_PASS — 통과 측 경계 인접 (FAIL 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.851,
+      "metric_min": 0.723,
+      "metric_max": 0.979,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "정상 조건에서의 우수한 탐지 성능을 보여 안전한 임무 수행 가능."
+    },
+    {
+      "label": "옅은 안개 · 흐림",
+      "fog": 35.0,
+      "ill": 6000.0,
+      "noi": 0.22,
+      "verdict": "PASS",
+      "metric": 0.876,
+      "source_iter": 2,
+      "selection_reason": "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 anchor)",
+      "coverage_category": "회귀",
+      "expected_verdict": "PASS",
+      "expected_metric": 0.876,
+      "metric_min": 0.745,
+      "metric_max": 1.0,
+      "acceptable_verdicts": [
+        "PASS"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "상대적으로 낮은 안개 밀도에서 우수한 탐지 성능을 기록, 안전한 임무 수행 보장."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 67.1,
+      "ill": 2895.0,
+      "noi": 0.433,
+      "verdict": "FAIL",
+      "metric": 0.235,
+      "source_iter": 9,
+      "selection_reason": "BOUNDARY_FAIL — 실패 측 경계 인접 (PASS 임계 바로 위)",
+      "coverage_category": "경계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.235,
+      "metric_min": 0.2,
+      "metric_max": 0.27,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "탐지 성능이 요구사항을 미달, 보고 누락 위험이 존재."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 66.9,
+      "ill": 2903.0,
+      "noi": 0.432,
+      "verdict": "FAIL",
+      "metric": 0.235,
+      "source_iter": 10,
+      "selection_reason": "DIVERSITY_FAIL — 다양성 확보 (보충 슬롯)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.235,
+      "metric_min": 0.2,
+      "metric_max": 0.27,
+      "acceptable_verdicts": [
+        "FAIL",
+        "MARGINAL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "탐지 성능이 요구사항을 미달, 보고 누락 위험이 존재."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 67.8,
+      "ill": 2861.0,
+      "noi": 0.437,
+      "verdict": "FAIL",
+      "metric": 0.147,
+      "source_iter": 8,
+      "selection_reason": "DIVERSITY_FAIL — 다양성 확보 (보충 슬롯)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.147,
+      "metric_min": 0.125,
+      "metric_max": 0.169,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "탐지 성능이 요구사항을 미달, 보고 누락 위험이 존재."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 70.5,
+      "ill": 2723.0,
+      "noi": 0.453,
+      "verdict": "FAIL",
+      "metric": 0.059,
+      "source_iter": 7,
+      "selection_reason": "DIVERSITY_FAIL — 다양성 확보 (보충 슬롯)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.059,
+      "metric_min": 0.05,
+      "metric_max": 0.068,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "탐지 성능이 요구사항을 미달, 보고 누락 위험이 존재."
+    },
+    {
+      "label": "짙은 안개 · 야간 · 센서 노후",
+      "fog": 95.0,
+      "ill": 1500.0,
+      "noi": 0.6,
+      "verdict": "FAIL",
+      "metric": 0.0,
+      "source_iter": 4,
+      "selection_reason": "WORST_FAIL — 가장 낮은 mAP의 FAIL (운용 한계 anchor)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.0,
+      "metric_min": 0.0,
+      "metric_max": 0.0,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "가장 낮은 탐지 성능으로, 보고 누락 위험이 극대화됨."
+    },
+    {
+      "label": "짙은 안개 · 흐림 · 센서 노후",
+      "fog": 72.5,
+      "ill": 2625.0,
+      "noi": 0.465,
+      "verdict": "FAIL",
+      "metric": 0.0,
+      "source_iter": 5,
+      "selection_reason": "DIVERSITY_FAIL — 다양성 확보 (보충 슬롯)",
+      "coverage_category": "한계",
+      "expected_verdict": "FAIL",
+      "expected_metric": 0.0,
+      "metric_min": 0.0,
+      "metric_max": 0.0,
+      "acceptable_verdicts": [
+        "FAIL"
+      ],
+      "tolerance_pct": 15.0,
+      "rationale": "탐지 성능이 요구사항을 미달, 보고 누락 위험이 존재."
+    }
+  ]
+}

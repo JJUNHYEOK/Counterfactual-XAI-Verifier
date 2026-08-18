@@ -20,10 +20,24 @@ if isempty(eo3d) || ~isgraphics(eo3d.fig)
     eo3d = setup_scene(W, H);
 end
 
-% Refresh intruders only when position delta exceeds 0.3 m so walking
-% persons get visible motion without paying the redraw cost every frame.
+% Honor dashboard's "force intruder redraw" flag (set on each new
+% boundary-search session) so persistent handles from the previous
+% session can't ghost-render alongside the newly-walking persons.
+force_redraw = false;
+try
+    if getappdata(0, 'EO_FORCE_INTRUDER_REDRAW')
+        force_redraw = true;
+        setappdata(0, 'EO_FORCE_INTRUDER_REDRAW', false);
+    end
+catch
+end
+
+% Refresh intruders when forced, on first frame, on layout change, or
+% when position delta exceeds 0.3 m (so walking persons get visible
+% motion without paying the redraw cost every frame).
 needs_redraw = false;
-if ~isfield(eo3d, "last_obs_xyz") || ...
+if force_redraw || ...
+        ~isfield(eo3d, "last_obs_xyz") || ...
         size(eo3d.last_obs_xyz, 1) ~= size(obs_xyz, 1) || ...
         ~isequal(eo3d.last_obs_rh, obs_rh)
     needs_redraw = true;
@@ -192,7 +206,7 @@ catch
 end
 
 % --- Intruders (people + vehicles — these update per frame) ---
-eo3d.intruders = [];          % cell array of patch/surface handles per intruder
+eo3d.intruders = gobjects(0); % graphics-handle column for redraw_intruders
 
 % Camera basics — perspective, decent FOV
 set(eo3d.ax, "Projection", "perspective");
@@ -221,12 +235,14 @@ catch
     obs_class = ones(size(obs_xyz, 1), 1);
 end
 
-% Delete previous intruder handles and redraw.
+% Delete previous intruder handles (tracked array + any tagged axes
+% children that may have leaked across sessions).
 for k = 1:numel(eo3d.intruders)
     if isgraphics(eo3d.intruders(k))
         delete(eo3d.intruders(k));
     end
 end
+delete(findobj(eo3d.ax, "Tag", "eo_intruder"));   % catch untracked stragglers
 eo3d.intruders = gobjects(0);
 
 for k = 1:size(obs_xyz, 1)
@@ -239,6 +255,9 @@ for k = 1:size(obs_xyz, 1)
         hh = draw_vehicle_3d(eo3d.ax, base, r, h);
     else
         hh = draw_person_3d(eo3d.ax, base, r, h);
+    end
+    for ih = 1:numel(hh)
+        try, set(hh(ih), "Tag", "eo_intruder"); catch, end
     end
     eo3d.intruders = [eo3d.intruders; hh];
 end

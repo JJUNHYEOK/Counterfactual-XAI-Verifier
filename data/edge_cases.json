@@ -171,13 +171,13 @@
     "fog": 60.9,
     "ill": 2841.6602,
     "noi": 0.4926,
-    "metric": 0.2403846153846154,
-    "metric_person": 0.4807692307692308,
-    "metric_vehicle": 0,
+    "metric": 0.21596992481203006,
+    "metric_person": 0.056,
+    "metric_vehicle": 0.37593984962406013,
     "verdict": "FAIL",
     "iter": 8,
     "mode": "boundary_push",
-    "saved_at": "2026-06-02T14:23:31+09:00"
+    "saved_at": "2026-06-12T03:59:10+09:00"
   },
   {
     "fog": 95.0,

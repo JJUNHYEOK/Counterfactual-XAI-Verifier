@@ -762,54 +762,93 @@ def generate_normalized_test_cases(history_json: str,
 
 
 def _format_test_cases_html(cases: list) -> str:
-    """HTML version of the test-case panel — bold/larger headers per case."""
+    """HTML table view of the generated test-case suite — Excel-style grid
+    so each column (verdict / mAP / env / 선정 기준 / 허용 구간 / 임무 영향)
+    can be scanned at a glance. The structured layout is itself a
+    contribution: boundary cases (MARGINAL → BOUNDARY_FAIL → BOUNDARY_PASS)
+    rise to the top with a category badge so the operator immediately sees
+    which rows characterise the failure envelope.
+    """
     if not cases:
-        body = ("<p style='color:#777;'>(테스트 케이스 없음 — 먼저 시뮬레이션을 실행하세요.)</p>")
-    else:
-        parts = [
-            f"<p><b style='font-size:18px;color:#1A5028;'>▣ 테스트 케이스 ({len(cases)}건)</b></p>"
-        ]
-        for i, c in enumerate(cases, 1):
-            verdict = c.get("verdict", "?")
-            metric  = c.get("metric")
-            metric_str = (f"  (mAP={metric:.3f})" if isinstance(metric, (int, float))
-                          else "")
-            cat = c.get("coverage_category", "다양성")
-            label = c.get("label", "(unnamed)")
-            header = f"[Case {i}] [{cat}] {label}  →  예상: {verdict}{metric_str}"
-            body_lines = []
-            body_lines.append(
-                f"환경: fog {c.get('fog', 0):.0f} %, "
-                f"illum {c.get('ill', 0):.0f} lx, "
-                f"noise {c.get('noi', 0):.2f}"
+        return (
+            "<html><body style=\"font-family: 'Malgun Gothic', sans-serif; "
+            "padding:18px; background:#F6FFF6; color:#777;\">"
+            "<p>(테스트 케이스 없음 — 먼저 시뮬레이션을 실행하세요.)</p>"
+            "</body></html>"
+        )
+
+    verdict_color = {
+        "PASS":     "#1A6E55",
+        "MARGINAL": "#A56A18",
+        "FAIL":     "#B5301A",
+    }
+
+    rows_html = []
+    for i, c in enumerate(cases, 1):
+        verdict = c.get("verdict", "?")
+        metric  = c.get("metric")
+        metric_str = f"{metric:.3f}" if isinstance(metric, (int, float)) else "—"
+        ver_col = verdict_color.get(verdict, "#222")
+        label = _html_escape(c.get("label", "(unnamed)"))
+
+        accept = c.get("acceptable_verdicts", [verdict])
+        mn = c.get("metric_min")
+        mx = c.get("metric_max")
+        if isinstance(mn, (int, float)) and isinstance(mx, (int, float)):
+            band_html = (
+                f"<span style='color:#444;'>{' / '.join(accept)}</span><br>"
+                f"<span style='color:#666;font-size:13px;'>"
+                f"mAP ∈ [{mn:.2f}, {mx:.2f}]</span>"
             )
-            reason = (c.get("selection_reason") or "").strip()
-            if reason:
-                src = c.get("source_iter")
-                src_str = f" — iter {src}" if src else ""
-                body_lines.append(f"선정 기준: {reason}{src_str}")
-            accept = c.get("acceptable_verdicts", [verdict])
-            mn = c.get("metric_min"); mx = c.get("metric_max")
-            if isinstance(mn, (int, float)) and isinstance(mx, (int, float)):
-                body_lines.append(
-                    f"재실행 허용 범위: verdict ∈ {{{' / '.join(accept)}}}, "
-                    f"mAP ∈ [{mn:.2f}, {mx:.2f}]"
-                )
-            rationale = (c.get("rationale") or "").strip()
-            if rationale:
-                body_lines.append(f"임무 영향: {rationale}")
-            body_html = "<br>".join(_html_escape(l) for l in body_lines)
-            parts.append(
-                f"<p style='margin:0 0 4px 0;'>"
-                f"<b style='font-size:16px;color:#2A6E55;'>{_html_escape(header)}</b></p>"
-                f"<p style='margin:0 0 16px 14px;'>{body_html}</p>"
-            )
-        body = "".join(parts)
+        else:
+            band_html = "—"
+
+        # Strip explicit verdict words from rationale so 임무 영향 column
+        # carries only the operational description, not redundant labels.
+        rationale_raw = (c.get("rationale") or "").strip()
+        rationale_raw = _strip_verdict_words(rationale_raw)
+        rationale = _html_escape(rationale_raw) or "—"
+
+        rows_html.append(
+            "<tr style='background:" + ("#F8FFF8" if i % 2 else "#FFFFFF") + ";'>"
+            f"<td style='text-align:center;font-weight:bold;'>{i}</td>"
+            f"<td style='font-weight:bold;'>{label}</td>"
+            f"<td style='text-align:center;font-weight:bold;color:{ver_col};'>{verdict}</td>"
+            f"<td style='text-align:center;font-family:monospace;'>{metric_str}</td>"
+            f"<td style='text-align:center;font-family:monospace;'>{c.get('fog', 0):.0f}%</td>"
+            f"<td style='text-align:center;font-family:monospace;'>{c.get('ill', 0):.0f}</td>"
+            f"<td style='text-align:center;font-family:monospace;'>{c.get('noi', 0):.2f}</td>"
+            f"<td style='font-size:13px;'>{band_html}</td>"
+            f"<td style='font-size:13px;'>{rationale}</td>"
+            "</tr>"
+        )
+
+    header_html = (
+        "<thead><tr style='background:#1A5028;color:#fff;'>"
+        "<th style='padding:6px 4px;'>#</th>"
+        "<th style='padding:6px 8px;text-align:left;'>라벨</th>"
+        "<th style='padding:6px 4px;'>Verdict</th>"
+        "<th style='padding:6px 4px;'>mAP</th>"
+        "<th style='padding:6px 4px;'>fog</th>"
+        "<th style='padding:6px 4px;'>illum (lx)</th>"
+        "<th style='padding:6px 4px;'>noise</th>"
+        "<th style='padding:6px 8px;text-align:left;'>재실행 허용 범위</th>"
+        "<th style='padding:6px 8px;text-align:left;'>임무 영향</th>"
+        "</tr></thead>"
+    )
+
     return (
         "<html><body style=\"font-family: 'Malgun Gothic', sans-serif; "
-        "font-size:15px; line-height:1.6; padding:14px; "
-        "background:#F6FFF6; color:#222;\">"
-        + body +
+        "font-size:14px; padding:10px; background:#F6FFF6; color:#222;\">"
+        f"<p style='margin:0 0 8px 0;'>"
+        f"<b style='font-size:17px;color:#1A5028;'>"
+        f"▣ 테스트 케이스 ({len(cases)}건)</b>"
+        f"</p>"
+        "<table style='border-collapse:collapse;width:100%;"
+        "border:1px solid #B0C8B5;'>"
+        + header_html
+        + "<tbody>" + "".join(rows_html) + "</tbody>"
+        "</table>"
         "</body></html>"
     )
 
@@ -817,6 +856,29 @@ def _format_test_cases_html(cases: list) -> str:
 def _html_escape(txt: str) -> str:
     s = "" if txt is None else str(txt)
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _strip_verdict_words(txt: str) -> str:
+    """Remove explicit verdict labels (PASS / FAIL / MARGINAL) and
+    leftover formulaic prefixes ("판정으로,") from a free text. Used by
+    임무 영향 column so the row reads as a clean operational description,
+    not a redundant verdict echo (verdict is already in its own column
+    with a colour badge)."""
+    import re
+    if not txt:
+        return ""
+    # Word-boundary strip — case-insensitive.
+    out = re.sub(r"\b(PASS|FAIL|MARGINAL|MARGINER)\b", "", txt,
+                 flags=re.IGNORECASE)
+    # Strip the formulaic Korean prefix that LLM rationale often emits
+    # right after the verdict word (e.g., "MARGINAL 판정으로, ...").
+    out = re.sub(r"\s*판정으로\s*[,，.]?\s*", "", out)
+    # Collapse leftover punctuation/spacing.
+    out = re.sub(r"\s{2,}", " ", out)
+    out = re.sub(r"\s*[·,]\s*[·,]+", ",", out)
+    out = re.sub(r"^\s*[·,.]\s*", "", out)
+    out = re.sub(r"\s*[·,]\s*$", "", out)
+    return out.strip()
 
 
 # Module-level cache of the most recently generated test suite. Populated by
@@ -1210,7 +1272,8 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
              "BEST_PASS — 가장 높은 mAP의 PASS (정상 회귀 anchor)")
 
     # 6. Diversity fill — remaining cases, prefer high-info first (by
-    #    |metric − 0.5| ascending — closer to boundary still prioritised)
+    #    |metric − 0.5| ascending — closer to boundary still prioritised).
+    #    Pass 1: respect L1 dedup so the early diversity slots are spread.
     rest = sorted(history, key=lambda r: abs(float(r.get("metric", 0)) - 0.5))
     for r in rest:
         if len(picked) >= max_cases:
@@ -1221,6 +1284,41 @@ def _rule_select_cases(history: list, max_cases: int) -> list:
                else "DIVERSITY_MARG")
         _add(r, tag + " — 다양성 확보 (다른 stress 축 cover)")
 
+    # Pass 2: if still short of max_cases, fill remaining slots without the
+    # L1<0.15 dedup so the operator always gets the full requested suite
+    # (e.g. default 10 cases). Skip records that are ALREADY in picked
+    # (via source_iter) so we don't duplicate rows.
+    if len(picked) < max_cases:
+        already = {p.get("source_iter") for p in picked
+                   if p.get("source_iter") is not None}
+        for r in rest:
+            if len(picked) >= max_cases:
+                break
+            iter_id = int(r.get("iter", 0)) if r.get("iter") else None
+            if iter_id is not None and iter_id in already:
+                continue
+            v = r.get("verdict", "PASS")
+            tag = ("DIVERSITY_FAIL" if v == "FAIL"
+                   else "DIVERSITY_PASS" if v == "PASS"
+                   else "DIVERSITY_MARG")
+            if _add(r, tag + " — 다양성 확보 (보충 슬롯)", skip_dedup=True):
+                already.add(iter_id)
+
+    # Final display order:
+    #   primary  — verdict bucket (MARGINAL → PASS → FAIL)
+    #   secondary — |mAP - 0.5| ascending (cases closest to the decision
+    #               boundary rise to the top of their bucket)
+    # This way the table reads boundary-out: MARGINAL rows first
+    # (most informative), then PASS rows sorted from boundary-adjacent
+    # down to clear baseline, then FAIL rows sorted from boundary-adjacent
+    # down to deepest failure.
+    _verdict_rank = {"MARGINAL": 0, "PASS": 1, "FAIL": 2}
+    def _sort_key(c):
+        m = c.get("metric")
+        m_val = float(m) if isinstance(m, (int, float)) else 0.5
+        return (_verdict_rank.get(c.get("verdict", "PASS"), 3),
+                abs(m_val - 0.5))
+    picked.sort(key=_sort_key)
     return picked
 
 
@@ -1239,10 +1337,10 @@ def _auto_rationale(r: dict) -> str:
     v = r.get("verdict", "PASS")
     m = float(r.get("metric", 0))
     if v == "PASS":
-        return f"임무 통과 조건 (mAP {m:.2f}) — 안전 envelope 회귀 테스트."
+        return f"정상 임무 수행 (mAP {m:.2f}) — 안전 envelope 회귀 테스트."
     if v == "MARGINAL":
-        return f"PASS 경계 인접 (mAP {m:.2f}) — 추가 악화 시 운용 불가."
-    return f"REQ-1 미달 (mAP {m:.2f}) — 보고 누락 위험 케이스."
+        return f"경계 인근 (mAP {m:.2f}) — 추가 악화 시 운용 불가."
+    return f"요구사항 미달 (mAP {m:.2f}) — 보고 누락 위험 케이스."
 
 
 def _format_test_cases_text(cases: list, requirement: str, method: str,
