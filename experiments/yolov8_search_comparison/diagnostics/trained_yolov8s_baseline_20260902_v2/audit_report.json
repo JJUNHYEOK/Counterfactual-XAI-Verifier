@@ -1,0 +1,209 @@
+{
+  "created_at": "2026-09-02T09:42:34.756152+00:00",
+  "source_evaluation": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\baseline_validation\\raw\\_shared_evaluations\\cache_20260902_121729_173239\\ed54cdee262b7169997e\\evaluation.json",
+  "coordinate_contract": {
+    "gt_format": "absolute pixel xywh",
+    "gt_origin": "continuous MATLAB pinhole coordinates; no normalization",
+    "frame_index": "MATLAB one-based index stored explicitly and paired by manifest order",
+    "image_size_wh": [
+      640,
+      360
+    ],
+    "prediction_format_from_ultralytics": "xyxy scaled back to original image shape",
+    "scoring_conversion": "prediction xyxy -> absolute pixel xywh",
+    "letterbox_note": "Ultralytics result.boxes.xyxy is already scaled to result.orig_shape",
+    "ap_iou_threshold": 0.5
+  },
+  "gt_summary": [
+    {
+      "class_name": "person",
+      "box_count": 118,
+      "unique_object_count": 3,
+      "nonpositive_count": 0,
+      "out_of_bounds_count": 0,
+      "width_min": 9.0,
+      "width_q25": 17.0,
+      "width_median": 18.0,
+      "width_mean": 17.923728813559322,
+      "width_q75": 19.0,
+      "width_max": 22.0,
+      "height_min": 1.0,
+      "height_q25": 24.0,
+      "height_median": 28.0,
+      "height_mean": 26.516949152542374,
+      "height_q75": 31.0,
+      "height_max": 36.0,
+      "area_min": 9.0,
+      "area_q25": 456.0,
+      "area_median": 495.0,
+      "area_mean": 479.52542372881356,
+      "area_q75": 544.0,
+      "area_max": 648.0
+    },
+    {
+      "class_name": "vehicle",
+      "box_count": 131,
+      "unique_object_count": 2,
+      "nonpositive_count": 0,
+      "out_of_bounds_count": 0,
+      "width_min": 31.0,
+      "width_q25": 45.5,
+      "width_median": 50.0,
+      "width_mean": 50.58015267175573,
+      "width_q75": 56.0,
+      "width_max": 62.0,
+      "height_min": 1.0,
+      "height_q25": 50.5,
+      "height_median": 59.0,
+      "height_mean": 53.778625954198475,
+      "height_q75": 66.0,
+      "height_max": 78.0,
+      "area_min": 49.0,
+      "area_q25": 2331.0,
+      "area_median": 2880.0,
+      "area_mean": 2781.2290076335876,
+      "area_q75": 3549.0,
+      "area_max": 4836.0
+    },
+    {
+      "class_name": "ALL",
+      "box_count": 249,
+      "unique_object_count": 5,
+      "nonpositive_count": 0,
+      "out_of_bounds_count": 0,
+      "width_min": 9.0,
+      "width_q25": 18.0,
+      "width_median": 41.0,
+      "width_mean": 35.10441767068273,
+      "width_q75": 51.0,
+      "width_max": 62.0,
+      "height_min": 1.0,
+      "height_q25": 26.0,
+      "height_median": 33.0,
+      "height_mean": 40.859437751004016,
+      "height_q75": 60.0,
+      "height_max": 78.0,
+      "area_min": 9.0,
+      "area_q25": 494.0,
+      "area_median": 630.0,
+      "area_mean": 1690.4618473895582,
+      "area_q75": 2940.0,
+      "area_max": 4836.0
+    }
+  ],
+  "candidate_comparison": [
+    {
+      "candidate": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+      "sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+      "training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\data.yaml",
+      "class_count": 2,
+      "resolved_mapping": "{\"0\": \"person\", \"1\": \"vehicle\"}",
+      "person_ap50": 0.9661016949152542,
+      "vehicle_ap50": 0.9839837758285153,
+      "map50": 0.9750427353718847,
+      "verdict": "PASS",
+      "person_gt": 118,
+      "vehicle_gt": 131,
+      "person_detections": 114,
+      "vehicle_detections": 139,
+      "person_tp": 114,
+      "vehicle_tp": 129,
+      "maximum_same_class_iou": 0.9871953616401455,
+      "mean_detection_max_iou": 0.9119437110616978,
+      "clipped_gt_map50_diagnostic_only": 0.9750427353718847,
+      "inference_seconds": 5.846706699579954
+    }
+  ],
+  "candidate_metadata": [
+    {
+      "absolute_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+      "size_bytes": 22490595,
+      "modified_at": "2026-09-02T06:20:40.357017+00:00",
+      "sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "task": "detect",
+      "model_names": {
+        "0": "person",
+        "1": "vehicle"
+      },
+      "class_count": 2,
+      "resolved_experiment_mapping": {
+        "0": "person",
+        "1": "vehicle"
+      },
+      "checkpoint_date": "2026-09-02T15:17:41.275109",
+      "checkpoint_ultralytics_version": "8.4.46",
+      "model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+      "training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\data.yaml",
+      "training_epochs": 50,
+      "training_imgsz": 640,
+      "training_batch": 4,
+      "training_seed": 42,
+      "training_project": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs",
+      "training_name": "full_yolov8s_seed42",
+      "simulation_training_evidence": "checkpoint train_args.data references the scenario-separated MATLAB simulation dataset",
+      "runtime_ultralytics_version": "8.4.46",
+      "runtime_torch_version": "2.5.1+cu121",
+      "runtime_python_version": "3.11.9",
+      "runtime_device": "cuda:0",
+      "evaluation_imgsz": 640,
+      "confidence_threshold": 0.25,
+      "nms_iou_threshold": 0.7,
+      "ap_iou_threshold": 0.5,
+      "original_result_shapes_hw": [
+        [
+          360,
+          640
+        ]
+      ],
+      "inference_seconds": 5.846706699579954,
+      "metrics": {
+        "map50": 0.9750427353718847,
+        "person_ap50": 0.9661016949152542,
+        "vehicle_ap50": 0.9839837758285153,
+        "detected_intruder_count": 5,
+        "visible_intruder_count": 5,
+        "per_class": {
+          "person": {
+            "class_name": "person",
+            "ap50": 0.9661016949152542,
+            "tp": 114,
+            "fp": 0,
+            "fn": 4,
+            "total_gt": 118,
+            "n_detections": 114,
+            "visible_object_ids": [
+              1,
+              2,
+              3
+            ],
+            "detected_object_ids": [
+              1,
+              2,
+              3
+            ]
+          },
+          "vehicle": {
+            "class_name": "vehicle",
+            "ap50": 0.9839837758285153,
+            "tp": 129,
+            "fp": 10,
+            "fn": 2,
+            "total_gt": 131,
+            "n_detections": 139,
+            "visible_object_ids": [
+              4,
+              5
+            ],
+            "detected_object_ids": [
+              4,
+              5
+            ]
+          }
+        }
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "selection_rule": "A candidate is eligible only if unmodified-GT baseline mAP@0.5 >= 0.50."
+}

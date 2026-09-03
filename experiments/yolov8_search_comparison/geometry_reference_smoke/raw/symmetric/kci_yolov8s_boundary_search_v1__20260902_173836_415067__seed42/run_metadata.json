@@ -1,0 +1,62 @@
+{
+  "experiment_id": "kci_yolov8s_boundary_search_v1",
+  "session_id": "kci_yolov8s_boundary_search_v1__20260902_173836_415067__seed42",
+  "search_method": "symmetric",
+  "started_at_utc": "2026-09-02T08:38:39.548455+00:00",
+  "completed_at_utc": "2026-09-02T08:39:12.722059+00:00",
+  "model": {
+    "detector": "yolov8",
+    "weights_filename": "best.pt",
+    "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+    "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+    "weights_provenance": "custom YOLOv8s fine-tuned on scenario-separated MATLAB simulation data",
+    "checkpoint_model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "checkpoint_training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\data.yaml",
+    "checkpoint_training_epochs": 50,
+    "checkpoint_training_batch": 4,
+    "checkpoint_training_seed": 42,
+    "checkpoint_version": "8.4.46",
+    "checkpoint_date": "2026-09-02T15:17:41.275109",
+    "ultralytics_version": "8.4.46",
+    "python_version": "3.11.9",
+    "torch_version": "2.5.1+cu121",
+    "device_argument": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 2060",
+    "input_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "class_mapping": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "class_mapping_note": "Resolved from model.names. Recognised person aliases map to person; car/motorcycle/bus/truck/van/vehicle aliases merge to vehicle.",
+    "model_class_names": {
+      "0": "person",
+      "1": "vehicle"
+    }
+  },
+  "scenario_id": "mountain_uav_default_layout",
+  "random_seed": 42,
+  "thresholds": {
+    "pass_map50": 0.5,
+    "fail_map50": 0.25
+  },
+  "environment_bounds": {
+    "fog_percent": [
+      0.0,
+      100.0
+    ],
+    "illumination_lux": [
+      200.0,
+      15000.0
+    ],
+    "camera_noise": [
+      0.0,
+      0.6
+    ]
+  },
+  "frame_stride": 500,
+  "deterministic_single_scenario": true,
+  "statistical_note": "Single deterministic scenario. No artificial 30-run replication and no inferential statistics are reported."
+}

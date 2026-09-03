@@ -1,0 +1,197 @@
+{
+  "audited_at_utc": "2026-09-02T15:49:28.696437+00:00",
+  "repository": "C:\\Users\\lab\\Counterfactual-XAI-Verifier",
+  "branch": "yeah",
+  "old_dataset": {
+    "plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\scenario_plan.json",
+    "plan_id": "yolov8s_sim_scenario_split_v1",
+    "train_scenario_count": 6,
+    "validation_scenario_count": 2,
+    "frame_stride": 3,
+    "nominal_frame_interval_seconds": 0.30000000000000004,
+    "split_policy": "Every rendered 181-frame trajectory belongs to exactly one split; sampled adjacent frames never cross splits.",
+    "image_counts": {
+      "train": 366,
+      "val": 122
+    },
+    "scenario_image_counts": {
+      "train_v01_clear_high": 61,
+      "train_v02_clear": 61,
+      "train_v03_light": 61,
+      "train_v04_moderate": 61,
+      "train_v05_hard": 61,
+      "train_v06_harder": 61,
+      "val_v07_clean": 61,
+      "val_v08_moderate": 61
+    },
+    "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\frame_manifest.csv"
+  },
+  "old_training": {
+    "args_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\args.yaml",
+    "initial_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "selected_best_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+    "selected_best_size_bytes": 22490595,
+    "selected_best_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA"
+  },
+  "fixed_S0_S4": {
+    "plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+    "plan_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+    "scenario_inputs": [
+      {
+        "scenario_id": "S0",
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S0.json",
+        "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+        "initial_manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S0\\initial_condition\\frame_manifest.json",
+        "initial_manifest_sha256": "784100F07FEEE246FF12CF54AD2908947D7A85FF1499E98CB6DE700EA1DE980E",
+        "rendered_image_count": 181
+      },
+      {
+        "scenario_id": "S1",
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S1.json",
+        "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+        "initial_manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S1\\initial_condition\\frame_manifest.json",
+        "initial_manifest_sha256": "42F70B4B945B14C441933E0E9B8B5A5FF7F1AC72ECE567FFF590D200632429B8",
+        "rendered_image_count": 181
+      },
+      {
+        "scenario_id": "S2",
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S2.json",
+        "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+        "initial_manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S2\\initial_condition\\frame_manifest.json",
+        "initial_manifest_sha256": "491B06839B9202AB2D6F95F6E6B73E780818DE833440E76426C464386084F9E4",
+        "rendered_image_count": 181
+      },
+      {
+        "scenario_id": "S3",
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S3.json",
+        "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+        "initial_manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S3\\initial_condition\\frame_manifest.json",
+        "initial_manifest_sha256": "AF010E8245D308ECA25D3204D519E342976A9D601CC943201BC1C4A9A5147326",
+        "rendered_image_count": 181
+      },
+      {
+        "scenario_id": "S4",
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S4.json",
+        "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+        "initial_manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S4\\initial_condition\\frame_manifest.json",
+        "initial_manifest_sha256": "A6F176692E92B8A7CF3BCE2C353CD280C934B0707B224E8410D54BE8E13D9D46",
+        "rendered_image_count": 181
+      }
+    ],
+    "prior_run_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\runs\\kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+    "prior_aggregate_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\aggregated\\kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+    "prior_report_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\reports\\kci_multi_scenario_symmetric_v1__20260902_201715_587801"
+  },
+  "storage": {
+    "total_bytes": 1023522574336,
+    "used_bytes": 736722915328,
+    "free_bytes": 286799659008,
+    "free_gib": 267.1029968261719
+  },
+  "hardware": {
+    "cpu": {
+      "name": "11th Gen Intel(R) Core(TM) i5-11400 @ 2.60GHz",
+      "physical_cores": 6,
+      "logical_processors": 12
+    },
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 2060",
+      "memory_total_mib": 6144,
+      "driver_version": "591.59"
+    },
+    "system_memory": {
+      "total_bytes": 17009278976,
+      "total_gib": 15.84112548828125
+    },
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]"
+  },
+  "preservation_snapshot": [
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\scenario_plan.json",
+      "exists": true,
+      "sha256": "800B108285F4A1654D643C0FED81BF83B60E17DB8FA5E84A57B9714B3C793ACE"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\frame_manifest.csv",
+      "exists": true,
+      "sha256": "8FFF0053AAED51AF3AD7E997F74D90C76732B7EF87D40467589A44CC4DCC637D"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\args.yaml",
+      "exists": true,
+      "sha256": "03D203B6C525CAD61FB49673AF780E9DC37DB385053545B8F0A95234160AA18B"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+      "exists": true,
+      "sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+      "exists": true,
+      "sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\aggregated\\kci_multi_scenario_symmetric_v1__20260902_201715_587801\\multi_scenario_results.json",
+      "exists": true,
+      "sha256": "EB55AC15025B2BA3BF05CCCCC16264D72F36DC56D5DE581BC329616A88964E57"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\aggregated\\kci_multi_scenario_symmetric_v1__20260902_201715_587801\\all_iteration_results.csv",
+      "exists": true,
+      "sha256": "AB3AD2556121B34A415C65036CE95419569D7714109261841D0B33C58C7007DA"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S0.json",
+      "exists": true,
+      "sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S0\\initial_condition\\frame_manifest.json",
+      "exists": true,
+      "sha256": "784100F07FEEE246FF12CF54AD2908947D7A85FF1499E98CB6DE700EA1DE980E"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S1.json",
+      "exists": true,
+      "sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S1\\initial_condition\\frame_manifest.json",
+      "exists": true,
+      "sha256": "42F70B4B945B14C441933E0E9B8B5A5FF7F1AC72ECE567FFF590D200632429B8"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S2.json",
+      "exists": true,
+      "sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S2\\initial_condition\\frame_manifest.json",
+      "exists": true,
+      "sha256": "491B06839B9202AB2D6F95F6E6B73E780818DE833440E76426C464386084F9E4"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S3.json",
+      "exists": true,
+      "sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S3\\initial_condition\\frame_manifest.json",
+      "exists": true,
+      "sha256": "AF010E8245D308ECA25D3204D519E342976A9D601CC943201BC1C4A9A5147326"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S4.json",
+      "exists": true,
+      "sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0"
+    },
+    {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S4\\initial_condition\\frame_manifest.json",
+      "exists": true,
+      "sha256": "A6F176692E92B8A7CF3BCE2C353CD280C934B0707B224E8410D54BE8E13D9D46"
+    }
+  ],
+  "policy": "Existing training data, weights, fixed S0-S4 inputs, runs, aggregates, and reports are read-only inputs for this experiment."
+}

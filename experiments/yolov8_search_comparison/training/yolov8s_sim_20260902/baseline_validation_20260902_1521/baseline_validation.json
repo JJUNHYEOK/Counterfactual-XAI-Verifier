@@ -1,0 +1,182 @@
+{
+  "schema_version": "1.0",
+  "source_evaluation": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\baseline_validation\\raw\\_shared_evaluations\\cache_20260902_121729_173239\\ed54cdee262b7169997e\\evaluation.json",
+  "held_out": true,
+  "scenario_id": "mountain_uav_default_layout",
+  "scenario_variant": 0,
+  "random_seed": 42,
+  "environment": {
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02
+  },
+  "evaluated_frame_count": 181,
+  "ground_truth_mode": "rendered_instance_mask_v1",
+  "model": {
+    "absolute_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+    "size_bytes": 22490595,
+    "modified_at": "2026-09-02T06:20:40.357017+00:00",
+    "sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+    "task": "detect",
+    "model_names": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "class_count": 2,
+    "resolved_experiment_mapping": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "checkpoint_date": "2026-09-02T15:17:41.275109",
+    "checkpoint_ultralytics_version": "8.4.46",
+    "model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\data.yaml",
+    "training_epochs": 50,
+    "training_imgsz": 640,
+    "training_batch": 4,
+    "training_seed": 42,
+    "training_project": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs",
+    "training_name": "full_yolov8s_seed42",
+    "simulation_training_evidence": "checkpoint train_args.data references the scenario-separated MATLAB simulation dataset",
+    "runtime_ultralytics_version": "8.4.46",
+    "runtime_torch_version": "2.5.1+cu121",
+    "runtime_python_version": "3.11.9",
+    "runtime_device": "cuda:0",
+    "evaluation_imgsz": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "original_result_shapes_hw": [
+      [
+        360,
+        640
+      ]
+    ],
+    "inference_seconds": 4.385586399585009,
+    "metrics": {
+      "map50": 0.9750427353718847,
+      "person_ap50": 0.9661016949152542,
+      "vehicle_ap50": 0.9839837758285153,
+      "detected_intruder_count": 5,
+      "visible_intruder_count": 5,
+      "per_class": {
+        "person": {
+          "class_name": "person",
+          "ap50": 0.9661016949152542,
+          "tp": 114,
+          "fp": 0,
+          "fn": 4,
+          "total_gt": 118,
+          "n_detections": 114,
+          "visible_object_ids": [
+            1,
+            2,
+            3
+          ],
+          "detected_object_ids": [
+            1,
+            2,
+            3
+          ]
+        },
+        "vehicle": {
+          "class_name": "vehicle",
+          "ap50": 0.9839837758285153,
+          "tp": 129,
+          "fp": 10,
+          "fn": 2,
+          "total_gt": 131,
+          "n_detections": 139,
+          "visible_object_ids": [
+            4,
+            5
+          ],
+          "detected_object_ids": [
+            4,
+            5
+          ]
+        }
+      }
+    },
+    "verdict": "PASS"
+  },
+  "evaluation_settings": {
+    "image_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "batch_size": 8,
+    "device": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 2060",
+    "python_version": "3.11.9"
+  },
+  "metrics": {
+    "map50": 0.9750427353718847,
+    "person_ap50": 0.9661016949152542,
+    "vehicle_ap50": 0.9839837758285153,
+    "visible_intruder_count": 5,
+    "detected_intruder_count": 5,
+    "per_class": {
+      "person": {
+        "class_name": "person",
+        "ap50": 0.9661016949152542,
+        "tp": 114,
+        "fp": 0,
+        "fn": 4,
+        "total_gt": 118,
+        "n_detections": 114,
+        "visible_object_ids": [
+          1,
+          2,
+          3
+        ],
+        "detected_object_ids": [
+          1,
+          2,
+          3
+        ],
+        "precision": 1.0,
+        "recall": 0.9661016949152542
+      },
+      "vehicle": {
+        "class_name": "vehicle",
+        "ap50": 0.9839837758285153,
+        "tp": 129,
+        "fp": 10,
+        "fn": 2,
+        "total_gt": 131,
+        "n_detections": 139,
+        "visible_object_ids": [
+          4,
+          5
+        ],
+        "detected_object_ids": [
+          4,
+          5
+        ],
+        "precision": 0.9280575539568345,
+        "recall": 0.9847328244274809
+      }
+    },
+    "total_tp": 243,
+    "total_fp": 10,
+    "total_fn": 6,
+    "micro_precision": 0.9604743083003953,
+    "micro_recall": 0.9759036144578314,
+    "maximum_detection_to_same_frame_gt_iou": 0.9871953616401455,
+    "mean_detection_to_same_frame_gt_iou": 0.9119437110616978
+  },
+  "timings": {
+    "geometry_simulation_seconds": 18.1368512,
+    "frame_rendering_seconds": 66.6120549,
+    "yolo_inference_seconds": 4.385586399585009,
+    "metric_scoring_seconds": 0.0030098985880613327,
+    "accounted_full_evaluation_seconds": 89.13750239817307,
+    "validation_reuse_wall_seconds": 6.536716198548675
+  },
+  "thresholds": {
+    "pass_map50": 0.5,
+    "fail_map50": 0.25
+  },
+  "verdict": "PASS"
+}

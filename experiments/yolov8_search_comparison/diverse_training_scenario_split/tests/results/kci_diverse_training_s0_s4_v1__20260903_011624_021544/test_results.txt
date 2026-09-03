@@ -1,0 +1,65 @@
+test_different_seed_changes_cache_identity (test_search_core.FairEvaluationTests.test_different_seed_changes_cache_identity) ... ok
+test_same_input_and_seed_produce_same_evaluation_identity (test_search_core.FairEvaluationTests.test_same_input_and_seed_produce_same_evaluation_identity) ... ok
+test_shared_cache_key_does_not_include_search_method (test_search_core.FairEvaluationTests.test_shared_cache_key_does_not_include_search_method) ... ok
+test_yolo_metric_is_class_aware_and_independent_of_search_method (test_search_core.FairEvaluationTests.test_yolo_metric_is_class_aware_and_independent_of_search_method) ... ok
+test_environment_gap_uses_configured_ranges (test_search_core.GapMetricTests.test_environment_gap_uses_configured_ranges) ... ok
+test_map_gap (test_search_core.GapMetricTests.test_map_gap) ... ok
+test_absolute_xywh_to_normalized_yolo_conversion (test_search_core.GroundTruthConventionTests.test_absolute_xywh_to_normalized_yolo_conversion) ... ok
+test_frame_index_and_image_name_alignment (test_search_core.GroundTruthConventionTests.test_frame_index_and_image_name_alignment) ... ok
+test_out_of_range_box_is_rejected_not_silently_resized (test_search_core.GroundTruthConventionTests.test_out_of_range_box_is_rejected_not_silently_resized) ... ok
+test_shifted_frame_name_is_rejected (test_search_core.GroundTruthConventionTests.test_shifted_frame_name_is_rejected) ... ok
+test_coco_mapping_uses_names_not_fixed_positions (test_search_core.ModelClassMappingTests.test_coco_mapping_uses_names_not_fixed_positions) ... ok
+test_custom_two_class_mapping (test_search_core.ModelClassMappingTests.test_custom_two_class_mapping) ... ok
+test_visdrone_candidate_mapping_excludes_unrelated_classes (test_search_core.ModelClassMappingTests.test_visdrone_candidate_mapping_excludes_unrelated_classes) ... ok
+test_asymmetric_probe_uses_65_percent_toward_fail (test_search_core.SearchPolicyTests.test_asymmetric_probe_uses_65_percent_toward_fail) ... ok
+test_asymmetric_recovery_uses_75_percent_toward_nonfail (test_search_core.SearchPolicyTests.test_asymmetric_recovery_uses_75_percent_toward_nonfail) ... ok
+test_environment_is_clamped_to_configured_bounds (test_search_core.SearchPolicyTests.test_environment_is_clamped_to_configured_bounds) ... ok
+test_pre_fail_rule_is_identical_between_methods (test_search_core.SearchPolicyTests.test_pre_fail_rule_is_identical_between_methods) ... ok
+test_symmetric_is_exact_midpoint (test_search_core.SearchPolicyTests.test_symmetric_is_exact_midpoint) ... ok
+test_below_fail_boundary_is_fail (test_search_core.VerdictTests.test_below_fail_boundary_is_fail) ... ok
+test_exact_fail_boundary_is_marginal (test_search_core.VerdictTests.test_exact_fail_boundary_is_marginal) ... ok
+test_exact_pass_threshold_is_pass (test_search_core.VerdictTests.test_exact_pass_threshold_is_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.001s
+
+OK
+
+test_cache_key_contains_scenario_identity (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_cache_key_contains_scenario_identity) ... ok
+test_environment_is_clamped (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_environment_is_clamped) ... ok
+test_fixed_weights_sha256 (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_fixed_weights_sha256) ... ok
+test_gap_formulas (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_gap_formulas) ... ok
+test_gt_coordinates_and_frame_alignment (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_gt_coordinates_and_frame_alignment) ... ok
+test_invalid_gt_coordinate_is_rejected (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_invalid_gt_coordinate_is_rejected) ... ok
+test_new_scenario_seeds_layouts_and_trajectories_are_unique (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_new_scenario_seeds_layouts_and_trajectories_are_unique) ... ok
+test_revalidation_verdicts_match (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_revalidation_verdicts_match) ... ok
+test_scenarios_cannot_mix_evaluation_keys (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_scenarios_cannot_mix_evaluation_keys) ... ok
+test_search_success_rate (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_search_success_rate) ... ok
+test_symmetric_midpoint_is_exactly_50_50 (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_symmetric_midpoint_is_exactly_50_50) ... ok
+test_threshold_boundaries (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_threshold_boundaries) ... ok
+test_training_overlap_audit_passed (experiments.yolov8_search_comparison.multi_scenario_symmetric.tests.test_multi_scenario.MultiScenarioUnitTests.test_training_overlap_audit_passed) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.848s
+
+OK
+
+test_gap_formulas (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.BoundaryPolicyTests.test_gap_formulas) ... ok
+test_symmetric_midpoint (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.BoundaryPolicyTests.test_symmetric_midpoint) ... ok
+test_verdict_boundaries (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.BoundaryPolicyTests.test_verdict_boundaries) ... ok
+test_camera_geometry_fixed_and_explicit (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_camera_geometry_fixed_and_explicit) ... ok
+test_each_scenario_has_both_classes (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_each_scenario_has_both_classes) ... ok
+test_environment_is_benign_training_range (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_environment_is_benign_training_range) ... ok
+test_exact_image_targets (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_exact_image_targets) ... ok
+test_frame_selection_spans_scenario (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_frame_selection_spans_scenario) ... ok
+test_identifiers_and_seeds_unique (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_identifiers_and_seeds_unique) ... ok
+test_split_counts (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_split_counts) ... ok
+test_trajectory_and_layout_unique (experiments.yolov8_search_comparison.diverse_training_scenario_split.tests.test_diverse_pipeline.DiversePlanTests.test_trajectory_and_layout_unique) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.005s
+
+OK
+
+
+GIT DIFF --CHECK

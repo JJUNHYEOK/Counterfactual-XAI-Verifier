@@ -1,0 +1,66 @@
+{
+  "session_id": "kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388",
+  "scenario_id": "T0",
+  "trajectory_name": "서향 이탈·상승 중거리 관측 (가시성 교정)",
+  "major_changes": [
+    "x축 역방향 이탈과 13 m 상승을 결합",
+    "v1 GT 실패 후 YOLO 이전에 끝점 거리와 객체 x 위치를 지원 범위로 축소",
+    "객체별 물리 크기·비대칭 횡간격·별도 보행 위상은 유지"
+  ],
+  "scenario_config_sha256": "68B389314359F3F68D8C7F91F99362129CACE54871DFE621961C6AA2F1E8E39C",
+  "initial_map50": 0.9419909481149682,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 83.28,
+    "illumination_lux": 2085.9,
+    "camera_noise": 0.5297,
+    "map50": 0.27253516064037386,
+    "verdict": "MARGINAL",
+    "cache_key": "a468ab9e2ce16f029fe75c96"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 83.75,
+    "illumination_lux": 2062.5,
+    "camera_noise": 0.5325,
+    "map50": 0.20147890773395552,
+    "verdict": "FAIL",
+    "cache_key": "6c2d5e62a7e19855ad3afa17"
+  },
+  "gap_map50": 0.07105625290641834,
+  "gap_environment_normalized": 0.010947747747747785,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.40000000000009,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.07105625290641834
+  },
+  "environment_range_denominators": {
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    },
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 628.6877449076898,
+  "scenario_driver_wall_seconds": 575.4773836005479,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

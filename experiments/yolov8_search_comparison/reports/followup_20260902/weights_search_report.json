@@ -1,0 +1,23 @@
+{
+  "search_date_local": "2026-09-02",
+  "scopes": [
+    "repository recursively",
+    "runs/detect/train*/weights and runs/train*/weights",
+    "models, weights, checkpoints, artifacts, outputs",
+    "all local and remote Git refs/history",
+    "C:/Users/lab/Desktop",
+    "C:/Users/lab/Documents",
+    "C:/Users/lab/Downloads",
+    "C:/Users/lab/OneDrive",
+    "adjacent user project directories"
+  ],
+  "related_training_artifacts_found_for_previous_best": false,
+  "git_history_weight_files_found": false,
+  "notes": [
+    "The only external candidate weight was C:/Users/lab/Downloads/best.pt.",
+    "Drone Crash Avoidance.v7-v7.yolov8.zip contains a dataset and labels, not a trained checkpoint.",
+    "The external best.pt loaded normally but is YOLO11n trained on VisDrone with five classes; it is not evidence of prior training on this MATLAB simulation."
+  ],
+  "selected_weight_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+  "selection_rule": "Only a YOLOv8s model with held-out baseline mAP@0.5 >= 0.50 is eligible."
+}

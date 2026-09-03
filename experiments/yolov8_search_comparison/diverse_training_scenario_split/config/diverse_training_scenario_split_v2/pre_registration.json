@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "plan_id": "diverse_training_scenario_split_v2",
+  "supersedes_failed_plan": "diverse_training_scenario_split_v1",
+  "failed_plan_artifacts": {
+    "config_root": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\config\\diverse_training_scenario_split_v1",
+    "data_root": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\data\\diverse_training_scenario_split_v1",
+    "training_gate_sha256": "6F2579EB4E768D3E317ABB384777911FD72A169C1832A1DB21ED66E1C43D884A",
+    "training_was_started": false
+  },
+  "frozen_at_utc": "2026-09-02T15:49:28.998083+00:00",
+  "scenario_plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\config\\diverse_training_scenario_split_v2\\scenario_plan.json",
+  "scenario_plan_sha256": "9C8837C3118CE0F53930F7DA091AC5B392FFC52390E6D7551D15445D38ABD55D",
+  "scenario_plan_csv_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\config\\diverse_training_scenario_split_v2\\scenario_plan.csv",
+  "scenario_plan_csv_sha256": "EE7884CB02B569BA6A92BB3147A60E57C191F0FB87BF29A98F5C5BE6C38E9688",
+  "existing_state_audit_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\config\\diverse_training_scenario_split_v2\\existing_state_audit.json",
+  "existing_state_audit_sha256": "62D209CE46E2F22501D52A762A5276611C28A3E4E793C30DA4F8C7E30007CA39",
+  "scenario_config_hashes": {
+    "T01_east_level_low": "3E013D03512CA5D4124EAD31489B2276FE2EDBC5757E59C86EC0383CA2448142",
+    "T02_east_level_high": "C16F9204450CB11EB58B133392242E225D00A864FEEF14D02A55F901C8D2AE46",
+    "T03_east_ascending": "9478E600C82D516106C7B773399C83E9D65D70D0ACE5A25EEF3DACEA4CA83E6D",
+    "T04_east_descending": "C6B9F14630984A08DE9CA5BF53A2F913AA774E6B6D3A87F3C719A0E73023D597",
+    "T05_west_retreat_low": "44926666ABBD8D7BC8E19BC95002D8F9B5DF7B7937C1793B24D65A018658389C",
+    "T06_west_retreat_high": "137CA10DDDE1538993FF13A9F04F8A6CE7C5B9FA7E7EF5A1D19245D54AE4F9ED",
+    "T07_north_lateral": "26B7C983C6925DA28387120569A74608B52C383314E29FB8A0A860B33B330C35",
+    "T08_south_lateral": "FDFC07DE76DD25F4FE4FE0BCB48A78520A152F963D202C1B901D6DC56543BC93",
+    "T09_diagonal_swnE": "4873FDE8DD3D3BB4CD613D9A086635EF22E268B493225461DF78517A0E110522",
+    "T10_diagonal_nwse": "7CD19D5B4E1917CECE3DD393ACDF2399BAC277836EB9E6A18A02082E50BFF347",
+    "T11_far_to_near": "AE12E17E7AEA966ED30DEDE86658FCBAB74EA7073E95B0F7F7CB7E8D78453D74",
+    "T12_near_to_far": "DB165C5652238CC99BFCB40FB0D80E66EA1CB7AFC6F6C5993FA4D90091F6797A",
+    "T13_high_short": "B84D42C1352E9C6EDD6BE127834FEB5395537199AC518E56AB528860BC0F1FC5",
+    "T14_low_close": "5D789E37C6B6D114E22F7FAE8CFEE55B14DAC9E2E68A2D3F0D74274888A865BE",
+    "T15_lateral_ascending": "1CA84D7243ECE91CB387C4A9E00FDE07AD6E6CDA07618B06D0AE0EF0A4E05687",
+    "T16_lateral_descending": "C4282653DA316B4678597FF716DBE6FFD87E5D03BC6BD204CAC517FA556B3803",
+    "T17_partial_occlusion": "E18387ECD8919F4DB13BC53FF9DAEC3BED63E1BAE0A79FFE23F64CD063720440",
+    "T18_wide_diagonal": "ACFE278899AE60F18072E6A5949C577BAB0705D5CB13C173043A265DBB330C88",
+    "V01_east_ascending": "68D94112AE2FFFDAD3295A478463791854693D6AA57C9D42FE4F72E0224BBC85",
+    "V02_west_retreat": "B602B56BA089F3AEE809CF1518351376F88868F468DD0CD0A373168DA98F91EF",
+    "V03_north_lateral": "1BC85CFD9932FB5978E9098F56B19906E137EA61C5571CD7A2DD0D0FAFE3E955",
+    "V04_diagonal_descending": "0E73842CB461FEE03CDFDE8951717A11A3A7096B7C87C7BF8E7479F5D785FCAA",
+    "V05_occluded_approach": "FFC2511EB2C989EE384929F034AB7B7C1AC0E8C8585E45CB93AF8ECF84706730"
+  },
+  "training_configuration": {
+    "model": "YOLOv8s two-class detector",
+    "initial_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "initial_weights_sha256": "1F47A78BF100391C2A140B7AC73A1CAAE18C32779BE7D310658112F7AC9AA78A",
+    "imgsz": 640,
+    "batch": 4,
+    "optimizer": "SGD",
+    "epochs": 50,
+    "patience": 12,
+    "seed": 42,
+    "selection_data": "five validation scenarios only"
+  },
+  "supported_diversification": [
+    "trajectory start/end",
+    "flight axis",
+    "ascending/descending altitude",
+    "object placement and spacing",
+    "person walking phase",
+    "camera-object distance",
+    "fog",
+    "illumination",
+    "camera noise"
+  ],
+  "unsupported_diversification": {
+    "camera_direction_and_tilt": "The current 3-D renderer fixes the boresight to world +x and reads a fixed 60-degree downward pitch from intrinsics.",
+    "multiple_terrain_or_background_layouts": "The current workspace builder provides one deterministic terrain and scenery layout."
+  },
+  "test_data_firewall": "S0-S4 results are forbidden for training termination, weight selection, or parameter adjustment."
+}

@@ -1,0 +1,54 @@
+{
+  "plan_id": "new_fixed_tests_t0_t2_v1",
+  "performed_before_yolo": true,
+  "all_valid": false,
+  "scenario_count": 3,
+  "validations": [
+    {
+      "scenario_id": "T0",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v1\\T0\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 0,
+      "vehicle_gt_count": 0,
+      "object_frame_count": 0,
+      "both_class_frame_count": 0,
+      "empty_frame_count": 181,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": false,
+      "errors": [
+        "one or more classes have zero visible GT: {'person': 0, 'vehicle': 0}"
+      ]
+    },
+    {
+      "scenario_id": "T1",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v1\\T1\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 0,
+      "vehicle_gt_count": 45,
+      "object_frame_count": 45,
+      "both_class_frame_count": 0,
+      "empty_frame_count": 136,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": false,
+      "errors": [
+        "one or more classes have zero visible GT: {'person': 0, 'vehicle': 45}"
+      ]
+    },
+    {
+      "scenario_id": "T2",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v1\\T2\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 108,
+      "vehicle_gt_count": 133,
+      "object_frame_count": 135,
+      "both_class_frame_count": 106,
+      "empty_frame_count": 46,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": true,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "plan_id": "new_fixed_tests_t0_t2_v2",
+  "supersedes_failed_visibility_plan": "new_fixed_tests_t0_t2_v1",
+  "pre_YOLO_visibility_correction": "The v1 MATLAB-only visible-GT gate failed before any T0-T2 YOLO inference: T0 had zero visible objects and T1 had zero visible persons. Only T0/T1 trajectory endpoints and object positions/sizes were brought into the supported camera/terrain range. T2 was copied unchanged. All v1 configs, renders and audits remain preserved.",
+  "frozen_at_utc": "2026-09-03T07:00:21.796991+00:00",
+  "plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\config\\new_fixed_tests_t0_t2_v2\\scenario_plan.json",
+  "plan_sha256": "8261A3362918D595FA36D2FFC4D4418D91C758B3346C34E84582F91C25ECAD15",
+  "evaluation_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\config\\new_fixed_tests_t0_t2_v2\\evaluation_config.json",
+  "evaluation_config_sha256": "CDC8B8D8475E67FF226813BE89240C86E17C0EEDE12A7BD5F0E0603D5326964C",
+  "scenario_config_hashes": {
+    "T0": "68B389314359F3F68D8C7F91F99362129CACE54871DFE621961C6AA2F1E8E39C",
+    "T1": "073DF701E2D8D91990B8DC263829522FD6539CA161B1BBD69B873559C70793CB",
+    "T2": "6F77AD1D194C4B14130F4782142D07E9B2DD5C0E588EFE7ADC28BE0F6AC9B4D1"
+  },
+  "yolo_inference_performed": false
+}

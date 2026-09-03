@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "T10_diagonal_nwse",
+  "split": "train",
+  "seed": 4110,
+  "duration_seconds": 18.0,
+  "total_frames": 181,
+  "selected_frame_indices": [
+    1,
+    10,
+    20,
+    29,
+    39,
+    48,
+    58,
+    67,
+    77,
+    86,
+    96,
+    105,
+    115,
+    124,
+    134,
+    143,
+    153,
+    162,
+    172,
+    181
+  ],
+  "selected_time_seconds": [
+    0.0,
+    0.9,
+    1.9,
+    2.8,
+    3.8,
+    4.7,
+    5.7,
+    6.6,
+    7.6,
+    8.5,
+    9.5,
+    10.4,
+    11.4,
+    12.3,
+    13.3,
+    14.2,
+    15.2,
+    16.1,
+    17.1,
+    18.0
+  ],
+  "trajectory": {
+    "name": "북서-남동 대각 상승",
+    "start_xyz": [
+      -30,
+      16,
+      51
+    ],
+    "end_xyz": [
+      14,
+      -14,
+      61
+    ]
+  },
+  "camera": {
+    "intrinsics": [
+      600.0,
+      600.0,
+      320.0,
+      180.0,
+      60.0
+    ],
+    "image_size": [
+      640,
+      360
+    ],
+    "boresight": "+x world axis, pitched 60 degrees downward (fixed renderer capability)"
+  },
+  "objects": [
+    {
+      "object_id": 1,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        -7,
+        8.2
+      ],
+      "radius_height": [
+        0.5,
+        1.8
+      ]
+    },
+    {
+      "object_id": 2,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        -4.4,
+        11.8
+      ],
+      "radius_height": [
+        1.2,
+        1.6
+      ]
+    },
+    {
+      "object_id": 3,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        14,
+        -1.8
+      ],
+      "radius_height": [
+        0.5,
+        1.8
+      ]
+    },
+    {
+      "object_id": 4,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        16.8,
+        1.8
+      ],
+      "radius_height": [
+        1.2,
+        1.6
+      ]
+    },
+    {
+      "object_id": 5,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        35,
+        -11.8
+      ],
+      "radius_height": [
+        0.5,
+        1.8
+      ]
+    },
+    {
+      "object_id": 6,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        38.0,
+        -8.2
+      ],
+      "radius_height": [
+        1.2,
+        1.6
+      ]
+    }
+  ],
+  "person_motion": {
+    "radius_m": 1.0,
+    "omega_rad_s": 0.45,
+    "phase_offset_rad": 2.72
+  },
+  "environment": {
+    "fog_percent": 14.0,
+    "illumination_lux": 11600.0,
+    "camera_noise": 0.04
+  },
+  "diversity_factors": [
+    "대각선",
+    "상승",
+    "넓은 간격"
+  ],
+  "ground_truth_version": "rendered_instance_mask_v1"
+}

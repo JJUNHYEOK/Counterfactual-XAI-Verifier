@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "passed": true,
+  "check_count": 6,
+  "checks": [
+    {
+      "name": "symmetric_json_csv_row_count",
+      "passed": true,
+      "detail": "rows=1"
+    },
+    {
+      "name": "symmetric_iter_1_verdict",
+      "passed": true,
+      "detail": "mAP50=1.0 verdict=PASS"
+    },
+    {
+      "name": "symmetric_iter_1_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=5.0"
+    },
+    {
+      "name": "symmetric_iter_1_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=12000.0"
+    },
+    {
+      "name": "symmetric_iter_1_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.02"
+    },
+    {
+      "name": "symmetric_metadata_exists",
+      "passed": true,
+      "detail": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\geometry_reference_smoke\\raw\\symmetric\\kci_yolov8s_boundary_search_v1__20260902_173836_415067__seed42\\run_metadata.json"
+    }
+  ],
+  "interpretation": "Validation covers thresholds, configured bounds, JSON/CSV row parity, and identical detector results for identical scenario/environment/seed. Policy weight equations are covered by unit tests."
+}

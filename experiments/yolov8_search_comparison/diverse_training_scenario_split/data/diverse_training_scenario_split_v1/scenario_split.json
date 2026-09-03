@@ -1,0 +1,40 @@
+{
+  "plan_id": "diverse_training_scenario_split_v1",
+  "policy": "Each scenario belongs wholly to train or validation. Fixed S0-S4 remain evaluation-only.",
+  "train_scenarios": [
+    "T01_east_level_low",
+    "T02_east_level_high",
+    "T03_east_ascending",
+    "T04_east_descending",
+    "T05_west_retreat_low",
+    "T06_west_retreat_high",
+    "T07_north_lateral",
+    "T08_south_lateral",
+    "T09_diagonal_swnE",
+    "T10_diagonal_nwse",
+    "T11_far_to_near",
+    "T12_near_to_far",
+    "T13_high_short",
+    "T14_low_close",
+    "T15_lateral_ascending",
+    "T16_lateral_descending",
+    "T17_partial_occlusion",
+    "T18_wide_diagonal"
+  ],
+  "validation_scenarios": [
+    "V01_east_ascending",
+    "V02_west_retreat",
+    "V03_north_lateral",
+    "V04_diagonal_descending",
+    "V05_occluded_approach"
+  ],
+  "fixed_test_scenarios": [
+    "S0",
+    "S1",
+    "S2",
+    "S3",
+    "S4"
+  ],
+  "scenario_overlap": [],
+  "passed": true
+}

@@ -1,0 +1,46 @@
+{
+  "experiment_id": "kci_multi_scenario_symmetric_v1",
+  "detector": "yolov8",
+  "weights_path": "experiments/yolov8_search_comparison/training/yolov8s_sim_20260902/runs/full_yolov8s_seed42/weights/best.pt",
+  "expected_weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+  "expected_model_class_names": {
+    "0": "person",
+    "1": "vehicle"
+  },
+  "search_method": "symmetric",
+  "initial_environment": {
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02
+  },
+  "environment_bounds": {
+    "fog_percent": [0.0, 100.0],
+    "illumination_lux": [200.0, 15000.0],
+    "camera_noise": [0.0, 0.6]
+  },
+  "degradation": {
+    "fog_add_percent_points": 30.0,
+    "illumination_multiplier": 0.5,
+    "camera_noise_add": 0.2
+  },
+  "thresholds": {
+    "pass_map50": 0.5,
+    "fail_map50": 0.25
+  },
+  "search_boundary_definition": "PASS and MARGINAL are non-failure; FAIL is mAP@0.5 < 0.25. The target is the MARGINAL-FAIL severe-degradation interval.",
+  "max_evaluations": 10,
+  "frame_stride": 1,
+  "expected_frame_count": 181,
+  "ground_truth_mode": "rendered_instance_mask_v1",
+  "gt_version": "rendered_instance_mask_v1",
+  "retain_rendered_frames": true,
+  "yolov8": {
+    "input_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "device": "auto",
+    "batch_size": 16
+  }
+}
+

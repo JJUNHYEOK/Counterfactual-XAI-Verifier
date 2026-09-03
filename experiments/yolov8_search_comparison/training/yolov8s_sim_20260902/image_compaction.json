@@ -1,0 +1,8 @@
+{
+  "converted_images": 488,
+  "original_png_bytes": 96534696,
+  "compacted_jpeg_bytes": 15664528,
+  "bytes_saved": 80870168,
+  "quality": 90,
+  "training_input_note": "Completed training used the original PNGs; compact JPEGs are retained for inspection only."
+}

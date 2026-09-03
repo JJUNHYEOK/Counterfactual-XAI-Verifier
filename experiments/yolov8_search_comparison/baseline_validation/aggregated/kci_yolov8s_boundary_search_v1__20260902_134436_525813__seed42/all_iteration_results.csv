@@ -1,0 +1,2 @@
+﻿search_method,iteration,fog_percent,illumination_lux,camera_noise,person_ap50,vehicle_ap50,map50,verdict,detected_intruder_count,next_condition_calculation
+symmetric,1,5.0,12000.0,0.02,0.3559322033898305,0.0,0.17796610169491525,FAIL,3,stop_unbracketed: FAIL exists but no PASS/MARGINAL anchor

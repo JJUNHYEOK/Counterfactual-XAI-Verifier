@@ -1,0 +1,40 @@
+{
+  "audit_id": "near_duplicate_visual_audit_v1",
+  "pair_count": 16,
+  "category_counts": {
+    "1": 6,
+    "2": 1,
+    "3": 9
+  },
+  "risk_counts": {
+    "중간": 7,
+    "높음": 9
+  },
+  "exact_duplicate_count": 0,
+  "object_involved_pair_count": 16,
+  "high_similarity_object_scene_count": 9,
+  "final_judgement": "16쌍 중 정확 영상 SHA-256 중복은 0쌍이다. 직접 시각 검토에서는 배경만 유사한 쌍 6개, 객체가 있으나 구성이 충분히 다른 쌍 1개, 공통 객체의 위치·크기와 배경까지 매우 유사한 쌍 9개를 확인했다. 높은 유사성 9쌍은 T17의 4개 학습 프레임과 S4의 인접한 9개 프레임에 집중되어 있어, 객체 포함 장면의 실질적 중복 가능성이 존재한다. 따라서 정확 파일 중복이 없다는 사실만으로 학습자료와 S0~S4의 시각적 독립성을 주장할 수 없다.",
+  "independence_statement": "S0~S4는 시나리오 ID·시드·궤적·파일 해시가 분리된 기존 고정 평가 시나리오이지만, 학습자료와 같은 MATLAB 렌더러·단일 지형을 공유하고 T17–S4에서 객체·배경이 매우 유사한 쌍이 확인되었다. 그러므로 논문에서는 '기존에 사전 확정된 고정 평가 시나리오'로만 표현하며, '독립 시험자료', '완전히 보지 않은 시험자료' 또는 '외부 시험자료'로 표현하지 않는다.",
+  "allowed_claims": [
+    "학습·검증·S0~S4의 시나리오 ID와 정확 파일 해시는 분리되었다.",
+    "dHash 4 이하의 16개 경고를 GT 오버레이로 직접 검토했다.",
+    "동일 MATLAB 시뮬레이션 환경의 기존 고정 S0~S4에서 기술적 성능과 경계 구간을 측정했다.",
+    "근접 영상 위험을 숨기지 않고 객체 포함 고유사 쌍 9개를 공개했다."
+  ],
+  "forbidden_claims": [
+    "S0~S4가 학습자료와 시각적으로 독립된 시험자료라는 주장",
+    "S0~S4가 완전히 보지 않은 외부 시험자료라는 주장",
+    "정확 SHA 중복이 없으므로 자료 누출 가능성이 없다는 주장",
+    "현재 S0~S4 결과가 실제 비행환경 일반화나 통계적 우월성을 입증한다는 주장"
+  ],
+  "comparison_sheets": [
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_01_02.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_03_04.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_05_06.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_07_08.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_09_10.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_11_12.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_13_14.png",
+    "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\near_duplicate_visual_audit_v1\\comparison_sheets\\sheet_15_16.png"
+  ]
+}

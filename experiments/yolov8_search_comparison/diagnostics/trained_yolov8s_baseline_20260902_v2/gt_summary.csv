@@ -1,0 +1,4 @@
+﻿class_name,box_count,unique_object_count,nonpositive_count,out_of_bounds_count,width_min,width_q25,width_median,width_mean,width_q75,width_max,height_min,height_q25,height_median,height_mean,height_q75,height_max,area_min,area_q25,area_median,area_mean,area_q75,area_max
+person,118,3,0,0,9.0,17.0,18.0,17.923728813559322,19.0,22.0,1.0,24.0,28.0,26.516949152542374,31.0,36.0,9.0,456.0,495.0,479.52542372881356,544.0,648.0
+vehicle,131,2,0,0,31.0,45.5,50.0,50.58015267175573,56.0,62.0,1.0,50.5,59.0,53.778625954198475,66.0,78.0,49.0,2331.0,2880.0,2781.2290076335876,3549.0,4836.0
+ALL,249,5,0,0,9.0,18.0,41.0,35.10441767068273,51.0,62.0,1.0,26.0,33.0,40.859437751004016,60.0,78.0,9.0,494.0,630.0,1690.4618473895582,2940.0,4836.0

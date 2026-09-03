@@ -1,0 +1,2 @@
+﻿search_method,detector,scenario_id,random_seed,evaluation_count,logical_evaluation_count,actual_new_evaluation_count,cache_hit_count,first_fail_evaluation,boundary_success,gap_map50,gap_environment_normalized,simulation_total_seconds,yolov8_inference_total_seconds,next_scenario_total_seconds,accounted_total_seconds,driver_wall_seconds,stop_reason
+symmetric,yolov8,mountain_uav_default_layout,42,1,1,1,0,,False,,,22.9793876,1.2316247001290321,3.5200268030166626e-05,24.214575201298093,33.164964500814676,maximum_evaluations_reached

@@ -1,0 +1,14 @@
+{
+  "plan_id": "new_fixed_tests_t0_t2_v1",
+  "frozen_at_utc": "2026-09-03T06:48:06.204837+00:00",
+  "plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\config\\new_fixed_tests_t0_t2_v1\\scenario_plan.json",
+  "plan_sha256": "72E6BDFDC91A6F851CBD29DBE71F32001BC06008EA62962766998188E430DADE",
+  "evaluation_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\config\\new_fixed_tests_t0_t2_v1\\evaluation_config.json",
+  "evaluation_config_sha256": "B66BAA767BBF800CC3A935536535E03BB6416692ED4158BE488A3364DB380FA4",
+  "scenario_config_hashes": {
+    "T0": "AC9B0236D6135ABF28908843D3BD50E197125F7F977D06AB0906BAD4E29BA0B7",
+    "T1": "6776925AEDD47F90F7B9ACB869043B6DB1A0B7E4910BE27EFC59622EA511018E",
+    "T2": "6F77AD1D194C4B14130F4782142D07E9B2DD5C0E588EFE7ADC28BE0F6AC9B4D1"
+  },
+  "yolo_inference_performed": false
+}

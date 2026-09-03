@@ -1,0 +1,50 @@
+{
+  "plan_id": "new_fixed_tests_t0_t2_v2",
+  "performed_before_yolo": true,
+  "all_valid": true,
+  "scenario_count": 3,
+  "validations": [
+    {
+      "scenario_id": "T0",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v2\\T0\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 48,
+      "vehicle_gt_count": 19,
+      "object_frame_count": 48,
+      "both_class_frame_count": 19,
+      "empty_frame_count": 133,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "scenario_id": "T1",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v2\\T1\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 15,
+      "vehicle_gt_count": 56,
+      "object_frame_count": 71,
+      "both_class_frame_count": 0,
+      "empty_frame_count": 110,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "scenario_id": "T2",
+      "manifest_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\scenarios\\new_fixed_tests_t0_t2_v2\\T2\\initial_condition\\frame_manifest.json",
+      "frame_count": 181,
+      "person_gt_count": 108,
+      "vehicle_gt_count": 133,
+      "object_frame_count": 135,
+      "both_class_frame_count": 106,
+      "empty_frame_count": 46,
+      "invalid_class_count": 0,
+      "invalid_box_count": 0,
+      "valid": true,
+      "errors": []
+    }
+  ]
+}

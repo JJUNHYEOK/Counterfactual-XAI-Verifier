@@ -1,0 +1,91 @@
+{
+  "absolute_path": "C:\\Users\\lab\\Downloads\\best.pt",
+  "size_bytes": 5455187,
+  "modified_at": "2025-11-06T10:34:20.345974+00:00",
+  "sha256": "F9CCC3360F01CB4CEAC0AE6AA3F6C4CA469C998C745893C67412E24184E90F60",
+  "task": "detect",
+  "model_names": {
+    "0": "car",
+    "1": "tree",
+    "2": "building",
+    "3": "person",
+    "4": "other"
+  },
+  "class_count": 5,
+  "resolved_experiment_mapping": {
+    "0": "vehicle",
+    "3": "person"
+  },
+  "checkpoint_date": "2025-10-26T01:40:49.546371",
+  "checkpoint_ultralytics_version": "8.3.217",
+  "model_definition": "yolo11n.pt",
+  "training_data": "VisDrone.yaml",
+  "training_epochs": 100,
+  "training_imgsz": 640,
+  "training_batch": 16,
+  "training_seed": 0,
+  "training_project": null,
+  "training_name": "VisDrone_train4",
+  "simulation_training_evidence": "none; checkpoint metadata does not reference this MATLAB simulation",
+  "runtime_ultralytics_version": "8.4.46",
+  "runtime_torch_version": "2.5.1+cu121",
+  "runtime_python_version": "3.11.9",
+  "runtime_device": "cuda:0",
+  "evaluation_imgsz": 640,
+  "confidence_threshold": 0.25,
+  "nms_iou_threshold": 0.7,
+  "ap_iou_threshold": 0.5,
+  "original_result_shapes_hw": [
+    [
+      360,
+      640
+    ]
+  ],
+  "inference_seconds": 2.4273883998394012,
+  "metrics": {
+    "map50": 0.05039633078956508,
+    "person_ap50": 0.042345261026466456,
+    "vehicle_ap50": 0.0584474005526637,
+    "detected_intruder_count": 5,
+    "visible_intruder_count": 5,
+    "per_class": {
+      "person": {
+        "class_name": "person",
+        "ap50": 0.042345261026466456,
+        "tp": 20,
+        "fp": 159,
+        "fn": 105,
+        "total_gt": 125,
+        "n_detections": 179,
+        "visible_object_ids": [
+          1,
+          2,
+          3
+        ],
+        "detected_object_ids": [
+          1,
+          2,
+          3
+        ]
+      },
+      "vehicle": {
+        "class_name": "vehicle",
+        "ap50": 0.0584474005526637,
+        "tp": 9,
+        "fp": 4,
+        "fn": 124,
+        "total_gt": 133,
+        "n_detections": 13,
+        "visible_object_ids": [
+          4,
+          5
+        ],
+        "detected_object_ids": [
+          4,
+          5
+        ]
+      }
+    }
+  },
+  "verdict": "FAIL"
+}

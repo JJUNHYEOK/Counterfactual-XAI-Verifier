@@ -1,0 +1,65 @@
+{
+  "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+  "scenario_id": "S4",
+  "trajectory_name": "원거리 시작 후 전방 접근",
+  "major_changes": [
+    "S0보다 27 m 먼 위치에서 시작",
+    "접근 거리에 따라 표적 영상 크기가 증가하도록 표적열 확장"
+  ],
+  "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+  "initial_map50": 0.968223736968725,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 83.75,
+    "illumination_lux": 2062.5,
+    "camera_noise": 0.5325,
+    "map50": 0.25942420233051744,
+    "verdict": "MARGINAL",
+    "cache_key": "0b057c6a017e56f3d375c840"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 84.22,
+    "illumination_lux": 2039.1,
+    "camera_noise": 0.5353,
+    "map50": 0.19463503283900843,
+    "verdict": "FAIL",
+    "cache_key": "b36f1e7a43efadf42b0314b8"
+  },
+  "gap_map50": 0.06478916949150901,
+  "gap_environment_normalized": 0.010947747747747785,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.40000000000009,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.06478916949150901
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 619.2549682031042,
+  "scenario_driver_wall_seconds": 567.4833038989455,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

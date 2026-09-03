@@ -1,0 +1,11 @@
+{
+  "run_dir": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42",
+  "best_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+  "best_weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+  "last_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\last.pt",
+  "last_weights_sha256": "2DD944062AB8C27B6A14331456CBACDA9DC6045C388A79ED7FB8542621EC8BAE",
+  "best_weights_retained": true,
+  "last_weights_retained": false,
+  "retention_note": "The selected best.pt is retained. The non-selected last.pt was removed to recover disk space after its hash was recorded.",
+  "completed_at": "2026-09-02T15:20:44.405047+09:00"
+}

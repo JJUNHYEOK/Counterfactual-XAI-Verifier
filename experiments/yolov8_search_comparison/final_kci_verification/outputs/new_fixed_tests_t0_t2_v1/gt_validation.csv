@@ -1,0 +1,4 @@
+﻿scenario_id,manifest_path,frame_count,person_gt_count,vehicle_gt_count,object_frame_count,both_class_frame_count,empty_frame_count,invalid_class_count,invalid_box_count,valid,errors
+T0,C:\Users\lab\Counterfactual-XAI-Verifier\experiments\yolov8_search_comparison\final_kci_verification\scenarios\new_fixed_tests_t0_t2_v1\T0\initial_condition\frame_manifest.json,181,0,0,0,0,181,0,0,False,"[""one or more classes have zero visible GT: {'person': 0, 'vehicle': 0}""]"
+T1,C:\Users\lab\Counterfactual-XAI-Verifier\experiments\yolov8_search_comparison\final_kci_verification\scenarios\new_fixed_tests_t0_t2_v1\T1\initial_condition\frame_manifest.json,181,0,45,45,0,136,0,0,False,"[""one or more classes have zero visible GT: {'person': 0, 'vehicle': 45}""]"
+T2,C:\Users\lab\Counterfactual-XAI-Verifier\experiments\yolov8_search_comparison\final_kci_verification\scenarios\new_fixed_tests_t0_t2_v1\T2\initial_condition\frame_manifest.json,181,108,133,135,106,46,0,0,True,[]

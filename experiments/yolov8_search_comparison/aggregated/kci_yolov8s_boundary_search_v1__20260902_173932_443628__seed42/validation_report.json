@@ -1,0 +1,468 @@
+{
+  "schema_version": "1.0",
+  "passed": true,
+  "check_count": 92,
+  "checks": [
+    {
+      "name": "symmetric_json_csv_row_count",
+      "passed": true,
+      "detail": "rows=10"
+    },
+    {
+      "name": "symmetric_iter_1_verdict",
+      "passed": true,
+      "detail": "mAP50=0.9750427353718847 verdict=PASS"
+    },
+    {
+      "name": "symmetric_iter_1_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=5.0"
+    },
+    {
+      "name": "symmetric_iter_1_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=12000.0"
+    },
+    {
+      "name": "symmetric_iter_1_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.02"
+    },
+    {
+      "name": "symmetric_iter_2_verdict",
+      "passed": true,
+      "detail": "mAP50=0.9482792081769957 verdict=PASS"
+    },
+    {
+      "name": "symmetric_iter_2_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=35.0"
+    },
+    {
+      "name": "symmetric_iter_2_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=6000.0"
+    },
+    {
+      "name": "symmetric_iter_2_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.22"
+    },
+    {
+      "name": "symmetric_iter_3_verdict",
+      "passed": true,
+      "detail": "mAP50=0.742301720791823 verdict=PASS"
+    },
+    {
+      "name": "symmetric_iter_3_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=65.0"
+    },
+    {
+      "name": "symmetric_iter_3_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=3000.0"
+    },
+    {
+      "name": "symmetric_iter_3_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.42"
+    },
+    {
+      "name": "symmetric_iter_4_verdict",
+      "passed": true,
+      "detail": "mAP50=0.0 verdict=FAIL"
+    },
+    {
+      "name": "symmetric_iter_4_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=95.0"
+    },
+    {
+      "name": "symmetric_iter_4_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=1500.0"
+    },
+    {
+      "name": "symmetric_iter_4_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.6"
+    },
+    {
+      "name": "symmetric_iter_5_verdict",
+      "passed": true,
+      "detail": "mAP50=0.1314206236253073 verdict=FAIL"
+    },
+    {
+      "name": "symmetric_iter_5_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=80.0"
+    },
+    {
+      "name": "symmetric_iter_5_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2250.0"
+    },
+    {
+      "name": "symmetric_iter_5_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.51"
+    },
+    {
+      "name": "symmetric_iter_6_verdict",
+      "passed": true,
+      "detail": "mAP50=0.5952222283270443 verdict=PASS"
+    },
+    {
+      "name": "symmetric_iter_6_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=72.5"
+    },
+    {
+      "name": "symmetric_iter_6_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2625.0"
+    },
+    {
+      "name": "symmetric_iter_6_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.465"
+    },
+    {
+      "name": "symmetric_iter_7_verdict",
+      "passed": true,
+      "detail": "mAP50=0.3933561909690775 verdict=MARGINAL"
+    },
+    {
+      "name": "symmetric_iter_7_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=76.25"
+    },
+    {
+      "name": "symmetric_iter_7_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2437.5"
+    },
+    {
+      "name": "symmetric_iter_7_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.4875"
+    },
+    {
+      "name": "symmetric_iter_8_verdict",
+      "passed": true,
+      "detail": "mAP50=0.2666256954327856 verdict=MARGINAL"
+    },
+    {
+      "name": "symmetric_iter_8_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=78.12"
+    },
+    {
+      "name": "symmetric_iter_8_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2343.8"
+    },
+    {
+      "name": "symmetric_iter_8_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.4988"
+    },
+    {
+      "name": "symmetric_iter_9_verdict",
+      "passed": true,
+      "detail": "mAP50=0.20432785612627763 verdict=FAIL"
+    },
+    {
+      "name": "symmetric_iter_9_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=79.06"
+    },
+    {
+      "name": "symmetric_iter_9_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2296.9"
+    },
+    {
+      "name": "symmetric_iter_9_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.5044"
+    },
+    {
+      "name": "symmetric_iter_10_verdict",
+      "passed": true,
+      "detail": "mAP50=0.23738517272609652 verdict=FAIL"
+    },
+    {
+      "name": "symmetric_iter_10_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=78.59"
+    },
+    {
+      "name": "symmetric_iter_10_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2320.4"
+    },
+    {
+      "name": "symmetric_iter_10_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.5016"
+    },
+    {
+      "name": "symmetric_metadata_exists",
+      "passed": true,
+      "detail": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\raw\\symmetric\\kci_yolov8s_boundary_search_v1__20260902_173932_443628__seed42\\run_metadata.json"
+    },
+    {
+      "name": "asymmetric_json_csv_row_count",
+      "passed": true,
+      "detail": "rows=10"
+    },
+    {
+      "name": "asymmetric_iter_1_verdict",
+      "passed": true,
+      "detail": "mAP50=0.9750427353718847 verdict=PASS"
+    },
+    {
+      "name": "asymmetric_iter_1_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=5.0"
+    },
+    {
+      "name": "asymmetric_iter_1_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=12000.0"
+    },
+    {
+      "name": "asymmetric_iter_1_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.02"
+    },
+    {
+      "name": "shared_evaluation_433842e524cb2f284ee3",
+      "passed": true,
+      "detail": "identical scenario/environment/seed has identical cache key and AP values"
+    },
+    {
+      "name": "asymmetric_iter_2_verdict",
+      "passed": true,
+      "detail": "mAP50=0.9482792081769957 verdict=PASS"
+    },
+    {
+      "name": "asymmetric_iter_2_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=35.0"
+    },
+    {
+      "name": "asymmetric_iter_2_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=6000.0"
+    },
+    {
+      "name": "asymmetric_iter_2_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.22"
+    },
+    {
+      "name": "shared_evaluation_42e46521001778d2acd4",
+      "passed": true,
+      "detail": "identical scenario/environment/seed has identical cache key and AP values"
+    },
+    {
+      "name": "asymmetric_iter_3_verdict",
+      "passed": true,
+      "detail": "mAP50=0.742301720791823 verdict=PASS"
+    },
+    {
+      "name": "asymmetric_iter_3_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=65.0"
+    },
+    {
+      "name": "asymmetric_iter_3_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=3000.0"
+    },
+    {
+      "name": "asymmetric_iter_3_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.42"
+    },
+    {
+      "name": "shared_evaluation_cb5c8fba91cdecd53d3e",
+      "passed": true,
+      "detail": "identical scenario/environment/seed has identical cache key and AP values"
+    },
+    {
+      "name": "asymmetric_iter_4_verdict",
+      "passed": true,
+      "detail": "mAP50=0.0 verdict=FAIL"
+    },
+    {
+      "name": "asymmetric_iter_4_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=95.0"
+    },
+    {
+      "name": "asymmetric_iter_4_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=1500.0"
+    },
+    {
+      "name": "asymmetric_iter_4_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.6"
+    },
+    {
+      "name": "shared_evaluation_7431a35aa2eaad1ae590",
+      "passed": true,
+      "detail": "identical scenario/environment/seed has identical cache key and AP values"
+    },
+    {
+      "name": "asymmetric_iter_5_verdict",
+      "passed": true,
+      "detail": "mAP50=0.5952222283270443 verdict=PASS"
+    },
+    {
+      "name": "asymmetric_iter_5_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=72.5"
+    },
+    {
+      "name": "asymmetric_iter_5_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2625.0"
+    },
+    {
+      "name": "asymmetric_iter_5_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.465"
+    },
+    {
+      "name": "shared_evaluation_348744cf3ceccff408c1",
+      "passed": true,
+      "detail": "identical scenario/environment/seed has identical cache key and AP values"
+    },
+    {
+      "name": "asymmetric_iter_6_verdict",
+      "passed": true,
+      "detail": "mAP50=0.0 verdict=FAIL"
+    },
+    {
+      "name": "asymmetric_iter_6_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=87.12"
+    },
+    {
+      "name": "asymmetric_iter_6_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=1893.8"
+    },
+    {
+      "name": "asymmetric_iter_6_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.5528"
+    },
+    {
+      "name": "asymmetric_iter_7_verdict",
+      "passed": true,
+      "detail": "mAP50=0.3975934791046707 verdict=MARGINAL"
+    },
+    {
+      "name": "asymmetric_iter_7_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=76.16"
+    },
+    {
+      "name": "asymmetric_iter_7_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2442.2"
+    },
+    {
+      "name": "asymmetric_iter_7_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.4869"
+    },
+    {
+      "name": "asymmetric_iter_8_verdict",
+      "passed": true,
+      "detail": "mAP50=0.030954845387501616 verdict=FAIL"
+    },
+    {
+      "name": "asymmetric_iter_8_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=83.28"
+    },
+    {
+      "name": "asymmetric_iter_8_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2085.7"
+    },
+    {
+      "name": "asymmetric_iter_8_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.5297"
+    },
+    {
+      "name": "asymmetric_iter_9_verdict",
+      "passed": true,
+      "detail": "mAP50=0.28273385949023155 verdict=MARGINAL"
+    },
+    {
+      "name": "asymmetric_iter_9_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=77.94"
+    },
+    {
+      "name": "asymmetric_iter_9_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2353.1"
+    },
+    {
+      "name": "asymmetric_iter_9_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.4976"
+    },
+    {
+      "name": "asymmetric_iter_10_verdict",
+      "passed": true,
+      "detail": "mAP50=0.07546254366670979 verdict=FAIL"
+    },
+    {
+      "name": "asymmetric_iter_10_fog_percent_bounds",
+      "passed": true,
+      "detail": "fog_percent=81.41"
+    },
+    {
+      "name": "asymmetric_iter_10_illumination_lux_bounds",
+      "passed": true,
+      "detail": "illumination_lux=2179.3"
+    },
+    {
+      "name": "asymmetric_iter_10_camera_noise_bounds",
+      "passed": true,
+      "detail": "camera_noise=0.5185"
+    },
+    {
+      "name": "asymmetric_metadata_exists",
+      "passed": true,
+      "detail": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\raw\\asymmetric\\kci_yolov8s_boundary_search_v1__20260902_173932_443628__seed42\\run_metadata.json"
+    },
+    {
+      "name": "common_pre_fail_environment_1",
+      "passed": true,
+      "detail": "both methods use the same pre-FAIL degradation path"
+    },
+    {
+      "name": "common_pre_fail_environment_2",
+      "passed": true,
+      "detail": "both methods use the same pre-FAIL degradation path"
+    },
+    {
+      "name": "common_pre_fail_environment_3",
+      "passed": true,
+      "detail": "both methods use the same pre-FAIL degradation path"
+    }
+  ],
+  "interpretation": "Validation covers thresholds, configured bounds, JSON/CSV row parity, and identical detector results for identical scenario/environment/seed. Policy weight equations are covered by unit tests."
+}

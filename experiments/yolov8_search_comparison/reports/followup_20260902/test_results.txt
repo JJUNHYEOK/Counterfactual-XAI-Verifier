@@ -1,0 +1,21 @@
+Command:
+.\.venv\Scripts\python.exe -m unittest discover -s experiments\yolov8_search_comparison\tests -v
+
+Result: PASS
+Tests run: 21
+Failures: 0
+Errors: 0
+
+Coverage includes exact PASS/MARGINAL/FAIL boundaries, symmetric 50:50,
+asymmetric 65% probe and 75% recovery, environment clamping, COCO/custom/
+VisDrone class-name mapping, absolute xywh to normalized YOLO conversion,
+out-of-range GT rejection, frame-index/image-name alignment, shared cache key
+fairness, seed identity, class-aware AP, Gap_mAP, and configured-range Gap_env.
+
+MATLAB checkcode messages were inspected for eo_camera_3d_render.m,
+render_eo_image.m, export_experiment_frames.m, and build_geometry_reference.m;
+the reported messages were preallocation/deprecated-property warnings. MATLAB
+then parsed all four functions successfully with nargin values 8, 8, 9, and 1.
+
+Final result validation:
+validation_report.json passed=true, check_count=92.

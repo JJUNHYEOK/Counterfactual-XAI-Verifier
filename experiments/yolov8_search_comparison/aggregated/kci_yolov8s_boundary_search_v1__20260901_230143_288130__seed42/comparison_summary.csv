@@ -1,0 +1,3 @@
+﻿search_method,detector,scenario_id,random_seed,evaluation_count,first_fail_evaluation,boundary_success,gap_map50,gap_environment_normalized,simulation_total_seconds,yolov8_inference_total_seconds,next_scenario_total_seconds,accounted_total_seconds,driver_wall_seconds,stop_reason
+symmetric,yolov8,mountain_uav_default_layout,42,1,1,False,,,66.0171617,5.736802799627185,6.50063157081604e-06,71.7566505997078,81.54615090042353,stop_unbracketed: FAIL exists but no PASS/MARGINAL anchor
+asymmetric,yolov8,mountain_uav_default_layout,42,1,1,False,,,66.0171617,5.736802799627185,4.0996819734573364e-06,71.7566481987582,0.012289300560951233,stop_unbracketed: FAIL exists but no PASS/MARGINAL anchor

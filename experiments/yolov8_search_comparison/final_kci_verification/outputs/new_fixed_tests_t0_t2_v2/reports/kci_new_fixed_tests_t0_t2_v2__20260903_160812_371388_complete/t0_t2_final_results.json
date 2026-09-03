@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "created_at_utc": "2026-09-03T08:03:05.861010+00:00",
+  "plan_id": "new_fixed_tests_t0_t2_v2",
+  "session_id": "kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388",
+  "source_hashes": {
+    "final_experiment_lock": "7FA27D5C5F97EAE4DD0F0DDE95DEBE364CFC3358503A87DF2E11FB68DEF71523",
+    "T0_T2_plan": "8261A3362918D595FA36D2FFC4D4418D91C758B3346C34E84582F91C25ECAD15",
+    "T0_T2_evaluation_config": "CDC8B8D8475E67FF226813BE89240C86E17C0EEDE12A7BD5F0E0603D5326964C",
+    "preinference_gate": "4B669A0C61A75CED9394C1194F621D20DA68E37F3DDE66914BB0BB1E2B4E3FE1",
+    "search_results": "37BD3DF8F8E06C039C353EFCE341FFC4815AAE7CD29FCA938E6701991383F583",
+    "iteration_results": "605988DD5F35108E1B08DD402A872BCE867F42B49BC800C39C767D7B709679F8",
+    "independent_revalidation": "EE408715D42955125AE9A630C5A30928134EED54D891F4E5FF3F944B8C074B1C"
+  },
+  "overall": {
+    "session_id": "kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388",
+    "completed_at_utc": "2026-09-03T07:41:30.223762+00:00",
+    "plan_id": "new_fixed_tests_t0_t2_v2",
+    "scenario_count": 3,
+    "initial_pass_count": 3,
+    "initial_pass_rate": 1.0,
+    "search_attempt_count": 3,
+    "search_success_count": 3,
+    "search_success_rate_all_scenarios": 1.0,
+    "search_success_rate_attempted": 1.0,
+    "first_fail_iteration_statistics": {
+      "count": 3,
+      "mean": 4.0,
+      "population_std": 0.0,
+      "median": 4.0,
+      "min": 4.0,
+      "max": 4.0,
+      "range": 0.0
+    },
+    "gap_map50_statistics": {
+      "count": 3,
+      "mean": 0.07040445053128283,
+      "population_std": 0.03810211325195502,
+      "median": 0.07105625290641834,
+      "min": 0.023416595712892507,
+      "max": 0.11674050297453764,
+      "range": 0.09332390726164513
+    },
+    "gap_environment_statistics": {
+      "count": 3,
+      "mean": 0.010947747747747753,
+      "population_std": 4.415885040048117e-17,
+      "median": 0.010947747747747785,
+      "min": 0.010947747747747691,
+      "max": 0.010947747747747785,
+      "range": 9.367506770274758e-17
+    },
+    "search_evaluation_count": 30,
+    "initial_evaluation_count": 3,
+    "nonmonotonic_increase_count": 0,
+    "scenario_with_nonmonotonic_increase_count": 0,
+    "search_execution_seconds": 2163.172926813544,
+    "mean_search_execution_seconds_per_scenario": 721.0576422711814,
+    "environment_bounds": {
+      "camera_noise": [
+        0.0,
+        0.6
+      ],
+      "fog_percent": [
+        0.0,
+        100.0
+      ],
+      "illumination_lux": [
+        200.0,
+        15000.0
+      ]
+    },
+    "scope_note": "Three deterministic scenarios additionally configured in the existing MATLAB simulation environment; no statistical significance or real-flight generalization claim is made."
+  },
+  "scenario_results": [
+    {
+      "scenario_id": "T0",
+      "initial_map50": 0.9419909481149682,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "evaluation_count": 10,
+      "final_nonfailure_fog_percent": 83.28,
+      "final_nonfailure_illumination_lux": 2085.9,
+      "final_nonfailure_camera_noise": 0.5297,
+      "final_nonfailure_map50": 0.27253516064037386,
+      "final_nonfailure_verdict": "MARGINAL",
+      "final_FAIL_fog_percent": 83.75,
+      "final_FAIL_illumination_lux": 2062.5,
+      "final_FAIL_camera_noise": 0.5325,
+      "final_FAIL_map50": 0.20147890773395552,
+      "gap_map50": 0.07105625290641834,
+      "gap_environment_normalized": 0.010947747747747785,
+      "nonmonotonic_map_increase_count": 0,
+      "accounted_search_seconds": 628.6877449076898,
+      "scenario_driver_wall_seconds": 575.4773836005479,
+      "revalidated_condition_count": 3,
+      "revalidation_all_verdicts_match": true,
+      "revalidation_max_abs_map50_difference": 0.0
+    },
+    {
+      "scenario_id": "T1",
+      "initial_map50": 0.94662342774821,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "evaluation_count": 10,
+      "final_nonfailure_fog_percent": 75.78,
+      "final_nonfailure_illumination_lux": 2460.9,
+      "final_nonfailure_camera_noise": 0.4847,
+      "final_nonfailure_map50": 0.26371953507045376,
+      "final_nonfailure_verdict": "MARGINAL",
+      "final_FAIL_fog_percent": 76.25,
+      "final_FAIL_illumination_lux": 2437.5,
+      "final_FAIL_camera_noise": 0.4875,
+      "final_FAIL_map50": 0.24030293935756125,
+      "gap_map50": 0.023416595712892507,
+      "gap_environment_normalized": 0.010947747747747691,
+      "nonmonotonic_map_increase_count": 0,
+      "accounted_search_seconds": 594.9141232085537,
+      "scenario_driver_wall_seconds": 543.226424401626,
+      "revalidated_condition_count": 3,
+      "revalidation_all_verdicts_match": true,
+      "revalidation_max_abs_map50_difference": 0.0
+    },
+    {
+      "scenario_id": "T2",
+      "initial_map50": 0.9783935745699857,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "evaluation_count": 10,
+      "final_nonfailure_fog_percent": 83.75,
+      "final_nonfailure_illumination_lux": 2062.5,
+      "final_nonfailure_camera_noise": 0.5325,
+      "final_nonfailure_map50": 0.3322376898887859,
+      "final_nonfailure_verdict": "MARGINAL",
+      "final_FAIL_fog_percent": 84.22,
+      "final_FAIL_illumination_lux": 2039.1,
+      "final_FAIL_camera_noise": 0.5353,
+      "final_FAIL_map50": 0.21549718691424824,
+      "gap_map50": 0.11674050297453764,
+      "gap_environment_normalized": 0.010947747747747785,
+      "nonmonotonic_map_increase_count": 0,
+      "accounted_search_seconds": 939.5710586973005,
+      "scenario_driver_wall_seconds": 879.0119559001178,
+      "revalidated_condition_count": 3,
+      "revalidation_all_verdicts_match": true,
+      "revalidation_max_abs_map50_difference": 0.0
+    }
+  ],
+  "independent_revalidation": {
+    "condition_count": 9,
+    "scenario_count": 3,
+    "all_fresh_render_and_inference": true,
+    "any_original_search_cache_used": false,
+    "verdict_match_count": 9,
+    "all_verdicts_match": true,
+    "maximum_absolute_map50_difference": 0.0,
+    "mean_absolute_map50_difference": 0.0,
+    "total_wall_seconds": 844.8829080983996
+  },
+  "limitations": [
+    "T0-T2 are deterministic scenarios additionally configured in the existing MATLAB simulation environment, not real-flight or external data.",
+    "All scenarios share one deterministic terrain/background and a fixed +x, 60-degree-down camera boresight.",
+    "The three environment variables change jointly, so their individual causal effects are not separated.",
+    "Three scenarios do not support a claim of statistical superiority.",
+    "The S0-S4 visual audit found nine high-risk object/background near-similarity pairs; S0-S4 must not be called independent test data."
+  ]
+}

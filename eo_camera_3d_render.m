@@ -1,4 +1,4 @@
-function img = eo_camera_3d_render(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
+function [img, instance_bboxes] = eo_camera_3d_render(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
 % eo_camera_3d_render — UAV 1인칭 시점의 진짜 3D EO 카메라 이미지 렌더러.
 %
 % render_camera_image (2D synthetic) 의 드롭인 대체 (drop-in replacement).
@@ -10,6 +10,7 @@ function img = eo_camera_3d_render(uav, obs_xyz, obs_rh, fog, illum, noise, cam_
 % 인자/반환은 render_camera_image 와 동일하므로 호출부 변경 최소.
 
 W = img_size(1); H = img_size(2);
+instance_bboxes = zeros(size(obs_xyz, 1), 4);
 fx = cam_intrin(1); fy = cam_intrin(2);
 cx = cam_intrin(3); cy = cam_intrin(4); %#ok<NASGU>
 pitch_deg = cam_intrin(5);
@@ -65,6 +66,15 @@ end
 % render_camera_image.m) puts +y to image RIGHT. Flip horizontally so
 % the 3D capture geometrically aligns with the GT bbox overlay.
 img = img(:, end:-1:1, :);
+
+% Pixel-exact visible-object boxes for AP evaluation. The legacy pinhole GT
+% cannot exactly match MATLAB's perspective renderer (see configure_camera).
+% This second render pass recolours each target with a unique flat colour,
+% preserving z-buffer occlusion, and derives boxes from the pixels actually
+% visible in the EO frame. It does not enlarge/shrink any target geometry.
+if nargout > 1
+    instance_bboxes = capture_instance_bboxes(eo3d, size(obs_xyz, 1), W, H);
+end
 
 % Weather post-processing — same as render_camera_image
 img = apply_weather(img, fog, illum, noise);
@@ -257,7 +267,10 @@ for k = 1:size(obs_xyz, 1)
         hh = draw_person_3d(eo3d.ax, base, r, h);
     end
     for ih = 1:numel(hh)
-        try, set(hh(ih), "Tag", "eo_intruder"); catch, end
+        try
+            set(hh(ih), "Tag", "eo_intruder", "UserData", k);
+        catch
+        end
     end
     eo3d.intruders = [eo3d.intruders; hh];
 end
@@ -265,6 +278,75 @@ end
 % Remember positions so next frame can skip redraw when they're unchanged.
 eo3d.last_obs_xyz = obs_xyz;
 eo3d.last_obs_rh  = obs_rh;
+end
+
+
+% =========================================================================
+% Instance-colour pass: boxes of the target pixels actually visible on screen
+% =========================================================================
+function bboxes = capture_instance_bboxes(eo3d, n_objects, W, H)
+bboxes = zeros(n_objects, 4);
+handles = eo3d.intruders(isgraphics(eo3d.intruders));
+if isempty(handles), return; end
+
+palette = [
+    1.0 0.0 1.0;  % magenta
+    0.0 1.0 1.0;  % cyan
+    1.0 1.0 0.0;  % yellow
+    1.0 0.0 0.0;  % red
+    0.0 0.0 1.0;  % blue
+    0.0 1.0 0.0;  % green
+];
+if n_objects > size(palette, 1)
+    palette = hsv(n_objects);
+end
+
+old_face = cell(numel(handles), 1);
+old_edge = cell(numel(handles), 1);
+old_light = cell(numel(handles), 1);
+old_alpha = cell(numel(handles), 1);
+for idx = 1:numel(handles)
+    object_id = double(get(handles(idx), "UserData"));
+    if isempty(object_id) || object_id < 1 || object_id > n_objects
+        object_id = 1;
+    end
+    old_face{idx} = get(handles(idx), "FaceColor");
+    old_edge{idx} = get(handles(idx), "EdgeColor");
+    old_light{idx} = get(handles(idx), "FaceLighting");
+    old_alpha{idx} = get(handles(idx), "FaceAlpha");
+    set(handles(idx), ...
+        "FaceColor", palette(object_id, :), ...
+        "EdgeColor", "none", ...
+        "FaceLighting", "none", ...
+        "FaceAlpha", 1.0);
+end
+
+drawnow;
+mask_frame = getframe(eo3d.ax);
+mask_img = double(mask_frame.cdata) / 255;
+if size(mask_img, 1) ~= H || size(mask_img, 2) ~= W
+    mask_img = imresize(mask_img, [H W], "nearest");
+end
+mask_img = mask_img(:, end:-1:1, :);
+
+for object_id = 1:n_objects
+    target = reshape(palette(object_id, :), 1, 1, 3);
+    distance = sqrt(sum((mask_img - target).^2, 3));
+    [rows, cols] = find(distance < 0.08);
+    if isempty(rows), continue; end
+    x1 = min(cols) - 1;  y1 = min(rows) - 1; % zero-based continuous pixels
+    x2 = max(cols);      y2 = max(rows);
+    bboxes(object_id, :) = [x1, y1, x2 - x1, y2 - y1];
+end
+
+for idx = 1:numel(handles)
+    set(handles(idx), ...
+        "FaceColor", old_face{idx}, ...
+        "EdgeColor", old_edge{idx}, ...
+        "FaceLighting", old_light{idx}, ...
+        "FaceAlpha", old_alpha{idx});
+end
+drawnow limitrate;
 end
 
 

@@ -1,0 +1,189 @@
+{
+  "prior_result_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\aggregated\\kci_yolov8s_boundary_search_v1__20260902_173932_443628__seed42\\symmetric_iterations.csv",
+  "new_result_is_independent": true,
+  "compared_iteration_count": 10,
+  "maximum_absolute_map50_difference": 0.7699023443782144,
+  "verdict_difference_count": 5,
+  "comparisons": [
+    {
+      "iteration": 1,
+      "new_environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "old_environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "new_map50": 0.991945917971277,
+      "old_map50": 0.9750427353718847,
+      "map50_difference": 0.016903182599392275,
+      "new_verdict": "PASS",
+      "old_verdict": "PASS"
+    },
+    {
+      "iteration": 2,
+      "new_environment": {
+        "fog_percent": 35.0,
+        "illumination_lux": 6000.0,
+        "camera_noise": 0.22
+      },
+      "old_environment": {
+        "fog_percent": 35.0,
+        "illumination_lux": 6000.0,
+        "camera_noise": 0.22
+      },
+      "new_map50": 0.9880579091514986,
+      "old_map50": 0.9482792081769957,
+      "map50_difference": 0.03977870097450287,
+      "new_verdict": "PASS",
+      "old_verdict": "PASS"
+    },
+    {
+      "iteration": 3,
+      "new_environment": {
+        "fog_percent": 65.0,
+        "illumination_lux": 3000.0,
+        "camera_noise": 0.42
+      },
+      "old_environment": {
+        "fog_percent": 65.0,
+        "illumination_lux": 3000.0,
+        "camera_noise": 0.42
+      },
+      "new_map50": 0.9645560164474423,
+      "old_map50": 0.742301720791823,
+      "map50_difference": 0.22225429565561927,
+      "new_verdict": "PASS",
+      "old_verdict": "PASS"
+    },
+    {
+      "iteration": 4,
+      "new_environment": {
+        "fog_percent": 95.0,
+        "illumination_lux": 1500.0,
+        "camera_noise": 0.6
+      },
+      "old_environment": {
+        "fog_percent": 95.0,
+        "illumination_lux": 1500.0,
+        "camera_noise": 0.6
+      },
+      "new_map50": 0.0,
+      "old_map50": 0.0,
+      "map50_difference": 0.0,
+      "new_verdict": "FAIL",
+      "old_verdict": "FAIL"
+    },
+    {
+      "iteration": 5,
+      "new_environment": {
+        "fog_percent": 80.0,
+        "illumination_lux": 2250.0,
+        "camera_noise": 0.51
+      },
+      "old_environment": {
+        "fog_percent": 80.0,
+        "illumination_lux": 2250.0,
+        "camera_noise": 0.51
+      },
+      "new_map50": 0.9013229680035216,
+      "old_map50": 0.1314206236253073,
+      "map50_difference": 0.7699023443782144,
+      "new_verdict": "PASS",
+      "old_verdict": "FAIL"
+    },
+    {
+      "iteration": 6,
+      "new_environment": {
+        "fog_percent": 87.5,
+        "illumination_lux": 1875.0,
+        "camera_noise": 0.555
+      },
+      "old_environment": {
+        "fog_percent": 72.5,
+        "illumination_lux": 2625.0,
+        "camera_noise": 0.465
+      },
+      "new_map50": 0.0061633281972265025,
+      "old_map50": 0.5952222283270443,
+      "map50_difference": -0.5890589001298178,
+      "new_verdict": "FAIL",
+      "old_verdict": "PASS"
+    },
+    {
+      "iteration": 7,
+      "new_environment": {
+        "fog_percent": 83.75,
+        "illumination_lux": 2062.5,
+        "camera_noise": 0.5325
+      },
+      "old_environment": {
+        "fog_percent": 76.25,
+        "illumination_lux": 2437.5,
+        "camera_noise": 0.4875
+      },
+      "new_map50": 0.5429722224252026,
+      "old_map50": 0.3933561909690775,
+      "map50_difference": 0.14961603145612512,
+      "new_verdict": "PASS",
+      "old_verdict": "MARGINAL"
+    },
+    {
+      "iteration": 8,
+      "new_environment": {
+        "fog_percent": 85.62,
+        "illumination_lux": 1968.8,
+        "camera_noise": 0.5437
+      },
+      "old_environment": {
+        "fog_percent": 78.12,
+        "illumination_lux": 2343.8,
+        "camera_noise": 0.4988
+      },
+      "new_map50": 0.1036408418442774,
+      "old_map50": 0.2666256954327856,
+      "map50_difference": -0.16298485358850817,
+      "new_verdict": "FAIL",
+      "old_verdict": "MARGINAL"
+    },
+    {
+      "iteration": 9,
+      "new_environment": {
+        "fog_percent": 84.69,
+        "illumination_lux": 2015.7,
+        "camera_noise": 0.5381
+      },
+      "old_environment": {
+        "fog_percent": 79.06,
+        "illumination_lux": 2296.9,
+        "camera_noise": 0.5044
+      },
+      "new_map50": 0.31080168624917237,
+      "old_map50": 0.20432785612627763,
+      "map50_difference": 0.10647383012289474,
+      "new_verdict": "MARGINAL",
+      "old_verdict": "FAIL"
+    },
+    {
+      "iteration": 10,
+      "new_environment": {
+        "fog_percent": 85.16,
+        "illumination_lux": 1992.2,
+        "camera_noise": 0.5409
+      },
+      "old_environment": {
+        "fog_percent": 78.59,
+        "illumination_lux": 2320.4,
+        "camera_noise": 0.5016
+      },
+      "new_map50": 0.17006090197724333,
+      "old_map50": 0.23738517272609652,
+      "map50_difference": -0.0673242707488532,
+      "new_verdict": "FAIL",
+      "old_verdict": "FAIL"
+    }
+  ]
+}

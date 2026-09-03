@@ -1,0 +1,5904 @@
+{
+  "schema_version": "2.0",
+  "cache_key": "7053da6a924ff3a1e0b8751b",
+  "evaluation_identity": {
+    "scenario_id": "T1",
+    "trajectory_config_sha256": "073DF701E2D8D91990B8DC263829522FD6539CA161B1BBD69B873559C70793CB",
+    "environment": {
+      "fog_percent": 75.31,
+      "illumination_lux": 2484.3,
+      "camera_noise": 0.4819
+    },
+    "seed": 5201,
+    "frame_stride": 1,
+    "gt_version": "rendered_instance_mask_v1",
+    "detector": "yolov8",
+    "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+    "inference_settings": {
+      "ap_iou_threshold": 0.5,
+      "batch_size": 16,
+      "confidence_threshold": 0.25,
+      "device": "auto",
+      "input_size": 640,
+      "nms_iou_threshold": 0.7
+    }
+  },
+  "scenario_id": "T1",
+  "scenario_config_sha256": "073DF701E2D8D91990B8DC263829522FD6539CA161B1BBD69B873559C70793CB",
+  "environment": {
+    "fog_percent": 75.31,
+    "illumination_lux": 2484.3,
+    "camera_noise": 0.4819
+  },
+  "random_seed": 5201,
+  "model": {
+    "detector": "yolov8",
+    "weights_filename": "best.pt",
+    "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537\\weights\\best.pt",
+    "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+    "weights_provenance": "general Ultralytics COCO pretrained YOLOv8s; not custom-trained",
+    "checkpoint_model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "checkpoint_training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\data\\diverse_training_scenario_split_v2\\data.yaml",
+    "checkpoint_training_epochs": 50,
+    "checkpoint_training_batch": 4,
+    "checkpoint_training_seed": 42,
+    "checkpoint_version": "8.4.46",
+    "checkpoint_date": "2026-09-03T01:15:02.730949",
+    "ultralytics_version": "8.4.46",
+    "python_version": "3.11.9",
+    "torch_version": "2.5.1+cu121",
+    "device_argument": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 2060",
+    "input_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "class_mapping": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "class_mapping_note": "Resolved from model.names. Recognised person aliases map to person; car/motorcycle/bus/truck/van/vehicle aliases merge to vehicle.",
+    "model_class_names": {
+      "0": "person",
+      "1": "vehicle"
+    }
+  },
+  "gt_version": "rendered_instance_mask_v1",
+  "render_source": "new_scenario_specific_render",
+  "matlab": {
+    "version": "25.2.0.3150157 (R2025b) Update 4",
+    "release": "2025b",
+    "renderer": "render_eo_image + eo_camera_3d_render visible-instance colour pass",
+    "image_width": 640,
+    "image_height": 360,
+    "evaluated_frame_count": 181
+  },
+  "metrics": {
+    "map50": 0.2834282753491049,
+    "person_ap50": 0.28114226498392414,
+    "vehicle_ap50": 0.2857142857142857,
+    "detected_intruder_count": 2,
+    "visible_intruder_count": 2,
+    "per_class": {
+      "person": {
+        "class_name": "person",
+        "ap50": 0.28114226498392414,
+        "tp": 12,
+        "fp": 69,
+        "fn": 4,
+        "total_gt": 16,
+        "n_detections": 81,
+        "visible_object_ids": [
+          2
+        ],
+        "detected_object_ids": [
+          2
+        ]
+      },
+      "vehicle": {
+        "class_name": "vehicle",
+        "ap50": 0.2857142857142857,
+        "tp": 16,
+        "fp": 0,
+        "fn": 40,
+        "total_gt": 56,
+        "n_detections": 16,
+        "visible_object_ids": [
+          1
+        ],
+        "detected_object_ids": [
+          1
+        ]
+      }
+    },
+    "total_precision": 0.28865979381443296,
+    "total_recall": 0.3888888888888889,
+    "person_precision": 0.14814814814814814,
+    "person_recall": 0.75,
+    "vehicle_precision": 1.0,
+    "vehicle_recall": 0.2857142857142857,
+    "matched_iou": {
+      "definition": "IoU values of confidence-ordered, one-to-one, class-matched true positives at the AP IoU threshold",
+      "matched_tp_count": 28,
+      "maximum_iou": 0.9777245086851675,
+      "mean_iou": 0.8533407110961294,
+      "per_class": {
+        "person": {
+          "matched_tp_count": 12,
+          "maximum_iou": 0.9362704032346167,
+          "mean_iou": 0.8412175587913833
+        },
+        "vehicle": {
+          "matched_tp_count": 16,
+          "maximum_iou": 0.9777245086851675,
+          "mean_iou": 0.8624330753246889
+        }
+      }
+    }
+  },
+  "timings": {
+    "simulation_seconds": 0.0201023,
+    "frame_rendering_seconds": 54.0295204,
+    "yolov8_inference_seconds": 4.193505398929119,
+    "metric_scoring_seconds": 0.0014515016227960587,
+    "total_execution_seconds": 58.244579600551916
+  },
+  "ultralytics_speed_ms_per_frame": [
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    },
+    {
+      "preprocess": 2.906301105137688,
+      "inference": 13.212295022705641,
+      "postprocess": 0.48714972908984233
+    }
+  ],
+  "effective_inference_batch_size": 16,
+  "frames": [
+    {
+      "frame_index": 1,
+      "time_seconds": 0.0,
+      "uav_xyz": [
+        -38,
+        12,
+        62
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0001.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 2,
+      "time_seconds": 0.1,
+      "uav_xyz": [
+        -37.75555555555555,
+        11.877777777777778,
+        61.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0002.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 3,
+      "time_seconds": 0.2,
+      "uav_xyz": [
+        -37.51111111111111,
+        11.755555555555556,
+        61.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0003.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 4,
+      "time_seconds": 0.3,
+      "uav_xyz": [
+        -37.266666666666666,
+        11.633333333333333,
+        61.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0004.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 5,
+      "time_seconds": 0.4,
+      "uav_xyz": [
+        -37.022222222222226,
+        11.511111111111111,
+        61.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0005.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 6,
+      "time_seconds": 0.5,
+      "uav_xyz": [
+        -36.77777777777778,
+        11.38888888888889,
+        61.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0006.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 7,
+      "time_seconds": 0.6,
+      "uav_xyz": [
+        -36.53333333333333,
+        11.266666666666667,
+        61.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0007.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 8,
+      "time_seconds": 0.7,
+      "uav_xyz": [
+        -36.28888888888889,
+        11.144444444444444,
+        61.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0008.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 9,
+      "time_seconds": 0.8,
+      "uav_xyz": [
+        -36.044444444444444,
+        11.022222222222222,
+        61.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0009.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 10,
+      "time_seconds": 0.9,
+      "uav_xyz": [
+        -35.8,
+        10.9,
+        61.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0010.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 11,
+      "time_seconds": 1.0,
+      "uav_xyz": [
+        -35.55555555555556,
+        10.777777777777779,
+        61.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0011.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 12,
+      "time_seconds": 1.1,
+      "uav_xyz": [
+        -35.31111111111111,
+        10.655555555555555,
+        61.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0012.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 13,
+      "time_seconds": 1.2,
+      "uav_xyz": [
+        -35.06666666666667,
+        10.533333333333333,
+        61
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0013.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 14,
+      "time_seconds": 1.3,
+      "uav_xyz": [
+        -34.82222222222222,
+        10.411111111111111,
+        60.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0014.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 15,
+      "time_seconds": 1.4,
+      "uav_xyz": [
+        -34.577777777777776,
+        10.288888888888888,
+        60.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0015.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.27561309933662415,
+          "bbox_xywh": [
+            278.0151062011719,
+            0.0,
+            8.76678466796875,
+            7.007053375244141
+          ],
+          "bbox_xyxy": [
+            278.0151062011719,
+            0.0,
+            286.7818908691406,
+            7.007053375244141
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 16,
+      "time_seconds": 1.5,
+      "uav_xyz": [
+        -34.333333333333336,
+        10.166666666666666,
+        60.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0016.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 17,
+      "time_seconds": 1.6,
+      "uav_xyz": [
+        -34.08888888888889,
+        10.044444444444444,
+        60.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0017.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 18,
+      "time_seconds": 1.7,
+      "uav_xyz": [
+        -33.84444444444445,
+        9.922222222222222,
+        60.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0018.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 19,
+      "time_seconds": 1.8,
+      "uav_xyz": [
+        -33.6,
+        9.8,
+        60.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0019.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 20,
+      "time_seconds": 1.9,
+      "uav_xyz": [
+        -33.355555555555554,
+        9.677777777777777,
+        60.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0020.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 21,
+      "time_seconds": 2.0,
+      "uav_xyz": [
+        -33.111111111111114,
+        9.555555555555555,
+        60.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0021.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 22,
+      "time_seconds": 2.1,
+      "uav_xyz": [
+        -32.86666666666667,
+        9.433333333333334,
+        60.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0022.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 23,
+      "time_seconds": 2.2,
+      "uav_xyz": [
+        -32.62222222222222,
+        9.311111111111112,
+        60.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0023.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3323497772216797,
+          "bbox_xywh": [
+            335.6677551269531,
+            0.0,
+            67.82659912109375,
+            41.08074951171875
+          ],
+          "bbox_xyxy": [
+            335.6677551269531,
+            0.0,
+            403.4943542480469,
+            41.08074951171875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 24,
+      "time_seconds": 2.3,
+      "uav_xyz": [
+        -32.37777777777778,
+        9.18888888888889,
+        60.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0024.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 25,
+      "time_seconds": 2.4,
+      "uav_xyz": [
+        -32.13333333333333,
+        9.066666666666666,
+        60
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0025.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 26,
+      "time_seconds": 2.5,
+      "uav_xyz": [
+        -31.88888888888889,
+        8.944444444444445,
+        59.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0026.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 27,
+      "time_seconds": 2.6,
+      "uav_xyz": [
+        -31.644444444444446,
+        8.822222222222223,
+        59.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0027.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 28,
+      "time_seconds": 2.7,
+      "uav_xyz": [
+        -31.4,
+        8.7,
+        59.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0028.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 29,
+      "time_seconds": 2.8,
+      "uav_xyz": [
+        -31.155555555555555,
+        8.577777777777778,
+        59.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0029.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 30,
+      "time_seconds": 2.9,
+      "uav_xyz": [
+        -30.91111111111111,
+        8.455555555555556,
+        59.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0030.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 31,
+      "time_seconds": 3.0,
+      "uav_xyz": [
+        -30.666666666666668,
+        8.333333333333334,
+        59.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0031.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 32,
+      "time_seconds": 3.1,
+      "uav_xyz": [
+        -30.422222222222224,
+        8.211111111111112,
+        59.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0032.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 33,
+      "time_seconds": 3.2,
+      "uav_xyz": [
+        -30.177777777777777,
+        8.088888888888889,
+        59.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0033.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 34,
+      "time_seconds": 3.3,
+      "uav_xyz": [
+        -29.933333333333334,
+        7.966666666666667,
+        59.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0034.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 35,
+      "time_seconds": 3.4,
+      "uav_xyz": [
+        -29.68888888888889,
+        7.844444444444445,
+        59.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0035.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 36,
+      "time_seconds": 3.5,
+      "uav_xyz": [
+        -29.444444444444443,
+        7.722222222222222,
+        59.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0036.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 37,
+      "time_seconds": 3.6,
+      "uav_xyz": [
+        -29.2,
+        7.6,
+        59
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0037.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 38,
+      "time_seconds": 3.7,
+      "uav_xyz": [
+        -28.955555555555556,
+        7.477777777777778,
+        58.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0038.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 39,
+      "time_seconds": 3.8,
+      "uav_xyz": [
+        -28.71111111111111,
+        7.355555555555555,
+        58.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0039.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 40,
+      "time_seconds": 3.9,
+      "uav_xyz": [
+        -28.46666666666667,
+        7.233333333333333,
+        58.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0040.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 41,
+      "time_seconds": 4.0,
+      "uav_xyz": [
+        -28.22222222222222,
+        7.111111111111112,
+        58.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0041.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 42,
+      "time_seconds": 4.1,
+      "uav_xyz": [
+        -27.977777777777778,
+        6.988888888888889,
+        58.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0042.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 43,
+      "time_seconds": 4.2,
+      "uav_xyz": [
+        -27.733333333333334,
+        6.866666666666666,
+        58.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0043.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 44,
+      "time_seconds": 4.3,
+      "uav_xyz": [
+        -27.488888888888887,
+        6.7444444444444445,
+        58.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0044.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 45,
+      "time_seconds": 4.4,
+      "uav_xyz": [
+        -27.244444444444447,
+        6.622222222222223,
+        58.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0045.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 46,
+      "time_seconds": 4.5,
+      "uav_xyz": [
+        -27,
+        6.5,
+        58.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0046.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 47,
+      "time_seconds": 4.6,
+      "uav_xyz": [
+        -26.755555555555556,
+        6.377777777777778,
+        58.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0047.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 48,
+      "time_seconds": 4.7,
+      "uav_xyz": [
+        -26.511111111111113,
+        6.2555555555555555,
+        58.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0048.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 49,
+      "time_seconds": 4.8,
+      "uav_xyz": [
+        -26.266666666666666,
+        6.133333333333334,
+        58
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0049.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 50,
+      "time_seconds": 4.9,
+      "uav_xyz": [
+        -26.022222222222226,
+        6.011111111111112,
+        57.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0050.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 51,
+      "time_seconds": 5.0,
+      "uav_xyz": [
+        -25.77777777777778,
+        5.888888888888888,
+        57.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0051.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 52,
+      "time_seconds": 5.1,
+      "uav_xyz": [
+        -25.53333333333333,
+        5.766666666666667,
+        57.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0052.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 53,
+      "time_seconds": 5.2,
+      "uav_xyz": [
+        -25.28888888888889,
+        5.644444444444445,
+        57.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0053.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 54,
+      "time_seconds": 5.3,
+      "uav_xyz": [
+        -25.044444444444444,
+        5.522222222222222,
+        57.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0054.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 55,
+      "time_seconds": 5.4,
+      "uav_xyz": [
+        -24.8,
+        5.4,
+        57.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0055.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 56,
+      "time_seconds": 5.5,
+      "uav_xyz": [
+        -24.555555555555554,
+        5.277777777777777,
+        57.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0056.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 57,
+      "time_seconds": 5.6,
+      "uav_xyz": [
+        -24.31111111111111,
+        5.155555555555555,
+        57.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0057.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 58,
+      "time_seconds": 5.7,
+      "uav_xyz": [
+        -24.066666666666666,
+        5.033333333333333,
+        57.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0058.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            370,
+            0,
+            35,
+            3
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 59,
+      "time_seconds": 5.8,
+      "uav_xyz": [
+        -23.822222222222223,
+        4.9111111111111105,
+        57.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0059.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            369,
+            0,
+            44,
+            5
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 60,
+      "time_seconds": 5.9,
+      "uav_xyz": [
+        -23.577777777777776,
+        4.788888888888889,
+        57.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0060.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            372,
+            0,
+            45,
+            8
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 61,
+      "time_seconds": 6.0,
+      "uav_xyz": [
+        -23.333333333333336,
+        4.666666666666667,
+        57
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0061.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            375,
+            0,
+            46,
+            11
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 62,
+      "time_seconds": 6.1,
+      "uav_xyz": [
+        -23.08888888888889,
+        4.544444444444444,
+        56.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0062.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            379,
+            0,
+            46,
+            13
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 63,
+      "time_seconds": 6.2,
+      "uav_xyz": [
+        -22.844444444444445,
+        4.4222222222222225,
+        56.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0063.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            382,
+            0,
+            47,
+            16
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 64,
+      "time_seconds": 6.3,
+      "uav_xyz": [
+        -22.6,
+        4.300000000000001,
+        56.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0064.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            385,
+            0,
+            48,
+            19
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 65,
+      "time_seconds": 6.4,
+      "uav_xyz": [
+        -22.355555555555554,
+        4.177777777777777,
+        56.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0065.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            389,
+            0,
+            48,
+            21
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 66,
+      "time_seconds": 6.5,
+      "uav_xyz": [
+        -22.11111111111111,
+        4.055555555555555,
+        56.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0066.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            392,
+            0,
+            49,
+            24
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.49789467453956604,
+          "bbox_xywh": [
+            391.35205078125,
+            0.052692413330078125,
+            51.949951171875,
+            33.42384719848633
+          ],
+          "bbox_xyxy": [
+            391.35205078125,
+            0.052692413330078125,
+            443.302001953125,
+            33.476539611816406
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 67,
+      "time_seconds": 6.6,
+      "uav_xyz": [
+        -21.866666666666667,
+        3.9333333333333336,
+        56.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0067.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            396,
+            0,
+            49,
+            27
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.35341477394104004,
+          "bbox_xywh": [
+            395.39642333984375,
+            0.24190902709960938,
+            51.302978515625,
+            38.34848403930664
+          ],
+          "bbox_xyxy": [
+            395.39642333984375,
+            0.24190902709960938,
+            446.69940185546875,
+            38.59039306640625
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 68,
+      "time_seconds": 6.7,
+      "uav_xyz": [
+        -21.62222222222222,
+        3.81111111111111,
+        56.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0068.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            399,
+            0,
+            50,
+            30
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.30538541078567505,
+          "bbox_xywh": [
+            398.51947021484375,
+            0.1235198974609375,
+            51.24261474609375,
+            38.60125732421875
+          ],
+          "bbox_xyxy": [
+            398.51947021484375,
+            0.1235198974609375,
+            449.7620849609375,
+            38.72477722167969
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 69,
+      "time_seconds": 6.8,
+      "uav_xyz": [
+        -21.37777777777778,
+        3.68888888888889,
+        56.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0069.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            401,
+            0,
+            52,
+            33
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3553359806537628,
+          "bbox_xywh": [
+            401.54571533203125,
+            0.01992034912109375,
+            52.52972412109375,
+            44.24114990234375
+          ],
+          "bbox_xyxy": [
+            401.54571533203125,
+            0.01992034912109375,
+            454.075439453125,
+            44.261070251464844
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 70,
+      "time_seconds": 6.9,
+      "uav_xyz": [
+        -21.133333333333333,
+        3.5666666666666664,
+        56.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0070.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            404,
+            0,
+            53,
+            36
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5919533967971802,
+          "bbox_xywh": [
+            404.44769287109375,
+            0.09395217895507812,
+            52.56732177734375,
+            47.520057678222656
+          ],
+          "bbox_xyxy": [
+            404.44769287109375,
+            0.09395217895507812,
+            457.0150146484375,
+            47.614009857177734
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 71,
+      "time_seconds": 7.0,
+      "uav_xyz": [
+        -20.88888888888889,
+        3.4444444444444446,
+        56.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0071.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            407,
+            0,
+            55,
+            39
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5034127831459045,
+          "bbox_xywh": [
+            407.12835693359375,
+            0.0,
+            56.58477783203125,
+            47.70671844482422
+          ],
+          "bbox_xyxy": [
+            407.12835693359375,
+            0.0,
+            463.713134765625,
+            47.70671844482422
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 72,
+      "time_seconds": 7.1,
+      "uav_xyz": [
+        -20.644444444444446,
+        3.322222222222223,
+        56.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0072.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            411,
+            0,
+            55,
+            43
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.4995713233947754,
+          "bbox_xywh": [
+            411.8501892089844,
+            0.0396575927734375,
+            54.0989990234375,
+            50.8753662109375
+          ],
+          "bbox_xyxy": [
+            411.8501892089844,
+            0.0396575927734375,
+            465.9491882324219,
+            50.91502380371094
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 73,
+      "time_seconds": 7.2,
+      "uav_xyz": [
+        -20.4,
+        3.1999999999999993,
+        56
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0073.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            415,
+            0,
+            56,
+            46
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.4435196816921234,
+          "bbox_xywh": [
+            414.9953308105469,
+            0.0,
+            55.41473388671875,
+            53.38208770751953
+          ],
+          "bbox_xyxy": [
+            414.9953308105469,
+            0.0,
+            470.4100646972656,
+            53.38208770751953
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 74,
+      "time_seconds": 7.3,
+      "uav_xyz": [
+        -20.155555555555555,
+        3.0777777777777775,
+        55.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0074.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            419,
+            0,
+            56,
+            49
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7023769617080688,
+          "bbox_xywh": [
+            419.7425231933594,
+            0.13277435302734375,
+            55.6712646484375,
+            56.284156799316406
+          ],
+          "bbox_xyxy": [
+            419.7425231933594,
+            0.13277435302734375,
+            475.4137878417969,
+            56.41693115234375
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.41448453068733215,
+          "bbox_xywh": [
+            522.5405883789062,
+            121.25376892089844,
+            80.5523681640625,
+            78.88320922851562
+          ],
+          "bbox_xyxy": [
+            522.5405883789062,
+            121.25376892089844,
+            603.0929565429688,
+            200.13697814941406
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 75,
+      "time_seconds": 7.4,
+      "uav_xyz": [
+        -19.91111111111111,
+        2.9555555555555557,
+        55.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0075.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            423,
+            0,
+            57,
+            53
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7929196953773499,
+          "bbox_xywh": [
+            423.824951171875,
+            0.6903610229492188,
+            56.7744140625,
+            59.39326477050781
+          ],
+          "bbox_xyxy": [
+            423.824951171875,
+            0.6903610229492188,
+            480.599365234375,
+            60.08362579345703
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3461047410964966,
+          "bbox_xywh": [
+            527.1500854492188,
+            126.720458984375,
+            87.802490234375,
+            76.30117797851562
+          ],
+          "bbox_xyxy": [
+            527.1500854492188,
+            126.720458984375,
+            614.9525756835938,
+            203.02163696289062
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 76,
+      "time_seconds": 7.5,
+      "uav_xyz": [
+        -19.666666666666664,
+        2.833333333333332,
+        55.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0076.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            427,
+            0,
+            58,
+            56
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.8916109204292297,
+          "bbox_xywh": [
+            427.872314453125,
+            1.6197052001953125,
+            56.1334228515625,
+            63.91468048095703
+          ],
+          "bbox_xyxy": [
+            427.872314453125,
+            1.6197052001953125,
+            484.0057373046875,
+            65.53438568115234
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 77,
+      "time_seconds": 7.6,
+      "uav_xyz": [
+        -19.42222222222222,
+        2.7111111111111104,
+        55.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0077.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            431,
+            0,
+            58,
+            59
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5058342814445496,
+          "bbox_xywh": [
+            431.74188232421875,
+            2.1318283081054688,
+            57.7476806640625,
+            67.1006851196289
+          ],
+          "bbox_xyxy": [
+            431.74188232421875,
+            2.1318283081054688,
+            489.48956298828125,
+            69.23251342773438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 78,
+      "time_seconds": 7.7,
+      "uav_xyz": [
+        -19.177777777777777,
+        2.5888888888888886,
+        55.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0078.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            435,
+            0,
+            59,
+            63
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.8861028552055359,
+          "bbox_xywh": [
+            435.5090026855469,
+            1.8209228515625,
+            58.4012451171875,
+            69.94808959960938
+          ],
+          "bbox_xyxy": [
+            435.5090026855469,
+            1.8209228515625,
+            493.9102478027344,
+            71.76901245117188
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.41387271881103516,
+          "bbox_xywh": [
+            546.655029296875,
+            143.93685913085938,
+            87.741943359375,
+            81.9610595703125
+          ],
+          "bbox_xyxy": [
+            546.655029296875,
+            143.93685913085938,
+            634.39697265625,
+            225.89791870117188
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 79,
+      "time_seconds": 7.8,
+      "uav_xyz": [
+        -18.933333333333334,
+        2.466666666666667,
+        55.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0079.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            439,
+            0,
+            60,
+            66
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.605479896068573,
+          "bbox_xywh": [
+            550.6492919921875,
+            146.78277587890625,
+            86.35546875,
+            89.91757202148438
+          ],
+          "bbox_xyxy": [
+            550.6492919921875,
+            146.78277587890625,
+            637.0047607421875,
+            236.70034790039062
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5944512486457825,
+          "bbox_xywh": [
+            438.87109375,
+            1.3720932006835938,
+            59.6357421875,
+            73.57427215576172
+          ],
+          "bbox_xyxy": [
+            438.87109375,
+            1.3720932006835938,
+            498.5068359375,
+            74.94636535644531
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.321288526058197,
+          "bbox_xywh": [
+            437.86572265625,
+            0.15738677978515625,
+            60.85888671875,
+            77.61803436279297
+          ],
+          "bbox_xyxy": [
+            437.86572265625,
+            0.15738677978515625,
+            498.724609375,
+            77.77542114257812
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 80,
+      "time_seconds": 7.9,
+      "uav_xyz": [
+        -18.68888888888889,
+        2.344444444444445,
+        55.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0080.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            443,
+            3,
+            61,
+            67
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6892864108085632,
+          "bbox_xywh": [
+            560.1126098632812,
+            153.59979248046875,
+            79.88739013671875,
+            94.22442626953125
+          ],
+          "bbox_xyxy": [
+            560.1126098632812,
+            153.59979248046875,
+            640.0,
+            247.82421875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 81,
+      "time_seconds": 8.0,
+      "uav_xyz": [
+        -18.444444444444446,
+        2.222222222222223,
+        55.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0081.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            447,
+            6,
+            62,
+            67
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6892179846763611,
+          "bbox_xywh": [
+            566.6614379882812,
+            160.16268920898438,
+            73.2952880859375,
+            86.2811279296875
+          ],
+          "bbox_xyxy": [
+            566.6614379882812,
+            160.16268920898438,
+            639.9567260742188,
+            246.44381713867188
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5427366495132446,
+          "bbox_xywh": [
+            452.0025634765625,
+            27.37774658203125,
+            57.718017578125,
+            57.1748046875
+          ],
+          "bbox_xyxy": [
+            452.0025634765625,
+            27.37774658203125,
+            509.7205810546875,
+            84.55255126953125
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 82,
+      "time_seconds": 8.1,
+      "uav_xyz": [
+        -18.2,
+        2.0999999999999996,
+        55.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0082.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            451,
+            9,
+            64,
+            68
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7232315540313721,
+          "bbox_xywh": [
+            457.0762939453125,
+            23.036109924316406,
+            57.11492919921875,
+            65.11300659179688
+          ],
+          "bbox_xyxy": [
+            457.0762939453125,
+            23.036109924316406,
+            514.1912231445312,
+            88.14911651611328
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.452198326587677,
+          "bbox_xywh": [
+            451.7520751953125,
+            6.971641540527344,
+            62.754150390625,
+            78.7015609741211
+          ],
+          "bbox_xyxy": [
+            451.7520751953125,
+            6.971641540527344,
+            514.5062255859375,
+            85.67320251464844
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3795781135559082,
+          "bbox_xywh": [
+            332.4473876953125,
+            0.0,
+            12.08984375,
+            5.963781356811523
+          ],
+          "bbox_xyxy": [
+            332.4473876953125,
+            0.0,
+            344.5372314453125,
+            5.963781356811523
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.27838245034217834,
+          "bbox_xywh": [
+            480.4901123046875,
+            90.74418640136719,
+            70.647705078125,
+            62.304901123046875
+          ],
+          "bbox_xyxy": [
+            480.4901123046875,
+            90.74418640136719,
+            551.1378173828125,
+            153.04908752441406
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 83,
+      "time_seconds": 8.2,
+      "uav_xyz": [
+        -17.955555555555556,
+        1.9777777777777779,
+        55.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0083.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            456,
+            12,
+            64,
+            69
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6849009394645691,
+          "bbox_xywh": [
+            583.23095703125,
+            169.32180786132812,
+            56.76904296875,
+            105.06271362304688
+          ],
+          "bbox_xyxy": [
+            583.23095703125,
+            169.32180786132812,
+            640.0,
+            274.384521484375
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.3077705204486847,
+          "bbox_xywh": [
+            456.3543701171875,
+            12.482093811035156,
+            63.1534423828125,
+            76.0517578125
+          ],
+          "bbox_xyxy": [
+            456.3543701171875,
+            12.482093811035156,
+            519.5078125,
+            88.53385162353516
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2759144902229309,
+          "bbox_xywh": [
+            462.18145751953125,
+            32.209686279296875,
+            57.1634521484375,
+            59.46354675292969
+          ],
+          "bbox_xyxy": [
+            462.18145751953125,
+            32.209686279296875,
+            519.3449096679688,
+            91.67323303222656
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2505342364311218,
+          "bbox_xywh": [
+            333.6331787109375,
+            0.0,
+            11.5858154296875,
+            6.71668815612793
+          ],
+          "bbox_xyxy": [
+            333.6331787109375,
+            0.0,
+            345.218994140625,
+            6.71668815612793
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 84,
+      "time_seconds": 8.3,
+      "uav_xyz": [
+        -17.71111111111111,
+        1.8555555555555543,
+        55.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0084.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            460,
+            15,
+            65,
+            70
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5461902618408203,
+          "bbox_xywh": [
+            588.4095458984375,
+            177.70285034179688,
+            51.5904541015625,
+            99.78469848632812
+          ],
+          "bbox_xyxy": [
+            588.4095458984375,
+            177.70285034179688,
+            640.0,
+            277.487548828125
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.4483200013637543,
+          "bbox_xywh": [
+            460.0965576171875,
+            15.85415267944336,
+            63.0743408203125,
+            78.96377944946289
+          ],
+          "bbox_xyxy": [
+            460.0965576171875,
+            15.85415267944336,
+            523.1708984375,
+            94.81793212890625
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3393360376358032,
+          "bbox_xywh": [
+            465.677001953125,
+            34.61845397949219,
+            58.8321533203125,
+            62.30564880371094
+          ],
+          "bbox_xyxy": [
+            465.677001953125,
+            34.61845397949219,
+            524.5091552734375,
+            96.92410278320312
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2642025053501129,
+          "bbox_xywh": [
+            512.67626953125,
+            198.16827392578125,
+            66.870849609375,
+            66.04214477539062
+          ],
+          "bbox_xyxy": [
+            512.67626953125,
+            198.16827392578125,
+            579.547119140625,
+            264.2104187011719
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 85,
+      "time_seconds": 8.4,
+      "uav_xyz": [
+        -17.466666666666665,
+        1.7333333333333325,
+        55
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0085.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            465,
+            19,
+            66,
+            70
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5052986145019531,
+          "bbox_xywh": [
+            471.1986083984375,
+            34.8216552734375,
+            58.642822265625,
+            65.97453308105469
+          ],
+          "bbox_xyxy": [
+            471.1986083984375,
+            34.8216552734375,
+            529.8414306640625,
+            100.79618835449219
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.43533754348754883,
+          "bbox_xywh": [
+            594.0823974609375,
+            185.14999389648438,
+            45.9176025390625,
+            90.221923828125
+          ],
+          "bbox_xyxy": [
+            594.0823974609375,
+            185.14999389648438,
+            640.0,
+            275.3719177246094
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 86,
+      "time_seconds": 8.5,
+      "uav_xyz": [
+        -17.22222222222222,
+        1.6111111111111107,
+        54.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0086.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            469,
+            23,
+            68,
+            70
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3635169267654419,
+          "bbox_xywh": [
+            476.50244140625,
+            44.675926208496094,
+            59.76025390625,
+            60.37371826171875
+          ],
+          "bbox_xyxy": [
+            476.50244140625,
+            44.675926208496094,
+            536.2626953125,
+            105.04964447021484
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2986014187335968,
+          "bbox_xywh": [
+            594.8552856445312,
+            195.95297241210938,
+            45.14471435546875,
+            80.90921020507812
+          ],
+          "bbox_xyxy": [
+            594.8552856445312,
+            195.95297241210938,
+            640.0,
+            276.8621826171875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 87,
+      "time_seconds": 8.6,
+      "uav_xyz": [
+        -16.977777777777778,
+        1.488888888888889,
+        54.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0087.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            474,
+            26,
+            68,
+            71
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7328133583068848,
+          "bbox_xywh": [
+            480.0985107421875,
+            42.41072082519531,
+            61.7000732421875,
+            66.40716552734375
+          ],
+          "bbox_xyxy": [
+            480.0985107421875,
+            42.41072082519531,
+            541.798583984375,
+            108.81788635253906
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3339862823486328,
+          "bbox_xywh": [
+            485.0877685546875,
+            58.766937255859375,
+            56.9068603515625,
+            50.56217956542969
+          ],
+          "bbox_xyxy": [
+            485.0877685546875,
+            58.766937255859375,
+            541.99462890625,
+            109.32911682128906
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 88,
+      "time_seconds": 8.7,
+      "uav_xyz": [
+        -16.733333333333334,
+        1.3666666666666671,
+        54.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0088.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            479,
+            29,
+            69,
+            72
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5187928080558777,
+          "bbox_xywh": [
+            488.7355651855469,
+            48.382591247558594,
+            59.136260986328125,
+            65.51225280761719
+          ],
+          "bbox_xyxy": [
+            488.7355651855469,
+            48.382591247558594,
+            547.871826171875,
+            113.89484405517578
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.3366490304470062,
+          "bbox_xywh": [
+            479.4800109863281,
+            28.870590209960938,
+            68.34713745117188,
+            85.50086975097656
+          ],
+          "bbox_xyxy": [
+            479.4800109863281,
+            28.870590209960938,
+            547.8271484375,
+            114.3714599609375
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 89,
+      "time_seconds": 8.8,
+      "uav_xyz": [
+        -16.48888888888889,
+        1.2444444444444454,
+        54.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0089.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            484,
+            33,
+            70,
+            73
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.25080928206443787,
+          "bbox_xywh": [
+            497.7401123046875,
+            60.19725036621094,
+            55.4359130859375,
+            58.105194091796875
+          ],
+          "bbox_xyxy": [
+            497.7401123046875,
+            60.19725036621094,
+            553.176025390625,
+            118.30244445800781
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 90,
+      "time_seconds": 8.9,
+      "uav_xyz": [
+        -16.244444444444444,
+        1.1222222222222218,
+        54.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0090.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            489,
+            37,
+            72,
+            73
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.6756370067596436,
+          "bbox_xywh": [
+            488.75836181640625,
+            36.89451599121094,
+            70.5777587890625,
+            83.15855407714844
+          ],
+          "bbox_xyxy": [
+            488.75836181640625,
+            36.89451599121094,
+            559.3361206054688,
+            120.05307006835938
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.35460197925567627,
+          "bbox_xywh": [
+            550.5855712890625,
+            237.91615295410156,
+            78.0584716796875,
+            70.80369567871094
+          ],
+          "bbox_xyxy": [
+            550.5855712890625,
+            237.91615295410156,
+            628.64404296875,
+            308.7198486328125
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 91,
+      "time_seconds": 9.0,
+      "uav_xyz": [
+        -16,
+        1,
+        54.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0091.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            494,
+            41,
+            73,
+            74
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5850824117660522,
+          "bbox_xywh": [
+            503.5841979980469,
+            65.90638732910156,
+            63.333526611328125,
+            61.68452453613281
+          ],
+          "bbox_xyxy": [
+            503.5841979980469,
+            65.90638732910156,
+            566.917724609375,
+            127.59091186523438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 92,
+      "time_seconds": 9.1,
+      "uav_xyz": [
+        -15.755555555555556,
+        0.8777777777777782,
+        54.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0092.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            499,
+            45,
+            74,
+            74
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6033390164375305,
+          "bbox_xywh": [
+            509.52728271484375,
+            64.47419738769531,
+            64.4058837890625,
+            68.12603759765625
+          ],
+          "bbox_xyxy": [
+            509.52728271484375,
+            64.47419738769531,
+            573.9331665039062,
+            132.60023498535156
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.28511470556259155,
+          "bbox_xywh": [
+            540.9876708984375,
+            136.5132293701172,
+            77.853515625,
+            72.60507202148438
+          ],
+          "bbox_xyxy": [
+            540.9876708984375,
+            136.5132293701172,
+            618.8411865234375,
+            209.11830139160156
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 93,
+      "time_seconds": 9.2,
+      "uav_xyz": [
+        -15.511111111111113,
+        0.7555555555555564,
+        54.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0093.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            505,
+            49,
+            75,
+            75
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.45617151260375977,
+          "bbox_xywh": [
+            520.3848876953125,
+            75.55738830566406,
+            59.759521484375,
+            63.13591003417969
+          ],
+          "bbox_xyxy": [
+            520.3848876953125,
+            75.55738830566406,
+            580.1444091796875,
+            138.69329833984375
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 94,
+      "time_seconds": 9.3,
+      "uav_xyz": [
+        -15.266666666666666,
+        0.6333333333333329,
+        54.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0094.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            510,
+            53,
+            77,
+            76
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5566728711128235,
+          "bbox_xywh": [
+            522.4296875,
+            75.37541198730469,
+            65.219970703125,
+            67.14030456542969
+          ],
+          "bbox_xyxy": [
+            522.4296875,
+            75.37541198730469,
+            587.649658203125,
+            142.51571655273438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 95,
+      "time_seconds": 9.4,
+      "uav_xyz": [
+        -15.022222222222222,
+        0.5111111111111111,
+        54.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0095.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            515,
+            57,
+            78,
+            76
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.35166019201278687,
+          "bbox_xywh": [
+            534.064208984375,
+            84.59233856201172,
+            60.99462890625,
+            63.38031768798828
+          ],
+          "bbox_xyxy": [
+            534.064208984375,
+            84.59233856201172,
+            595.058837890625,
+            147.97265625
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 96,
+      "time_seconds": 9.5,
+      "uav_xyz": [
+        -14.777777777777779,
+        0.3888888888888893,
+        54.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0096.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            521,
+            61,
+            79,
+            77
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.628606915473938,
+          "bbox_xywh": [
+            541.574462890625,
+            88.05027770996094,
+            60.66162109375,
+            66.36688232421875
+          ],
+          "bbox_xyxy": [
+            541.574462890625,
+            88.05027770996094,
+            602.236083984375,
+            154.4171600341797
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 97,
+      "time_seconds": 9.6,
+      "uav_xyz": [
+        -14.533333333333335,
+        0.2666666666666675,
+        54
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0097.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            527,
+            65,
+            80,
+            78
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.8119255900382996,
+          "bbox_xywh": [
+            549.5927734375,
+            92.94427490234375,
+            60.2880859375,
+            65.789794921875
+          ],
+          "bbox_xyxy": [
+            549.5927734375,
+            92.94427490234375,
+            609.880859375,
+            158.73406982421875
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.3961280584335327,
+          "bbox_xywh": [
+            526.2078247070312,
+            64.64056396484375,
+            82.4508056640625,
+            91.76458740234375
+          ],
+          "bbox_xyxy": [
+            526.2078247070312,
+            64.64056396484375,
+            608.6586303710938,
+            156.4051513671875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 98,
+      "time_seconds": 9.7,
+      "uav_xyz": [
+        -14.288888888888891,
+        0.1444444444444457,
+        53.91666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0098.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            532,
+            70,
+            83,
+            78
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2898039221763611,
+          "bbox_xywh": [
+            557.6922607421875,
+            100.20015716552734,
+            61.0079345703125,
+            64.35828399658203
+          ],
+          "bbox_xyxy": [
+            557.6922607421875,
+            100.20015716552734,
+            618.7001953125,
+            164.55844116210938
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 99,
+      "time_seconds": 9.8,
+      "uav_xyz": [
+        -14.044444444444448,
+        0.02222222222222392,
+        53.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0099.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            538,
+            74,
+            84,
+            79
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6326754093170166,
+          "bbox_xywh": [
+            560.60302734375,
+            104.03854370117188,
+            67.15771484375,
+            67.75552368164062
+          ],
+          "bbox_xyxy": [
+            560.60302734375,
+            104.03854370117188,
+            627.7607421875,
+            171.7940673828125
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.27570390701293945,
+          "bbox_xywh": [
+            538.0279541015625,
+            73.84175872802734,
+            87.184326171875,
+            94.06562042236328
+          ],
+          "bbox_xyxy": [
+            538.0279541015625,
+            73.84175872802734,
+            625.2122802734375,
+            167.90737915039062
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 100,
+      "time_seconds": 9.9,
+      "uav_xyz": [
+        -13.799999999999997,
+        -0.10000000000000142,
+        53.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0100.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            544,
+            79,
+            86,
+            80
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3604837656021118,
+          "bbox_xywh": [
+            563.7661743164062,
+            109.46599578857422,
+            73.306884765625,
+            68.30841827392578
+          ],
+          "bbox_xyxy": [
+            563.7661743164062,
+            109.46599578857422,
+            637.0730590820312,
+            177.7744140625
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 101,
+      "time_seconds": 10.0,
+      "uav_xyz": [
+        -13.555555555555554,
+        -0.2222222222222232,
+        53.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0101.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            551,
+            83,
+            86,
+            81
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6102291941642761,
+          "bbox_xywh": [
+            572.4766845703125,
+            115.86727905273438,
+            67.4466552734375,
+            67.1275634765625
+          ],
+          "bbox_xyxy": [
+            572.4766845703125,
+            115.86727905273438,
+            639.92333984375,
+            182.99484252929688
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 102,
+      "time_seconds": 10.1,
+      "uav_xyz": [
+        -13.31111111111111,
+        -0.344444444444445,
+        53.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0102.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            557,
+            88,
+            83,
+            82
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.39167994260787964,
+          "bbox_xywh": [
+            578.57470703125,
+            114.3498306274414,
+            61.42529296875,
+            75.70061492919922
+          ],
+          "bbox_xyxy": [
+            578.57470703125,
+            114.3498306274414,
+            640.0,
+            190.05044555664062
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 103,
+      "time_seconds": 10.2,
+      "uav_xyz": [
+        -13.066666666666666,
+        -0.4666666666666668,
+        53.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0103.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            563,
+            93,
+            77,
+            82
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.4585137367248535,
+          "bbox_xywh": [
+            590.7928466796875,
+            123.32644653320312,
+            49.2071533203125,
+            72.7935791015625
+          ],
+          "bbox_xyxy": [
+            590.7928466796875,
+            123.32644653320312,
+            640.0,
+            196.12002563476562
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.26176655292510986,
+          "bbox_xywh": [
+            564.6737670898438,
+            91.65570831298828,
+            75.32623291015625,
+            70.80968475341797
+          ],
+          "bbox_xyxy": [
+            564.6737670898438,
+            91.65570831298828,
+            640.0,
+            162.46539306640625
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 104,
+      "time_seconds": 10.3,
+      "uav_xyz": [
+        -12.822222222222223,
+        -0.5888888888888886,
+        53.41666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0104.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            569,
+            98,
+            71,
+            83
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.7799353003501892,
+          "bbox_xywh": [
+            569.9036254882812,
+            97.3658676147461,
+            70.09637451171875,
+            104.08979034423828
+          ],
+          "bbox_xyxy": [
+            569.9036254882812,
+            97.3658676147461,
+            640.0,
+            201.45565795898438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 105,
+      "time_seconds": 10.4,
+      "uav_xyz": [
+        -12.57777777777778,
+        -0.7111111111111104,
+        53.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0105.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            577,
+            103,
+            63,
+            84
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.8552365899085999,
+          "bbox_xywh": [
+            576.2330932617188,
+            103.20240020751953,
+            63.76690673828125,
+            104.45452117919922
+          ],
+          "bbox_xyxy": [
+            576.2330932617188,
+            103.20240020751953,
+            640.0,
+            207.65692138671875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 106,
+      "time_seconds": 10.5,
+      "uav_xyz": [
+        -12.333333333333332,
+        -0.8333333333333339,
+        53.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0106.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            583,
+            109,
+            57,
+            84
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.884978175163269,
+          "bbox_xywh": [
+            583.4721069335938,
+            108.18558502197266,
+            56.52789306640625,
+            97.55706024169922
+          ],
+          "bbox_xyxy": [
+            583.4721069335938,
+            108.18558502197266,
+            640.0,
+            205.74264526367188
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 107,
+      "time_seconds": 10.6,
+      "uav_xyz": [
+        -12.088888888888889,
+        -0.9555555555555557,
+        53.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0107.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            590,
+            113,
+            50,
+            87
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.812616765499115,
+          "bbox_xywh": [
+            590.0621337890625,
+            112.11612701416016,
+            49.81689453125,
+            88.66234588623047
+          ],
+          "bbox_xyxy": [
+            590.0621337890625,
+            112.11612701416016,
+            639.8790283203125,
+            200.77847290039062
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 108,
+      "time_seconds": 10.7,
+      "uav_xyz": [
+        -11.844444444444445,
+        -1.0777777777777775,
+        53.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0108.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            597,
+            119,
+            43,
+            87
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.8216304779052734,
+          "bbox_xywh": [
+            596.222900390625,
+            117.6497802734375,
+            43.777099609375,
+            90.98507690429688
+          ],
+          "bbox_xyxy": [
+            596.222900390625,
+            117.6497802734375,
+            640.0,
+            208.63485717773438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 109,
+      "time_seconds": 10.8,
+      "uav_xyz": [
+        -11.600000000000001,
+        -1.1999999999999993,
+        53
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0109.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            605,
+            124,
+            35,
+            89
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7694495916366577,
+          "bbox_xywh": [
+            618.1016845703125,
+            175.17845153808594,
+            21.40576171875,
+            31.28955078125
+          ],
+          "bbox_xyxy": [
+            618.1016845703125,
+            175.17845153808594,
+            639.5074462890625,
+            206.46800231933594
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.47175055742263794,
+          "bbox_xywh": [
+            604.5408935546875,
+            125.04130554199219,
+            35.4591064453125,
+            33.91619873046875
+          ],
+          "bbox_xyxy": [
+            604.5408935546875,
+            125.04130554199219,
+            640.0,
+            158.95750427246094
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.45944473147392273,
+          "bbox_xywh": [
+            605.034423828125,
+            124.34349060058594,
+            34.965576171875,
+            79.16668701171875
+          ],
+          "bbox_xyxy": [
+            605.034423828125,
+            124.34349060058594,
+            640.0,
+            203.5101776123047
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.4390343427658081,
+          "bbox_xywh": [
+            604.1991577148438,
+            127.4779052734375,
+            18.6307373046875,
+            31.0623779296875
+          ],
+          "bbox_xyxy": [
+            604.1991577148438,
+            127.4779052734375,
+            622.8298950195312,
+            158.540283203125
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.25504982471466064,
+          "bbox_xywh": [
+            616.0806884765625,
+            152.37652587890625,
+            23.9193115234375,
+            54.7904052734375
+          ],
+          "bbox_xyxy": [
+            616.0806884765625,
+            152.37652587890625,
+            640.0,
+            207.16693115234375
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 110,
+      "time_seconds": 10.9,
+      "uav_xyz": [
+        -11.355555555555558,
+        -1.322222222222221,
+        52.91666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0110.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            612,
+            130,
+            28,
+            89
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.782263994216919,
+          "bbox_xywh": [
+            612.5673828125,
+            128.87936401367188,
+            27.39013671875,
+            85.22882080078125
+          ],
+          "bbox_xyxy": [
+            612.5673828125,
+            128.87936401367188,
+            639.95751953125,
+            214.10818481445312
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3259906768798828,
+          "bbox_xywh": [
+            626.3155517578125,
+            183.02980041503906,
+            13.6439208984375,
+            33.331787109375
+          ],
+          "bbox_xyxy": [
+            626.3155517578125,
+            183.02980041503906,
+            639.95947265625,
+            216.36158752441406
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 111,
+      "time_seconds": 11.0,
+      "uav_xyz": [
+        -11.111111111111107,
+        -1.4444444444444464,
+        52.83333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0111.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            620,
+            135,
+            20,
+            84
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.4039211869239807,
+          "bbox_xywh": [
+            620.0189208984375,
+            135.28248596191406,
+            19.965087890625,
+            37.253753662109375
+          ],
+          "bbox_xyxy": [
+            620.0189208984375,
+            135.28248596191406,
+            639.9840087890625,
+            172.53623962402344
+          ]
+        },
+        {
+          "source_class_id": 1,
+          "source_class_name": "vehicle",
+          "class_name": "vehicle",
+          "confidence": 0.30569884181022644,
+          "bbox_xywh": [
+            620.8603515625,
+            136.6964874267578,
+            19.1396484375,
+            84.61172485351562
+          ],
+          "bbox_xyxy": [
+            620.8603515625,
+            136.6964874267578,
+            640.0,
+            221.30821228027344
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 112,
+      "time_seconds": 11.1,
+      "uav_xyz": [
+        -10.866666666666667,
+        -1.5666666666666664,
+        52.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0112.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            627,
+            147,
+            13,
+            39
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6823906898498535,
+          "bbox_xywh": [
+            628.1141967773438,
+            147.02120971679688,
+            11.809326171875,
+            34.9886474609375
+          ],
+          "bbox_xyxy": [
+            628.1141967773438,
+            147.02120971679688,
+            639.9235229492188,
+            182.00985717773438
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 113,
+      "time_seconds": 11.2,
+      "uav_xyz": [
+        -10.62222222222222,
+        -1.68888888888889,
+        52.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0113.png",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            635,
+            155,
+            5,
+            26
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 114,
+      "time_seconds": 11.3,
+      "uav_xyz": [
+        -10.37777777777778,
+        -1.81111111111111,
+        52.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0114.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 115,
+      "time_seconds": 11.4,
+      "uav_xyz": [
+        -10.133333333333333,
+        -1.9333333333333336,
+        52.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0115.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            517,
+            0,
+            2,
+            1
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 116,
+      "time_seconds": 11.5,
+      "uav_xyz": [
+        -9.888888888888893,
+        -2.0555555555555536,
+        52.41666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0116.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            507,
+            0,
+            19,
+            5
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.3915858566761017,
+          "bbox_xywh": [
+            508.7908935546875,
+            0.0,
+            13.7034912109375,
+            6.054908752441406
+          ],
+          "bbox_xyxy": [
+            508.7908935546875,
+            0.0,
+            522.494384765625,
+            6.054908752441406
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 117,
+      "time_seconds": 11.6,
+      "uav_xyz": [
+        -9.644444444444442,
+        -2.177777777777779,
+        52.33333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0117.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            524,
+            0,
+            21,
+            9
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.42679160833358765,
+          "bbox_xywh": [
+            524.3574829101562,
+            0.0,
+            20.2269287109375,
+            11.317831039428711
+          ],
+          "bbox_xyxy": [
+            524.3574829101562,
+            0.0,
+            544.5844116210938,
+            11.317831039428711
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 118,
+      "time_seconds": 11.7,
+      "uav_xyz": [
+        -9.399999999999999,
+        -2.3000000000000007,
+        52.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0118.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            529,
+            0,
+            24,
+            13
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6213085055351257,
+          "bbox_xywh": [
+            529.9326171875,
+            0.0,
+            21.7061767578125,
+            16.805715560913086
+          ],
+          "bbox_xyxy": [
+            529.9326171875,
+            0.0,
+            551.6387939453125,
+            16.805715560913086
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 119,
+      "time_seconds": 11.8,
+      "uav_xyz": [
+        -9.155555555555555,
+        -2.4222222222222225,
+        52.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0119.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            535,
+            0,
+            26,
+            17
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5339760780334473,
+          "bbox_xywh": [
+            536.3588256835938,
+            0.0,
+            23.0328369140625,
+            19.499406814575195
+          ],
+          "bbox_xyxy": [
+            536.3588256835938,
+            0.0,
+            559.3916625976562,
+            19.499406814575195
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 120,
+      "time_seconds": 11.9,
+      "uav_xyz": [
+        -8.911111111111111,
+        -2.5444444444444443,
+        52.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0120.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            541,
+            0,
+            28,
+            20
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7287139892578125,
+          "bbox_xywh": [
+            541.665283203125,
+            0.0,
+            25.9425048828125,
+            21.70248031616211
+          ],
+          "bbox_xyxy": [
+            541.665283203125,
+            0.0,
+            567.6077880859375,
+            21.70248031616211
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 121,
+      "time_seconds": 12.0,
+      "uav_xyz": [
+        -8.666666666666668,
+        -2.666666666666666,
+        52
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0121.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            547,
+            0,
+            30,
+            24
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.747307538986206,
+          "bbox_xywh": [
+            549.0135498046875,
+            0.0,
+            26.788818359375,
+            24.12049102783203
+          ],
+          "bbox_xyxy": [
+            549.0135498046875,
+            0.0,
+            575.8023681640625,
+            24.12049102783203
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 122,
+      "time_seconds": 12.1,
+      "uav_xyz": [
+        -8.42222222222222,
+        -2.7888888888888896,
+        51.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0122.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            566,
+            0,
+            31,
+            23
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7576273083686829,
+          "bbox_xywh": [
+            567.7105712890625,
+            0.0109100341796875,
+            27.784423828125,
+            23.34838104248047
+          ],
+          "bbox_xyxy": [
+            567.7105712890625,
+            0.0109100341796875,
+            595.4949951171875,
+            23.359291076660156
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 123,
+      "time_seconds": 12.2,
+      "uav_xyz": [
+        -8.177777777777777,
+        -2.9111111111111114,
+        51.83333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0123.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            573,
+            0,
+            34,
+            27
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7683881521224976,
+          "bbox_xywh": [
+            572.9015502929688,
+            0.028298377990722656,
+            32.626708984375,
+            27.911856651306152
+          ],
+          "bbox_xyxy": [
+            572.9015502929688,
+            0.028298377990722656,
+            605.5282592773438,
+            27.940155029296875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 124,
+      "time_seconds": 12.3,
+      "uav_xyz": [
+        -7.933333333333334,
+        -3.033333333333333,
+        51.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0124.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            579,
+            0,
+            38,
+            31
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6924961805343628,
+          "bbox_xywh": [
+            579.8886108398438,
+            0.0646200180053711,
+            34.8262939453125,
+            31.17233371734619
+          ],
+          "bbox_xyxy": [
+            579.8886108398438,
+            0.0646200180053711,
+            614.7149047851562,
+            31.236953735351562
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 125,
+      "time_seconds": 12.4,
+      "uav_xyz": [
+        -7.68888888888889,
+        -3.155555555555555,
+        51.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0125.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            586,
+            0,
+            41,
+            35
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.7749558687210083,
+          "bbox_xywh": [
+            587.3134765625,
+            0.05718231201171875,
+            37.291015625,
+            35.66680908203125
+          ],
+          "bbox_xyxy": [
+            587.3134765625,
+            0.05718231201171875,
+            624.6044921875,
+            35.72399139404297
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 126,
+      "time_seconds": 12.5,
+      "uav_xyz": [
+        -7.444444444444446,
+        -3.277777777777777,
+        51.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0126.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            593,
+            0,
+            44,
+            39
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.6456546783447266,
+          "bbox_xywh": [
+            593.879638671875,
+            0.3540534973144531,
+            44.509033203125,
+            38.417808532714844
+          ],
+          "bbox_xyxy": [
+            593.879638671875,
+            0.3540534973144531,
+            638.388671875,
+            38.7718620300293
+          ]
+        },
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2759551703929901,
+          "bbox_xywh": [
+            571.4478759765625,
+            0.15244674682617188,
+            65.8226318359375,
+            38.58561325073242
+          ],
+          "bbox_xyxy": [
+            571.4478759765625,
+            0.15244674682617188,
+            637.2705078125,
+            38.738059997558594
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 127,
+      "time_seconds": 12.6,
+      "uav_xyz": [
+        -7.200000000000003,
+        -3.3999999999999986,
+        51.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0127.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            610,
+            0,
+            30,
+            35
+          ]
+        }
+      ],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5708080530166626,
+          "bbox_xywh": [
+            611.5670166015625,
+            0.0471038818359375,
+            28.1605224609375,
+            36.1285514831543
+          ],
+          "bbox_xyxy": [
+            611.5670166015625,
+            0.0471038818359375,
+            639.7275390625,
+            36.175655364990234
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 128,
+      "time_seconds": 12.7,
+      "uav_xyz": [
+        -6.955555555555552,
+        -3.522222222222224,
+        51.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0128.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            617,
+            0,
+            23,
+            39
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 129,
+      "time_seconds": 12.8,
+      "uav_xyz": [
+        -6.711111111111109,
+        -3.6444444444444457,
+        51.33333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0129.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            625,
+            13,
+            15,
+            31
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 130,
+      "time_seconds": 12.9,
+      "uav_xyz": [
+        -6.466666666666665,
+        -3.7666666666666675,
+        51.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0130.png",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            632,
+            33,
+            8,
+            15
+          ]
+        }
+      ],
+      "detections": []
+    },
+    {
+      "frame_index": 131,
+      "time_seconds": 13.0,
+      "uav_xyz": [
+        -6.222222222222221,
+        -3.8888888888888893,
+        51.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0131.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 132,
+      "time_seconds": 13.1,
+      "uav_xyz": [
+        -5.977777777777781,
+        -4.011111111111109,
+        51.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0132.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 133,
+      "time_seconds": 13.2,
+      "uav_xyz": [
+        -5.733333333333334,
+        -4.133333333333333,
+        51
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0133.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 134,
+      "time_seconds": 13.3,
+      "uav_xyz": [
+        -5.488888888888887,
+        -4.255555555555556,
+        50.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0134.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.41309550404548645,
+          "bbox_xywh": [
+            576.6572265625,
+            125.71783447265625,
+            62.8802490234375,
+            109.49395751953125
+          ],
+          "bbox_xyxy": [
+            576.6572265625,
+            125.71783447265625,
+            639.5374755859375,
+            235.2117919921875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 135,
+      "time_seconds": 13.4,
+      "uav_xyz": [
+        -5.24444444444444,
+        -4.37777777777778,
+        50.83333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0135.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 136,
+      "time_seconds": 13.5,
+      "uav_xyz": [
+        -5,
+        -4.5,
+        50.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0136.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 137,
+      "time_seconds": 13.6,
+      "uav_xyz": [
+        -4.75555555555556,
+        -4.62222222222222,
+        50.66666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0137.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 138,
+      "time_seconds": 13.7,
+      "uav_xyz": [
+        -4.511111111111113,
+        -4.744444444444444,
+        50.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0138.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 139,
+      "time_seconds": 13.8,
+      "uav_xyz": [
+        -4.266666666666666,
+        -4.866666666666667,
+        50.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0139.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 140,
+      "time_seconds": 13.9,
+      "uav_xyz": [
+        -4.022222222222219,
+        -4.988888888888891,
+        50.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0140.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 141,
+      "time_seconds": 14.0,
+      "uav_xyz": [
+        -3.7777777777777786,
+        -5.111111111111111,
+        50.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0141.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 142,
+      "time_seconds": 14.1,
+      "uav_xyz": [
+        -3.5333333333333314,
+        -5.233333333333334,
+        50.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0142.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 143,
+      "time_seconds": 14.2,
+      "uav_xyz": [
+        -3.2888888888888914,
+        -5.355555555555554,
+        50.16666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0143.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 144,
+      "time_seconds": 14.3,
+      "uav_xyz": [
+        -3.0444444444444443,
+        -5.477777777777778,
+        50.083333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0144.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 145,
+      "time_seconds": 14.4,
+      "uav_xyz": [
+        -2.799999999999997,
+        -5.600000000000001,
+        50
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0145.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 146,
+      "time_seconds": 14.5,
+      "uav_xyz": [
+        -2.555555555555557,
+        -5.722222222222221,
+        49.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0146.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 147,
+      "time_seconds": 14.6,
+      "uav_xyz": [
+        -2.31111111111111,
+        -5.844444444444445,
+        49.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0147.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 148,
+      "time_seconds": 14.7,
+      "uav_xyz": [
+        -2.06666666666667,
+        -5.966666666666665,
+        49.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0148.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 149,
+      "time_seconds": 14.8,
+      "uav_xyz": [
+        -1.8222222222222229,
+        -6.088888888888889,
+        49.66666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0149.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 150,
+      "time_seconds": 14.9,
+      "uav_xyz": [
+        -1.5777777777777828,
+        -6.211111111111109,
+        49.583333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0150.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 151,
+      "time_seconds": 15.0,
+      "uav_xyz": [
+        -1.3333333333333286,
+        -6.333333333333336,
+        49.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0151.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 152,
+      "time_seconds": 15.1,
+      "uav_xyz": [
+        -1.0888888888888886,
+        -6.455555555555556,
+        49.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0152.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 153,
+      "time_seconds": 15.2,
+      "uav_xyz": [
+        -0.8444444444444414,
+        -6.577777777777779,
+        49.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0153.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 154,
+      "time_seconds": 15.3,
+      "uav_xyz": [
+        -0.6000000000000014,
+        -6.699999999999999,
+        49.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0154.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 155,
+      "time_seconds": 15.4,
+      "uav_xyz": [
+        -0.3555555555555543,
+        -6.822222222222223,
+        49.16666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0155.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 156,
+      "time_seconds": 15.5,
+      "uav_xyz": [
+        -0.11111111111110716,
+        -6.944444444444446,
+        49.08333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0156.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 157,
+      "time_seconds": 15.6,
+      "uav_xyz": [
+        0.13333333333333286,
+        -7.066666666666666,
+        49
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0157.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 158,
+      "time_seconds": 15.7,
+      "uav_xyz": [
+        0.37777777777778,
+        -7.18888888888889,
+        48.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0158.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 159,
+      "time_seconds": 15.8,
+      "uav_xyz": [
+        0.62222222222222,
+        -7.31111111111111,
+        48.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0159.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 160,
+      "time_seconds": 15.9,
+      "uav_xyz": [
+        0.8666666666666671,
+        -7.433333333333334,
+        48.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0160.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 161,
+      "time_seconds": 16.0,
+      "uav_xyz": [
+        1.1111111111111072,
+        -7.555555555555554,
+        48.66666666666667
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0161.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 162,
+      "time_seconds": 16.1,
+      "uav_xyz": [
+        1.3555555555555543,
+        -7.677777777777777,
+        48.58333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0162.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 163,
+      "time_seconds": 16.2,
+      "uav_xyz": [
+        1.6000000000000014,
+        -7.800000000000001,
+        48.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0163.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 164,
+      "time_seconds": 16.3,
+      "uav_xyz": [
+        1.8444444444444414,
+        -7.922222222222221,
+        48.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0164.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 165,
+      "time_seconds": 16.4,
+      "uav_xyz": [
+        2.0888888888888886,
+        -8.044444444444444,
+        48.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0165.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 166,
+      "time_seconds": 16.5,
+      "uav_xyz": [
+        2.3333333333333286,
+        -8.166666666666664,
+        48.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0166.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 167,
+      "time_seconds": 16.6,
+      "uav_xyz": [
+        2.577777777777783,
+        -8.288888888888891,
+        48.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0167.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 168,
+      "time_seconds": 16.7,
+      "uav_xyz": [
+        2.822222222222223,
+        -8.411111111111111,
+        48.08333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0168.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 169,
+      "time_seconds": 16.8,
+      "uav_xyz": [
+        3.06666666666667,
+        -8.533333333333335,
+        48
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0169.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.31107234954833984,
+          "bbox_xywh": [
+            569.1474609375,
+            91.0154037475586,
+            70.48095703125,
+            87.94684600830078
+          ],
+          "bbox_xyxy": [
+            569.1474609375,
+            91.0154037475586,
+            639.62841796875,
+            178.96224975585938
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 170,
+      "time_seconds": 16.9,
+      "uav_xyz": [
+        3.31111111111111,
+        -8.655555555555555,
+        47.916666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0170.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 171,
+      "time_seconds": 17.0,
+      "uav_xyz": [
+        3.555555555555557,
+        -8.777777777777779,
+        47.833333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0171.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 172,
+      "time_seconds": 17.1,
+      "uav_xyz": [
+        3.799999999999997,
+        -8.899999999999999,
+        47.75
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0172.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.364855021238327,
+          "bbox_xywh": [
+            595.792236328125,
+            113.62881469726562,
+            44.207763671875,
+            88.80621337890625
+          ],
+          "bbox_xyxy": [
+            595.792236328125,
+            113.62881469726562,
+            640.0,
+            202.43502807617188
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 173,
+      "time_seconds": 17.2,
+      "uav_xyz": [
+        4.044444444444444,
+        -9.022222222222222,
+        47.666666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0173.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.2814514935016632,
+          "bbox_xywh": [
+            553.1864013671875,
+            72.51991271972656,
+            80.3515625,
+            64.85148620605469
+          ],
+          "bbox_xyxy": [
+            553.1864013671875,
+            72.51991271972656,
+            633.5379638671875,
+            137.37139892578125
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 174,
+      "time_seconds": 17.3,
+      "uav_xyz": [
+        4.288888888888891,
+        -9.144444444444446,
+        47.58333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0174.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 175,
+      "time_seconds": 17.4,
+      "uav_xyz": [
+        4.533333333333331,
+        -9.266666666666666,
+        47.5
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0175.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 176,
+      "time_seconds": 17.5,
+      "uav_xyz": [
+        4.777777777777779,
+        -9.38888888888889,
+        47.416666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0176.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 177,
+      "time_seconds": 17.6,
+      "uav_xyz": [
+        5.022222222222219,
+        -9.51111111111111,
+        47.333333333333336
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0177.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 178,
+      "time_seconds": 17.7,
+      "uav_xyz": [
+        5.266666666666666,
+        -9.633333333333333,
+        47.25
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0178.png",
+      "ground_truth": [],
+      "detections": [
+        {
+          "source_class_id": 0,
+          "source_class_name": "person",
+          "class_name": "person",
+          "confidence": 0.5413276553153992,
+          "bbox_xywh": [
+            595.6585693359375,
+            104.12183380126953,
+            44.3397216796875,
+            69.29601287841797
+          ],
+          "bbox_xyxy": [
+            595.6585693359375,
+            104.12183380126953,
+            639.998291015625,
+            173.4178466796875
+          ]
+        }
+      ]
+    },
+    {
+      "frame_index": 179,
+      "time_seconds": 17.8,
+      "uav_xyz": [
+        5.511111111111113,
+        -9.755555555555556,
+        47.166666666666664
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0179.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 180,
+      "time_seconds": 17.9,
+      "uav_xyz": [
+        5.75555555555556,
+        -9.87777777777778,
+        47.08333333333333
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0180.png",
+      "ground_truth": [],
+      "detections": []
+    },
+    {
+      "frame_index": 181,
+      "time_seconds": 18.0,
+      "uav_xyz": [
+        6,
+        -10,
+        47
+      ],
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\final_kci_verification\\outputs\\new_fixed_tests_t0_t2_v2\\runs\\kci_new_fixed_tests_t0_t2_v2__20260903_160812_371388\\T1\\evaluations\\7053da6a924ff3a1e0b8751b\\frames\\frame_0181.png",
+      "ground_truth": [],
+      "detections": []
+    }
+  ]
+}

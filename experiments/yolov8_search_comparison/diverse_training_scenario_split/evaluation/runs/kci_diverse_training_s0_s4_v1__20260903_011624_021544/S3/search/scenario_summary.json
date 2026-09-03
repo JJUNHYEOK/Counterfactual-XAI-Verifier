@@ -1,0 +1,83 @@
+{
+  "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+  "scenario_id": "S3",
+  "trajectory_name": "남서-북동 대각선 통과",
+  "major_changes": [
+    "x와 y를 동시에 변화시키는 대각선 경로",
+    "대각선 통로를 따라 표적 배치"
+  ],
+  "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+  "initial_map50": 0.9860438069393294,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 83.75,
+    "illumination_lux": 2062.5,
+    "camera_noise": 0.5325,
+    "map50": 0.2569162835838678,
+    "verdict": "MARGINAL",
+    "cache_key": "9aad953658190a35f178b429"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 84.22,
+    "illumination_lux": 2039.1,
+    "camera_noise": 0.5353,
+    "map50": 0.1864371074084959,
+    "verdict": "FAIL",
+    "cache_key": "2a66c266bf23551f89281277"
+  },
+  "gap_map50": 0.07047917617537192,
+  "gap_environment_normalized": 0.010947747747747785,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.40000000000009,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.07047917617537192
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 578.2676465937417,
+  "scenario_driver_wall_seconds": 527.7051793988794,
+  "nonmonotonic_map_increase_count": 1,
+  "nonmonotonic_map_increase_events": [
+    {
+      "from_iteration": 1,
+      "to_iteration": 2,
+      "from_environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "to_environment": {
+        "fog_percent": 35.0,
+        "illumination_lux": 6000.0,
+        "camera_noise": 0.22
+      },
+      "from_map50": 0.9860438069393294,
+      "to_map50": 0.9892069020141891,
+      "map50_increase": 0.0031630950748597897
+    }
+  ],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

@@ -1,0 +1,1955 @@
+{
+  "schema_version": "1.0",
+  "environment": {
+    "fog_percent": 40,
+    "illumination_lux": 7000,
+    "camera_noise": 0.1
+  },
+  "random_seed": 105,
+  "scenario_variant": 5,
+  "scenario_transform": {
+    "uav_xyz_offset": [
+      -1.2169666216392485,
+      -1.77514674189303,
+      -0.4850286490610595
+    ],
+    "object_xy_offsets": [
+      [
+        -1.090094220417058,
+        -1.5571418694676038
+      ],
+      [
+        -2.1274030365362853,
+        0.5397440067296354
+      ],
+      [
+        -0.007007663944905533,
+        2.2365846076810185
+      ],
+      [
+        2.123789183783942,
+        2.275722494318457
+      ],
+      [
+        1.1022458842073464,
+        0.6281496064556392
+      ]
+    ],
+    "walk_phase_offset_radians": 2.15
+  },
+  "detector_mode": "yolov8",
+  "ground_truth_mode": "rendered_instance_mask_v1",
+  "renderer": "render_eo_image (3-D with deterministic 2-D fallback)",
+  "image_width": 640,
+  "image_height": 360,
+  "frame_stride": 3,
+  "total_simulation_frames": 181,
+  "evaluated_frame_count": 61,
+  "object_count": 5,
+  "person_count": 3,
+  "vehicle_count": 2,
+  "geometry_simulation_seconds": 0,
+  "frame_rendering_seconds": 18.0187502,
+  "matlab_version": "25.2.0.3150157 (R2025b) Update 4",
+  "matlab_release": "2025b",
+  "frames": [
+    {
+      "frame_index": 1,
+      "time_seconds": 0,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0001.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            344,
+            195,
+            17,
+            25
+          ],
+          "legacy_projected_bbox_xywh": [
+            337.305619240851,
+            184.3070768540172,
+            29.89364553045033,
+            50.497457141073795
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            349,
+            0,
+            13,
+            15
+          ],
+          "legacy_projected_bbox_xywh": [
+            343.5117396010233,
+            -31.138044249079314,
+            25.29611734532608,
+            56.68706786283306
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 4,
+      "time_seconds": 0.30000000000000004,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0004.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            345,
+            220,
+            18,
+            25
+          ],
+          "legacy_projected_bbox_xywh": [
+            343.71114832633896,
+            214.73895443343133,
+            30.71266469321631,
+            49.492781731209504
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            350,
+            0,
+            15,
+            32
+          ],
+          "legacy_projected_bbox_xywh": [
+            348.03916311534897,
+            -19.26018849539716,
+            25.696334048374354,
+            56.78759566592592
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 7,
+      "time_seconds": 0.6000000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0007.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            359,
+            257,
+            18,
+            22
+          ],
+          "legacy_projected_bbox_xywh": [
+            351.42095853203,
+            245.73184629001372,
+            31.555896963608575,
+            48.357239802092124
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            357,
+            3,
+            16,
+            36
+          ],
+          "legacy_projected_bbox_xywh": [
+            351.61240326680036,
+            -7.379879904292011,
+            26.090442275867645,
+            56.851096459534205
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 10,
+      "time_seconds": 0.9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0010.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            359,
+            285,
+            20,
+            21
+          ],
+          "legacy_projected_bbox_xywh": [
+            360.28959226240823,
+            277.1080629569549,
+            32.41958227288819,
+            47.09131835139124
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            358,
+            21,
+            16,
+            36
+          ],
+          "legacy_projected_bbox_xywh": [
+            354.0866910695612,
+            4.551929959397768,
+            26.485647427054857,
+            56.88986642909666
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 13,
+      "time_seconds": 1.2000000000000002,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0013.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            378,
+            319,
+            21,
+            20
+          ],
+          "legacy_projected_bbox_xywh": [
+            370.24246185927933,
+            308.1480299753705,
+            33.38053738394581,
+            45.84908112408493
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            361,
+            27,
+            16,
+            36
+          ],
+          "legacy_projected_bbox_xywh": [
+            355.3492528744248,
+            16.693282783750618,
+            26.886460769430755,
+            56.902250402867224
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 16,
+      "time_seconds": 1.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0016.jpg",
+      "ground_truth": [
+        {
+          "object_id": 1,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            380,
+            350,
+            21,
+            10
+          ],
+          "legacy_projected_bbox_xywh": [
+            381.0016082972742,
+            339.3013403486548,
+            34.378567273705244,
+            44.497698305012705
+          ]
+        },
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            362,
+            46,
+            17,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            355.30710623917486,
+            29.498870874457253,
+            27.283794925409154,
+            56.83772271503639
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 19,
+      "time_seconds": 1.8,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0019.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            360,
+            54,
+            17,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            353.93960810924705,
+            42.976813872676246,
+            27.692667869248737,
+            56.72387760923969
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 22,
+      "time_seconds": 2.1,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0022.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            361,
+            74,
+            17,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            351.2584551205576,
+            57.287877854971995,
+            28.122508486438562,
+            56.5645272762204
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 25,
+      "time_seconds": 2.4000000000000004,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0025.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            354,
+            84,
+            17,
+            34
+          ],
+          "legacy_projected_bbox_xywh": [
+            347.30506686954766,
+            72.744693930459,
+            28.575468693698554,
+            56.33652427780541
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 28,
+      "time_seconds": 2.7,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0028.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            355,
+            105,
+            17,
+            34
+          ],
+          "legacy_projected_bbox_xywh": [
+            342.162493648618,
+            89.60501264913876,
+            29.057303222931466,
+            56.02536837628705
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 31,
+      "time_seconds": 3,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0031.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            343,
+            119,
+            17,
+            34
+          ],
+          "legacy_projected_bbox_xywh": [
+            335.9476183259965,
+            108.14657832858374,
+            29.57289708780837,
+            55.61081283788444
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 34,
+      "time_seconds": 3.3000000000000003,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0034.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            343,
+            143,
+            18,
+            32
+          ],
+          "legacy_projected_bbox_xywh": [
+            328.81124810429515,
+            128.55701421794373,
+            30.133599177565145,
+            55.08774845300448
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 37,
+      "time_seconds": 3.6,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0037.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            328,
+            163,
+            17,
+            31
+          ],
+          "legacy_projected_bbox_xywh": [
+            320.92604027191504,
+            151.08808883745024,
+            30.74731328524439,
+            54.435858191561294
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 40,
+      "time_seconds": 3.9000000000000004,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0040.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            328,
+            187,
+            18,
+            31
+          ],
+          "legacy_projected_bbox_xywh": [
+            312.48616660485817,
+            175.99382455336803,
+            31.42218356961365,
+            53.63031246945877
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 43,
+      "time_seconds": 4.2,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0043.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            311,
+            215,
+            18,
+            30
+          ],
+          "legacy_projected_bbox_xywh": [
+            303.7037005115865,
+            203.5306164329505,
+            32.16654619019016,
+            52.640830262738945
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 46,
+      "time_seconds": 4.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0046.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            311,
+            243,
+            18,
+            28
+          ],
+          "legacy_projected_bbox_xywh": [
+            294.79622672385585,
+            233.84667570955338,
+            33.000844638588774,
+            51.45763009970574
+          ]
+        },
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            461,
+            0,
+            14,
+            5
+          ],
+          "legacy_projected_bbox_xywh": [
+            463.00510703198154,
+            -42.813936942055705,
+            27.42760061749061,
+            62.10265075961021
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 49,
+      "time_seconds": 4.800000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0049.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            293,
+            279,
+            19,
+            26
+          ],
+          "legacy_projected_bbox_xywh": [
+            285.93901860157837,
+            266.8140176887673,
+            33.98814746375888,
+            50.143972811818344
+          ]
+        },
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            474,
+            0,
+            23,
+            29
+          ],
+          "legacy_projected_bbox_xywh": [
+            471.6250265871473,
+            -22.357590903629102,
+            28.23804502017174,
+            62.425091446237275
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 52,
+      "time_seconds": 5.1000000000000005,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0052.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            292,
+            309,
+            20,
+            26
+          ],
+          "legacy_projected_bbox_xywh": [
+            277.4194236347646,
+            303.4094166285644,
+            35.070155552029405,
+            48.48164347237844
+          ]
+        },
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            477,
+            8,
+            25,
+            39
+          ],
+          "legacy_projected_bbox_xywh": [
+            481.7574447742594,
+            -1.4108308549569415,
+            29.082317284614533,
+            62.698476452346824
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 55,
+      "time_seconds": 5.4,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0055.jpg",
+      "ground_truth": [
+        {
+          "object_id": 2,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            279,
+            355,
+            15,
+            5
+          ],
+          "legacy_projected_bbox_xywh": [
+            269.5097450328622,
+            343.94816787144657,
+            36.24792559296202,
+            46.39054754572146
+          ]
+        },
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            495,
+            32,
+            26,
+            39
+          ],
+          "legacy_projected_bbox_xywh": [
+            493.3389757375754,
+            19.818120527833088,
+            29.962142375247254,
+            62.933592433241955
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 58,
+      "time_seconds": 5.7,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0058.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            499,
+            53,
+            28,
+            39
+          ],
+          "legacy_projected_bbox_xywh": [
+            506.21912035995683,
+            41.25601926596295,
+            30.872116194212595,
+            63.118044481447015
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 61,
+      "time_seconds": 6,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0061.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            521,
+            75,
+            30,
+            39
+          ],
+          "legacy_projected_bbox_xywh": [
+            520.1866755373289,
+            62.848288156813325,
+            31.805244946069934,
+            63.23670174687102
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 64,
+      "time_seconds": 6.300000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0064.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            525,
+            99,
+            32,
+            38
+          ],
+          "legacy_projected_bbox_xywh": [
+            534.9748385925382,
+            84.552011937457,
+            32.75377973981597,
+            63.27411414217937
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 67,
+      "time_seconds": 6.6000000000000005,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0067.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            549,
+            119,
+            35,
+            38
+          ],
+          "legacy_projected_bbox_xywh": [
+            550.2668848718388,
+            106.34212062344747,
+            33.7095433134225,
+            63.2146938978789
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 70,
+      "time_seconds": 6.9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0070.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            555,
+            145,
+            36,
+            38
+          ],
+          "legacy_projected_bbox_xywh": [
+            565.706098297478,
+            128.21810230413246,
+            34.66435563470668,
+            63.04280574190281
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 73,
+      "time_seconds": 7.2,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0073.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            579,
+            163,
+            38,
+            37
+          ],
+          "legacy_projected_bbox_xywh": [
+            580.8349598119221,
+            150.32407844193625,
+            35.600312034962485,
+            62.71549925021864
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            344,
+            0,
+            42,
+            5
+          ],
+          "legacy_projected_bbox_xywh": [
+            246.01215218728592,
+            -2.996628023465803,
+            55.49088585953555,
+            74.34005488113986
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 76,
+      "time_seconds": 7.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0076.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            585,
+            193,
+            41,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            595.0730700286904,
+            172.94779774374953,
+            36.48650037603011,
+            62.15845185052845
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            345,
+            0,
+            44,
+            19
+          ],
+          "legacy_projected_bbox_xywh": [
+            244.7064949069475,
+            12.535246952319966,
+            56.47012881978935,
+            74.79557409491872
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 79,
+      "time_seconds": 7.800000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0079.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            605,
+            209,
+            35,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            608.2778269187986,
+            195.80636648167103,
+            37.35079175789622,
+            61.44717108090845
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            344,
+            0,
+            45,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            243.35392817269158,
+            28.64102123026035,
+            57.484553870481335,
+            75.23612805633067
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 82,
+      "time_seconds": 8.1,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0082.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            613,
+            244,
+            27,
+            31
+          ],
+          "legacy_projected_bbox_xywh": [
+            620.113046590264,
+            219.05249877737802,
+            38.19097940007646,
+            60.56653202149968
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            345,
+            0,
+            46,
+            50
+          ],
+          "legacy_projected_bbox_xywh": [
+            241.95187770692718,
+            45.35310170005749,
+            58.53609171980463,
+            75.65914264120033
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 85,
+      "time_seconds": 8.4,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0085.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            626,
+            273,
+            14,
+            16
+          ],
+          "legacy_projected_bbox_xywh": [
+            630.3469661836577,
+            242.84000912767897,
+            39.01375208980119,
+            59.51359979404526
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            345,
+            7,
+            47,
+            59
+          ],
+          "legacy_projected_bbox_xywh": [
+            240.49757736208988,
+            62.70638199050133,
+            59.6268169784326,
+            76.06171851739667
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 88,
+      "time_seconds": 8.700000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0088.jpg",
+      "ground_truth": [
+        {
+          "object_id": 3,
+          "simulation_class_id": 1,
+          "class_name": "person",
+          "bbox_xywh": [
+            635,
+            313,
+            5,
+            9
+          ],
+          "legacy_projected_bbox_xywh": [
+            638.7839555132047,
+            267.4227965751974,
+            39.824242925711246,
+            58.27076727694913
+          ]
+        },
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            345,
+            23,
+            48,
+            60
+          ],
+          "legacy_projected_bbox_xywh": [
+            238.98805090529743,
+            80.73848565931445,
+            60.7589618210269,
+            76.44058733347686
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 91,
+      "time_seconds": 9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0091.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            346,
+            39,
+            49,
+            61
+          ],
+          "legacy_projected_bbox_xywh": [
+            237.42009168769385,
+            99.49003849153928,
+            61.93493123422962,
+            76.79206128224286
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 94,
+      "time_seconds": 9.3,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0094.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            346,
+            56,
+            50,
+            62
+          ],
+          "legacy_projected_bbox_xywh": [
+            235.79023990623818,
+            119.00497405403034,
+            63.15732007032136,
+            77.11197490627661
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 97,
+      "time_seconds": 9.600000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0097.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            347,
+            74,
+            51,
+            63
+          ],
+          "legacy_projected_bbox_xywh": [
+            234.09475711862007,
+            139.33087734305275,
+            64.42893216103494,
+            77.39561779406486
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 100,
+      "time_seconds": 9.9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0100.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            347,
+            93,
+            52,
+            63
+          ],
+          "legacy_projected_bbox_xywh": [
+            232.32959761620884,
+            160.51937218307498,
+            65.7528017878434,
+            77.63765654963265
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            392,
+            0,
+            42,
+            7
+          ],
+          "legacy_projected_bbox_xywh": [
+            337.18870777949974,
+            -12.937904357311709,
+            51.566123338499324,
+            69.69075666298032
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 103,
+      "time_seconds": 10.200000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0103.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            348,
+            111,
+            53,
+            65
+          ],
+          "legacy_projected_bbox_xywh": [
+            230.49037619363244,
+            182.62655901614045,
+            67.13221785477569,
+            77.83204409429732
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            393,
+            0,
+            43,
+            21
+          ],
+          "legacy_projected_bbox_xywh": [
+            337.47023029517254,
+            1.2815225923648939,
+            52.41069088551757,
+            70.10462241327494
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 106,
+      "time_seconds": 10.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0106.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            348,
+            131,
+            55,
+            66
+          ],
+          "legacy_projected_bbox_xywh": [
+            228.57233177448575,
+            205.7135108981994,
+            68.57075116913569,
+            77.97191396179448
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            392,
+            0,
+            46,
+            36
+          ],
+          "legacy_projected_bbox_xywh": [
+            337.76112810609334,
+            15.986945519657695,
+            53.28338431827996,
+            70.50763113254474
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 109,
+      "time_seconds": 10.8,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0109.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            349,
+            151,
+            55,
+            67
+          ],
+          "legacy_projected_bbox_xywh": [
+            226.57028625798344,
+            229.84683693584054,
+            70.07228530651244,
+            78.04945675925484
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            393,
+            0,
+            47,
+            51
+          ],
+          "legacy_projected_bbox_xywh": [
+            338.0618774681703,
+            31.20371339864184,
+            54.18563240451073,
+            70.8979571892046
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 112,
+      "time_seconds": 11.100000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0112.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            349,
+            171,
+            57,
+            70
+          ],
+          "legacy_projected_bbox_xywh": [
+            224.47859783760805,
+            255.09932410962506,
+            71.64105162179396,
+            78.05577536283079
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            395,
+            9,
+            47,
+            57
+          ],
+          "legacy_projected_bbox_xywh": [
+            338.3729874507258,
+            46.95896929249642,
+            55.118962352177334,
+            71.27355972042551
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 115,
+      "time_seconds": 11.4,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0115.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            350,
+            193,
+            58,
+            72
+          ],
+          "legacy_projected_bbox_xywh": [
+            222.29110790559443,
+            281.550670508913,
+            73.28166907080416,
+            77.98071466798189
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            396,
+            25,
+            49,
+            56
+          ],
+          "legacy_projected_bbox_xywh": [
+            338.6950028120289,
+            63.281811934695824,
+            56.085008436086866,
+            71.63215577532871
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 118,
+      "time_seconds": 11.700000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0118.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            351,
+            215,
+            59,
+            74
+          ],
+          "legacy_projected_bbox_xywh": [
+            220.00108049093785,
+            309.28832553662437,
+            74.99918963179664,
+            77.81266078150918
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            397,
+            40,
+            50,
+            58
+          ],
+          "legacy_projected_bbox_xywh": [
+            339.02850718261107,
+            80.20347509352355,
+            57.08552154783331,
+            71.97118970965799
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 121,
+      "time_seconds": 12,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0121.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            351,
+            239,
+            61,
+            76
+          ],
+          "legacy_projected_bbox_xywh": [
+            217.60113297657185,
+            338.408455744184,
+            76.7991502675711,
+            77.53830337468861
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            398,
+            57,
+            51,
+            58
+          ],
+          "legacy_projected_bbox_xywh": [
+            339.3741265954979,
+            97.7575270459763,
+            58.12237978649364,
+            72.28779824174538
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 124,
+      "time_seconds": 12.3,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0124.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            352,
+            263,
+            62,
+            78
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            399,
+            73,
+            52,
+            59
+          ],
+          "legacy_projected_bbox_xywh": [
+            339.7325334082809,
+            115.98009284146133,
+            59.19760022484286,
+            72.578770475032
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 127,
+      "time_seconds": 12.600000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0127.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            353,
+            289,
+            64,
+            71
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            401,
+            91,
+            53,
+            60
+          ],
+          "legacy_projected_bbox_xywh": [
+            340.104450668727,
+            134.91010245192535,
+            60.31335200618099,
+            72.84050206713286
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 130,
+      "time_seconds": 12.9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0130.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            353,
+            316,
+            62,
+            44
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            403,
+            109,
+            53,
+            60
+          ],
+          "legacy_projected_bbox_xywh": [
+            340.4906569835669,
+            154.589568395455,
+            61.471970950700836,
+            73.06894257485834
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 133,
+      "time_seconds": 13.200000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0133.jpg",
+      "ground_truth": [
+        {
+          "object_id": 4,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            354,
+            344,
+            63,
+            16
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            404,
+            127,
+            55,
+            62
+          ],
+          "legacy_projected_bbox_xywh": [
+            340.89199195945247,
+            175.06389699990908,
+            62.675975878357406,
+            73.25953482304882
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 136,
+      "time_seconds": 13.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0136.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            405,
+            145,
+            57,
+            64
+          ],
+          "legacy_projected_bbox_xywh": [
+            341.3093622960941,
+            196.38223816018296,
+            63.92808688828228,
+            73.40714492543475
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 139,
+      "time_seconds": 13.8,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0139.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            407,
+            165,
+            58,
+            66
+          ],
+          "legacy_projected_bbox_xywh": [
+            341.7437486246419,
+            218.59787925986112,
+            65.23124587392579,
+            73.50598131910314
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 142,
+      "time_seconds": 14.100000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0142.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            409,
+            185,
+            58,
+            67
+          ],
+          "legacy_projected_bbox_xywh": [
+            342.1962131998639,
+            241.76868990328256,
+            66.58863959959183,
+            73.54950084931721
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 145,
+      "time_seconds": 14.4,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0145.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            411,
+            206,
+            60,
+            69
+          ],
+          "legacy_projected_bbox_xywh": [
+            342.6679085731304,
+            265.95762527214833,
+            68.00372571939118,
+            73.53029954422362
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 148,
+      "time_seconds": 14.700000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0148.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            412,
+            228,
+            62,
+            71
+          ],
+          "legacy_projected_bbox_xywh": [
+            343.16008739527587,
+            291.23329732505863,
+            69.48026218582754,
+            73.4399852313827
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 151,
+      "time_seconds": 15,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0151.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            414,
+            251,
+            63,
+            73
+          ],
+          "legacy_projected_bbox_xywh": [
+            343.67411352487755,
+            317.6706247530585,
+            71.02234057463278,
+            73.26902854708408
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 154,
+      "time_seconds": 15.3,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0154.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            416,
+            275,
+            65,
+            75
+          ],
+          "legacy_projected_bbox_xywh": [
+            344.21147464936547,
+            345.3515746576925,
+            72.63442394809653,
+            73.00658814558892
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 157,
+      "time_seconds": 15.600000000000001,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0157.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            418,
+            299,
+            67,
+            61
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 160,
+      "time_seconds": 15.9,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0160.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            421,
+            325,
+            62,
+            35
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 163,
+      "time_seconds": 16.2,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0163.jpg",
+      "ground_truth": [
+        {
+          "object_id": 5,
+          "simulation_class_id": 2,
+          "class_name": "vehicle",
+          "bbox_xywh": [
+            423,
+            353,
+            61,
+            7
+          ],
+          "legacy_projected_bbox_xywh": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 166,
+      "time_seconds": 16.5,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0166.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 169,
+      "time_seconds": 16.8,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0169.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 172,
+      "time_seconds": 17.1,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0172.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 175,
+      "time_seconds": 17.400000000000002,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0175.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 178,
+      "time_seconds": 17.7,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0178.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    },
+    {
+      "frame_index": 181,
+      "time_seconds": 18,
+      "image_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\rendered_scenarios\\train_v05_hard\\frames\\frame_0181.jpg",
+      "ground_truth": [],
+      "heuristic_detections": []
+    }
+  ],
+  "image_storage": {
+    "format": "JPEG",
+    "quality": 90,
+    "note": "Original PNGs were used for the completed training; exact PNGs are reproducible from the scenario plan."
+  }
+}

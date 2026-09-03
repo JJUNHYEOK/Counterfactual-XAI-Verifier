@@ -1,0 +1,10 @@
+{
+  "run_dir": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\smoke_epoch1",
+  "best_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\smoke_epoch1\\weights\\best.pt",
+  "best_weights_sha256": "65F4A8B32BD1DB07785D96DD3F975F43B0E56FA587D49ECA0226685960F28BE1",
+  "last_weights": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\smoke_epoch1\\weights\\last.pt",
+  "last_weights_sha256": "CE1404D50948436A670062798E03DB4579C4399C7981B74B3D8050FAAFE7AB86",
+  "weights_retained": false,
+  "retention_note": "Smoke-only checkpoints were removed after successful pipeline validation to recover disk space; args.yaml, results.csv, logs, and figures are retained.",
+  "completed_at": "2026-09-02T15:16:39.457569+09:00"
+}

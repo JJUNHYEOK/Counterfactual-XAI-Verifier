@@ -1,0 +1,357 @@
+{
+  "session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "passed": true,
+  "passed_count": 29,
+  "failed_count": 0,
+  "checks": [
+    {
+      "name": "fixed_weights_sha256",
+      "passed": true,
+      "detail": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA"
+    },
+    {
+      "name": "five_registered_scenarios",
+      "passed": true,
+      "detail": 5
+    },
+    {
+      "name": "scenario_configs_unchanged",
+      "passed": true,
+      "detail": {
+        "S0": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+        "S1": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+        "S2": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+        "S3": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+        "S4": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0"
+      }
+    },
+    {
+      "name": "all_gt_scenarios_valid",
+      "passed": true,
+      "detail": [
+        [
+          "S0",
+          true
+        ],
+        [
+          "S1",
+          true
+        ],
+        [
+          "S2",
+          true
+        ],
+        [
+          "S3",
+          true
+        ],
+        [
+          "S4",
+          true
+        ]
+      ]
+    },
+    {
+      "name": "all_gt_counts_minimum_20",
+      "passed": true,
+      "detail": [
+        [
+          "S0",
+          118,
+          131
+        ],
+        [
+          "S1",
+          287,
+          123
+        ],
+        [
+          "S2",
+          170,
+          141
+        ],
+        [
+          "S3",
+          154,
+          134
+        ],
+        [
+          "S4",
+          172,
+          29
+        ]
+      ]
+    },
+    {
+      "name": "gt_geometry_and_alignment",
+      "passed": true,
+      "detail": "0 invalid boxes; 181 aligned frames per scenario"
+    },
+    {
+      "name": "new_scenario_leakage_audit",
+      "passed": true,
+      "detail": [
+        [
+          "S0",
+          true
+        ],
+        [
+          "S1",
+          true
+        ],
+        [
+          "S2",
+          true
+        ],
+        [
+          "S3",
+          true
+        ],
+        [
+          "S4",
+          true
+        ]
+      ]
+    },
+    {
+      "name": "zero_exact_content_overlap",
+      "passed": true,
+      "detail": "S1-S4 image/frame/nonempty-label overlaps are zero"
+    },
+    {
+      "name": "five_initial_pass",
+      "passed": true,
+      "detail": 5
+    },
+    {
+      "name": "five_search_success",
+      "passed": true,
+      "detail": 1.0
+    },
+    {
+      "name": "fifty_iteration_records",
+      "passed": true,
+      "detail": 50
+    },
+    {
+      "name": "symmetric_only",
+      "passed": true,
+      "detail": "all decisions are common pre-FAIL or 50:50 midpoint"
+    },
+    {
+      "name": "fixed_inference_and_gt",
+      "passed": true,
+      "detail": "all 50 records"
+    },
+    {
+      "name": "scenario_specific_evaluation_keys",
+      "passed": true,
+      "detail": {
+        "records": 50,
+        "unique_keys": 50
+      }
+    },
+    {
+      "name": "gap_formulas_and_anchor_sides",
+      "passed": true,
+      "detail": [
+        {
+          "scenario_id": "S0",
+          "gap_map": 0.02924052270668906,
+          "gap_env": 0.010947747747747785,
+          "passed": true
+        },
+        {
+          "scenario_id": "S1",
+          "gap_map": 0.008130081300812997,
+          "gap_env": 0.010947747747747785,
+          "passed": true
+        },
+        {
+          "scenario_id": "S2",
+          "gap_map": 0.02768043387567798,
+          "gap_env": 0.010954504504504442,
+          "passed": true
+        },
+        {
+          "scenario_id": "S3",
+          "gap_map": 0.03392130257801901,
+          "gap_env": 0.010954504504504442,
+          "passed": true
+        },
+        {
+          "scenario_id": "S4",
+          "gap_map": 0.02305533279871691,
+          "gap_env": 0.010954504504504536,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "first_fail_statistics",
+      "passed": true,
+      "detail": {
+        "count": 5,
+        "mean": 4.0,
+        "population_std": 0.0,
+        "median": 4.0,
+        "min": 4.0,
+        "max": 4.0,
+        "range": 0.0
+      }
+    },
+    {
+      "name": "nonmonotonic_event_count",
+      "passed": true,
+      "detail": "S3 only"
+    },
+    {
+      "name": "s0_independent_reproduction",
+      "passed": true,
+      "detail": 0.0
+    },
+    {
+      "name": "fifteen_revalidation_cases",
+      "passed": true,
+      "detail": 15
+    },
+    {
+      "name": "all_revalidation_verdicts_match",
+      "passed": true,
+      "detail": 15
+    },
+    {
+      "name": "revalidation_is_fresh",
+      "passed": true,
+      "detail": "15 independent stores, 0 cache hits"
+    },
+    {
+      "name": "revalidation_map_difference_recorded",
+      "passed": true,
+      "detail": 0.0
+    },
+    {
+      "name": "eight_required_figures",
+      "passed": true,
+      "detail": [
+        "01_five_trajectory_comparison.png",
+        "02_map_by_iteration.png",
+        "03_environment_by_iteration.png",
+        "04_final_gap_map.png",
+        "05_final_gap_env.png",
+        "06_initial_pass_examples.png",
+        "07_final_boundary_examples.png",
+        "08_search_success_rate.png"
+      ]
+    },
+    {
+      "name": "figures_at_least_300dpi_nominal",
+      "passed": true,
+      "detail": [
+        {
+          "file": "01_five_trajectory_comparison.png",
+          "width": 3570,
+          "height": 1406,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "02_map_by_iteration.png",
+          "width": 2520,
+          "height": 1525,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "03_environment_by_iteration.png",
+          "width": 2520,
+          "height": 2666,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "04_final_gap_map.png",
+          "width": 2131,
+          "height": 1346,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "05_final_gap_env.png",
+          "width": 2131,
+          "height": 1346,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "06_initial_pass_examples.png",
+          "width": 5070,
+          "height": 885,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "07_final_boundary_examples.png",
+          "width": 2385,
+          "height": 3543,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        },
+        {
+          "file": "08_search_success_rate.png",
+          "width": 1920,
+          "height": 1406,
+          "dpi": [
+            299.9994,
+            299.9994
+          ]
+        }
+      ]
+    },
+    {
+      "name": "paper_sections_complete",
+      "passed": true,
+      "detail": "sections 4.1-5.6"
+    },
+    {
+      "name": "paper_excludes_out_of_scope_terms",
+      "passed": true,
+      "detail": "no out-of-scope comparison text"
+    },
+    {
+      "name": "aggregate_csv_row_counts",
+      "passed": true,
+      "detail": "5 summary rows, 50 iteration rows"
+    },
+    {
+      "name": "all_multi_scenario_json_parse",
+      "passed": true,
+      "detail": {
+        "count": 208,
+        "errors": []
+      }
+    },
+    {
+      "name": "all_unit_tests",
+      "passed": true,
+      "detail": {
+        "count": 34,
+        "returncode": 0
+      }
+    }
+  ]
+}

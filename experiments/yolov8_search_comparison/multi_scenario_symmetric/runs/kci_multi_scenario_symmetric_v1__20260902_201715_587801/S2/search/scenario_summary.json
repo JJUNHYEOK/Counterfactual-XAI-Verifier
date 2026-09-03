@@ -1,0 +1,65 @@
+{
+  "session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "scenario_id": "S2",
+  "trajectory_name": "고도 점진 하강 접근",
+  "major_changes": [
+    "18초 동안 고도 15 m 하강",
+    "진행방향 전방에 표적 간격 유지"
+  ],
+  "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+  "initial_map50": 0.9801353040029361,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 73.44,
+    "illumination_lux": 2578.1,
+    "camera_noise": 0.4707,
+    "map50": 0.27488527325823947,
+    "verdict": "MARGINAL",
+    "cache_key": "bb0fea7a01cb4efd3fdb3588"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 73.91,
+    "illumination_lux": 2554.6,
+    "camera_noise": 0.4735,
+    "map50": 0.2472048393825615,
+    "verdict": "FAIL",
+    "cache_key": "15e5313d1b1a7c07f1ddc7c6"
+  },
+  "gap_map50": 0.02768043387567798,
+  "gap_environment_normalized": 0.010954504504504442,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.5,
+    "camera_noise": 0.002799999999999969,
+    "map50": 0.02768043387567798
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 594.6233762938936,
+  "scenario_driver_wall_seconds": 546.8447167985141,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

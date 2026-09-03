@@ -1,0 +1,32 @@
+{
+  "case_id": "S4_final_nonfail",
+  "case_role": "final_nonfail",
+  "original_scenario_id": "S4",
+  "environment": {
+    "fog_percent": 71.56,
+    "illumination_lux": 2671.9,
+    "camera_noise": 0.4594
+  },
+  "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+  "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+  "gt_version": "rendered_instance_mask_v1",
+  "expected_verdict": "MARGINAL",
+  "original_map50": 0.2505012028869286,
+  "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S4_final_nonfail",
+  "revalidation_map50": 0.2505012028869286,
+  "map50_signed_difference": 0.0,
+  "map50_absolute_difference": 0.0,
+  "revalidation_verdict": "MARGINAL",
+  "verdict_matches": true,
+  "fresh_independent_store": true,
+  "evaluation_store_used": false,
+  "evaluation_cache_key": "961ffe1bb5dd7783e28f2d6e",
+  "timings": {
+    "simulation_seconds": 0.0340446,
+    "frame_rendering_seconds": 60.2811085,
+    "yolov8_inference_seconds": 5.251868899911642,
+    "metric_scoring_seconds": 0.0013069994747638702,
+    "total_execution_seconds": 65.56832899938641
+  },
+  "completed_at_utc": "2026-09-02T13:55:13.439797+00:00"
+}

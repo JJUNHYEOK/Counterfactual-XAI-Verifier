@@ -1,0 +1,12 @@
+{
+  "data_yaml": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\data.yaml",
+  "smoke_yaml": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\dataset\\data_smoke.yaml",
+  "scenario_count": 8,
+  "train_scenario_count": 6,
+  "val_scenario_count": 2,
+  "train_image_count": 366,
+  "val_image_count": 122,
+  "person_label_count": 317,
+  "vehicle_label_count": 351,
+  "leakage_audit_passed": true
+}

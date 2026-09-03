@@ -1,0 +1,697 @@
+{
+  "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+  "started_at_utc": "2026-09-02T16:16:24.024546+00:00",
+  "config": {
+    "experiment_id": "kci_diverse_training_s0_s4_v1",
+    "training_plan_id": "diverse_training_scenario_split_v2",
+    "training_run_id": "diverse_yolov8s_seed42__20260903_010327_583537",
+    "detector": "yolov8",
+    "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537\\weights\\best.pt",
+    "expected_weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+    "expected_model_class_names": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "search_method": "symmetric",
+    "global_initial_pass_gate": true,
+    "initial_environment": {
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02
+    },
+    "environment_bounds": {
+      "fog_percent": [
+        0.0,
+        100.0
+      ],
+      "illumination_lux": [
+        200.0,
+        15000.0
+      ],
+      "camera_noise": [
+        0.0,
+        0.6
+      ]
+    },
+    "degradation": {
+      "fog_add_percent_points": 30.0,
+      "illumination_multiplier": 0.5,
+      "camera_noise_add": 0.2
+    },
+    "thresholds": {
+      "pass_map50": 0.5,
+      "fail_map50": 0.25
+    },
+    "search_boundary_definition": "PASS and MARGINAL are non-failure; only FAIL is the failure-side anchor.",
+    "max_evaluations": 10,
+    "frame_stride": 1,
+    "expected_frame_count": 181,
+    "ground_truth_mode": "rendered_instance_mask_v1",
+    "gt_version": "rendered_instance_mask_v1",
+    "retain_rendered_frames": true,
+    "yolov8": {
+      "input_size": 640,
+      "confidence_threshold": 0.25,
+      "nms_iou_threshold": 0.7,
+      "ap_iou_threshold": 0.5,
+      "device": "auto",
+      "batch_size": 16
+    },
+    "fixed_evaluation_statement": "S0-S4 are previously pre-registered fixed evaluation scenarios, not completely unseen external test data.",
+    "cache_policy": "A new evaluation root and weight-hash-keyed repository are required; no prior detector outputs or AP/mAP caches are reused."
+  },
+  "config_sha256": "C518027341CC9708408BE7E19FB639B37D6ECE3D76E2B4D7B872AFFB69215F34",
+  "scenario_plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+  "scenario_plan_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+  "scenario_plan": {
+    "schema_version": "1.0",
+    "plan_id": "multi_scenario_symmetric_plan_v2",
+    "created_at_utc": "2026-09-02T12:00:00+00:00",
+    "supersedes_preflight_plan": "multi_scenario_symmetric_plan_v1",
+    "preflight_correction": "S1 vehicle x/y positions moved into the fixed camera frustum after v1 GT-only validation found zero visible vehicle boxes; no YOLO inference had been run.",
+    "registration_rule": "Scenario definitions are frozen before YOLO inference and may not be selected or edited based on detector performance.",
+    "initial_environment": {
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02
+    },
+    "ground_truth_version": "rendered_instance_mask_v1",
+    "scenarios": [
+      {
+        "scenario_id": "S0",
+        "trajectory_name": "기준 동서 직선 순항",
+        "seed": 42,
+        "uav_initial_xyz": [
+          -15.0,
+          0.0,
+          54.25444453897675
+        ],
+        "uav_end_xyz": [
+          39.0,
+          0.0,
+          54.25444453897675
+        ],
+        "flight_direction_unit": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "altitude_range_m": [
+          54.25444453897675,
+          54.25444453897675
+        ],
+        "camera": {
+          "intrinsics": [
+            600.0,
+            600.0,
+            320.0,
+            180.0,
+            60.0
+          ],
+          "image_size": [
+            640,
+            360
+          ],
+          "boresight": "+x, pitched 60 degrees downward"
+        },
+        "object_layout": [
+          {
+            "object_id": 1,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              -5,
+              2
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 2,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              5,
+              -2
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 3,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              15,
+              3
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 4,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              25,
+              -2
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          },
+          {
+            "object_id": 5,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              35,
+              2
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          }
+        ],
+        "person_count": 3,
+        "vehicle_count": 2,
+        "total_frames": 181,
+        "difference_from_training_validation_test": "held-out variant 0; never included in the train/validation split",
+        "major_changes": [
+          "기존 대표 시나리오를 최종 렌더러로 독립 재실행"
+        ],
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S0.json",
+        "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719"
+      },
+      {
+        "scenario_id": "S1",
+        "trajectory_name": "남쪽에서 북쪽으로 횡방향 관측",
+        "seed": 3101,
+        "uav_initial_xyz": [
+          -12.0,
+          -14.0,
+          54.25444453897675
+        ],
+        "uav_end_xyz": [
+          -12.0,
+          14.0,
+          54.25444453897675
+        ],
+        "flight_direction_unit": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "altitude_range_m": [
+          54.25444453897675,
+          54.25444453897675
+        ],
+        "camera": {
+          "intrinsics": [
+            600.0,
+            600.0,
+            320.0,
+            180.0,
+            60.0
+          ],
+          "image_size": [
+            640,
+            360
+          ],
+          "boresight": "+x, pitched 60 degrees downward"
+        },
+        "object_layout": [
+          {
+            "object_id": 1,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              -2,
+              -5
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 2,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              5,
+              0
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 3,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              12,
+              5
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 4,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              0,
+              -7
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          },
+          {
+            "object_id": 5,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              6,
+              7
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          }
+        ],
+        "person_count": 3,
+        "vehicle_count": 2,
+        "total_frames": 181,
+        "difference_from_training_validation_test": "explicit lateral path; training variants only used constant xyz offsets of the S0 eastbound path",
+        "major_changes": [
+          "UAV 진행축을 x축에서 y축으로 변경",
+          "표적을 측면 관측 폭에 맞춰 재배치"
+        ],
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S1.json",
+        "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3"
+      },
+      {
+        "scenario_id": "S2",
+        "trajectory_name": "고도 점진 하강 접근",
+        "seed": 3102,
+        "uav_initial_xyz": [
+          -18.0,
+          0.0,
+          64.0
+        ],
+        "uav_end_xyz": [
+          30.0,
+          0.0,
+          49.0
+        ],
+        "flight_direction_unit": [
+          0.9544799780350297,
+          0.0,
+          -0.2982749931359468
+        ],
+        "altitude_range_m": [
+          49.0,
+          64.0
+        ],
+        "camera": {
+          "intrinsics": [
+            600.0,
+            600.0,
+            320.0,
+            180.0,
+            60.0
+          ],
+          "image_size": [
+            640,
+            360
+          ],
+          "boresight": "+x, pitched 60 degrees downward"
+        },
+        "object_layout": [
+          {
+            "object_id": 1,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              -6,
+              1
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 2,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              5,
+              -3
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 3,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              16,
+              4
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 4,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              28,
+              -1
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          },
+          {
+            "object_id": 5,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              40,
+              3
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          }
+        ],
+        "person_count": 3,
+        "vehicle_count": 2,
+        "total_frames": 181,
+        "difference_from_training_validation_test": "time-varying altitude; training variants used constant altitude offsets",
+        "major_changes": [
+          "18초 동안 고도 15 m 하강",
+          "진행방향 전방에 표적 간격 유지"
+        ],
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S2.json",
+        "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E"
+      },
+      {
+        "scenario_id": "S3",
+        "trajectory_name": "남서-북동 대각선 통과",
+        "seed": 3103,
+        "uav_initial_xyz": [
+          -18.0,
+          -10.0,
+          56.0
+        ],
+        "uav_end_xyz": [
+          30.0,
+          10.0,
+          56.0
+        ],
+        "flight_direction_unit": [
+          0.9230769230769231,
+          0.38461538461538464,
+          0.0
+        ],
+        "altitude_range_m": [
+          56.0,
+          56.0
+        ],
+        "camera": {
+          "intrinsics": [
+            600.0,
+            600.0,
+            320.0,
+            180.0,
+            60.0
+          ],
+          "image_size": [
+            640,
+            360
+          ],
+          "boresight": "+x, pitched 60 degrees downward"
+        },
+        "object_layout": [
+          {
+            "object_id": 1,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              -6,
+              -6
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 2,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              4,
+              -2
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 3,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              14,
+              2
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 4,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              24,
+              6
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          },
+          {
+            "object_id": 5,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              34,
+              10
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          }
+        ],
+        "person_count": 3,
+        "vehicle_count": 2,
+        "total_frames": 181,
+        "difference_from_training_validation_test": "diagonal velocity and diagonal target corridor absent from train/validation variants",
+        "major_changes": [
+          "x와 y를 동시에 변화시키는 대각선 경로",
+          "대각선 통로를 따라 표적 배치"
+        ],
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S3.json",
+        "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6"
+      },
+      {
+        "scenario_id": "S4",
+        "trajectory_name": "원거리 시작 후 전방 접근",
+        "seed": 3104,
+        "uav_initial_xyz": [
+          -42.0,
+          0.0,
+          58.0
+        ],
+        "uav_end_xyz": [
+          12.0,
+          0.0,
+          58.0
+        ],
+        "flight_direction_unit": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "altitude_range_m": [
+          58.0,
+          58.0
+        ],
+        "camera": {
+          "intrinsics": [
+            600.0,
+            600.0,
+            320.0,
+            180.0,
+            60.0
+          ],
+          "image_size": [
+            640,
+            360
+          ],
+          "boresight": "+x, pitched 60 degrees downward"
+        },
+        "object_layout": [
+          {
+            "object_id": 1,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              -8,
+              -1
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 2,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              3,
+              3
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 3,
+            "class_id": 1,
+            "class_name": "person",
+            "xy": [
+              16,
+              -3
+            ],
+            "radius_height": [
+              0.5,
+              1.8
+            ]
+          },
+          {
+            "object_id": 4,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              30,
+              2
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          },
+          {
+            "object_id": 5,
+            "class_id": 2,
+            "class_name": "vehicle",
+            "xy": [
+              44,
+              -2
+            ],
+            "radius_height": [
+              1.2,
+              1.6
+            ]
+          }
+        ],
+        "person_count": 3,
+        "vehicle_count": 2,
+        "total_frames": 181,
+        "difference_from_training_validation_test": "long-range start and expanded target spacing absent from train/validation variants",
+        "major_changes": [
+          "S0보다 27 m 먼 위치에서 시작",
+          "접근 거리에 따라 표적 영상 크기가 증가하도록 표적열 확장"
+        ],
+        "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S4.json",
+        "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0"
+      }
+    ]
+  },
+  "model": {
+    "detector": "yolov8",
+    "weights_filename": "best.pt",
+    "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537\\weights\\best.pt",
+    "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+    "weights_provenance": "general Ultralytics COCO pretrained YOLOv8s; not custom-trained",
+    "checkpoint_model_definition": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\yolov8s.pt",
+    "checkpoint_training_data": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\data\\diverse_training_scenario_split_v2\\data.yaml",
+    "checkpoint_training_epochs": 50,
+    "checkpoint_training_batch": 4,
+    "checkpoint_training_seed": 42,
+    "checkpoint_version": "8.4.46",
+    "checkpoint_date": "2026-09-03T01:15:02.730949",
+    "ultralytics_version": "8.4.46",
+    "python_version": "3.11.9",
+    "torch_version": "2.5.1+cu121",
+    "device_argument": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 2060",
+    "input_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "class_mapping": {
+      "0": "person",
+      "1": "vehicle"
+    },
+    "class_mapping_note": "Resolved from model.names. Recognised person aliases map to person; car/motorcycle/bus/truck/van/vehicle aliases merge to vehicle.",
+    "model_class_names": {
+      "0": "person",
+      "1": "vehicle"
+    }
+  },
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "executable": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.venv\\Scripts\\python.exe"
+  },
+  "preinference_gate": {
+    "gt_validation_passed": true,
+    "leakage_audit_passed": true
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "scenario_id": "S4",
+  "trajectory_name": "원거리 시작 후 전방 접근",
+  "major_changes": [
+    "S0보다 27 m 먼 위치에서 시작",
+    "접근 거리에 따라 표적 영상 크기가 증가하도록 표적열 확장"
+  ],
+  "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+  "initial_map50": 0.773363365494554,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 71.56,
+    "illumination_lux": 2671.9,
+    "camera_noise": 0.4594,
+    "map50": 0.2505012028869286,
+    "verdict": "MARGINAL",
+    "cache_key": "961ffe1bb5dd7783e28f2d6e"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 72.03,
+    "illumination_lux": 2648.4,
+    "camera_noise": 0.4622,
+    "map50": 0.2274458700882117,
+    "verdict": "FAIL",
+    "cache_key": "dacf4b96047212968a713a17"
+  },
+  "gap_map50": 0.02305533279871691,
+  "gap_environment_normalized": 0.010954504504504536,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.5,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.02305533279871691
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 816.619172408967,
+  "scenario_driver_wall_seconds": 769.3401200994849,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

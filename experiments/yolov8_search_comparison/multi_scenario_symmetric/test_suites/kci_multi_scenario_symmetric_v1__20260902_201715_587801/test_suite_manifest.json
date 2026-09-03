@@ -1,0 +1,248 @@
+{
+  "schema_version": "1.0",
+  "source_session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "created_before_revalidation": true,
+  "case_count": 15,
+  "cases": [
+    {
+      "case_id": "S0_initial_pass",
+      "case_role": "initial_pass",
+      "original_scenario_id": "S0",
+      "environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "PASS",
+      "original_map50": 0.9750427353718847,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S0_initial_pass"
+    },
+    {
+      "case_id": "S0_final_nonfail",
+      "case_role": "final_nonfail",
+      "original_scenario_id": "S0",
+      "environment": {
+        "fog_percent": 78.12,
+        "illumination_lux": 2343.8,
+        "camera_noise": 0.4988
+      },
+      "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "MARGINAL",
+      "original_map50": 0.2666256954327856,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S0_final_nonfail"
+    },
+    {
+      "case_id": "S0_final_fail",
+      "case_role": "final_fail",
+      "original_scenario_id": "S0",
+      "environment": {
+        "fog_percent": 78.59,
+        "illumination_lux": 2320.4,
+        "camera_noise": 0.5016
+      },
+      "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "FAIL",
+      "original_map50": 0.23738517272609652,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S0_final_fail"
+    },
+    {
+      "case_id": "S1_initial_pass",
+      "case_role": "initial_pass",
+      "original_scenario_id": "S1",
+      "environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "PASS",
+      "original_map50": 0.7952264779883924,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S1_initial_pass"
+    },
+    {
+      "case_id": "S1_final_nonfail",
+      "case_role": "final_nonfail",
+      "original_scenario_id": "S1",
+      "environment": {
+        "fog_percent": 72.03,
+        "illumination_lux": 2648.4,
+        "camera_noise": 0.4622
+      },
+      "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "MARGINAL",
+      "original_map50": 0.25261324041811845,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S1_final_nonfail"
+    },
+    {
+      "case_id": "S1_final_fail",
+      "case_role": "final_fail",
+      "original_scenario_id": "S1",
+      "environment": {
+        "fog_percent": 72.5,
+        "illumination_lux": 2625.0,
+        "camera_noise": 0.465
+      },
+      "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "FAIL",
+      "original_map50": 0.24448315911730545,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S1_final_fail"
+    },
+    {
+      "case_id": "S2_initial_pass",
+      "case_role": "initial_pass",
+      "original_scenario_id": "S2",
+      "environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "PASS",
+      "original_map50": 0.9801353040029361,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S2_initial_pass"
+    },
+    {
+      "case_id": "S2_final_nonfail",
+      "case_role": "final_nonfail",
+      "original_scenario_id": "S2",
+      "environment": {
+        "fog_percent": 73.44,
+        "illumination_lux": 2578.1,
+        "camera_noise": 0.4707
+      },
+      "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "MARGINAL",
+      "original_map50": 0.27488527325823947,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S2_final_nonfail"
+    },
+    {
+      "case_id": "S2_final_fail",
+      "case_role": "final_fail",
+      "original_scenario_id": "S2",
+      "environment": {
+        "fog_percent": 73.91,
+        "illumination_lux": 2554.6,
+        "camera_noise": 0.4735
+      },
+      "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "FAIL",
+      "original_map50": 0.2472048393825615,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S2_final_fail"
+    },
+    {
+      "case_id": "S3_initial_pass",
+      "case_role": "initial_pass",
+      "original_scenario_id": "S3",
+      "environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "PASS",
+      "original_map50": 0.7448725607933085,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S3_initial_pass"
+    },
+    {
+      "case_id": "S3_final_nonfail",
+      "case_role": "final_nonfail",
+      "original_scenario_id": "S3",
+      "environment": {
+        "fog_percent": 73.44,
+        "illumination_lux": 2578.1,
+        "camera_noise": 0.4707
+      },
+      "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "MARGINAL",
+      "original_map50": 0.28290366350067847,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S3_final_nonfail"
+    },
+    {
+      "case_id": "S3_final_fail",
+      "case_role": "final_fail",
+      "original_scenario_id": "S3",
+      "environment": {
+        "fog_percent": 73.91,
+        "illumination_lux": 2554.6,
+        "camera_noise": 0.4735
+      },
+      "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "FAIL",
+      "original_map50": 0.24898236092265946,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S3_final_fail"
+    },
+    {
+      "case_id": "S4_initial_pass",
+      "case_role": "initial_pass",
+      "original_scenario_id": "S4",
+      "environment": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      },
+      "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "PASS",
+      "original_map50": 0.773363365494554,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S4_initial_pass"
+    },
+    {
+      "case_id": "S4_final_nonfail",
+      "case_role": "final_nonfail",
+      "original_scenario_id": "S4",
+      "environment": {
+        "fog_percent": 71.56,
+        "illumination_lux": 2671.9,
+        "camera_noise": 0.4594
+      },
+      "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "MARGINAL",
+      "original_map50": 0.2505012028869286,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S4_final_nonfail"
+    },
+    {
+      "case_id": "S4_final_fail",
+      "case_role": "final_fail",
+      "original_scenario_id": "S4",
+      "environment": {
+        "fog_percent": 72.03,
+        "illumination_lux": 2648.4,
+        "camera_noise": 0.4622
+      },
+      "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+      "weights_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+      "gt_version": "rendered_instance_mask_v1",
+      "expected_verdict": "FAIL",
+      "original_map50": 0.2274458700882117,
+      "rerun_command": ".venv\\Scripts\\python.exe -m experiments.yolov8_search_comparison.multi_scenario_symmetric.reverify_cases --session kci_multi_scenario_symmetric_v1__20260902_201715_587801 --case S4_final_fail"
+    }
+  ]
+}

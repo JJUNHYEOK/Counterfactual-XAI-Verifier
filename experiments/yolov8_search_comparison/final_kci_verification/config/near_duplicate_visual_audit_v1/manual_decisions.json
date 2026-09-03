@@ -1,0 +1,182 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "near_duplicate_visual_audit_v1",
+  "reviewer": "Codex direct visual inspection of all 16 lossless GT-overlay pairs",
+  "reviewed_at": "2026-09-03T15:33:05.3832835+09:00",
+  "decisions": [
+    {
+      "pair_id": "P01",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S1에는 상단 잘림 사람 1, 중앙 사람 1, 차량 1이 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "매우 높음: 동일한 나무 군집·지면 경계·우측 갈색 영역이 거의 같은 화면 위치에 있음",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "dHash 1의 원인은 거의 동일한 배경 구도이나, 학습 쪽에는 GT 객체가 전혀 없어 객체 구성의 직접 중복은 아님. 배경 맥락 누출 가능성은 남음."
+    },
+    {
+      "pair_id": "P02",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S1에는 사람 2, 차량 1이 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "매우 높음: 나무·지면·색 영역의 배치가 학습 영상과 거의 동일하고 S1의 한 프레임 이동만 보임",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "객체는 한쪽에만 존재하지만 시험 장면의 배경이 학습 영상과 사실상 같은 카메라 구도여서 완전 독립성에는 위험이 있음."
+    },
+    {
+      "pair_id": "P03",
+      "object_position_similarity": "높음: 공통 사람 객체가 두 영상 모두 화면 상단 중앙 부근에 위치함",
+      "object_size_similarity": "높음: 공통 사람 상자의 폭·높이가 유사함",
+      "occlusion_similarity": "다름: 학습 영상의 사람은 차량과 인접·부분 중첩되고 S4에는 차량 GT가 없음",
+      "background_similarity": "매우 높음: 통나무·나무 군집·바위와 지면 경계가 소폭 평행 이동한 동일 구도임",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "차량 클래스 구성은 다르지만 공통 사람의 위치·크기와 결정론적 배경 구도가 함께 매우 유사하여 객체 장면의 실질적 중복 가능성이 있음."
+    },
+    {
+      "pair_id": "P04",
+      "object_position_similarity": "높음: 공통 사람이 두 영상 모두 상단 중앙의 같은 상대 위치에 있음",
+      "object_size_similarity": "높음: 공통 사람 상자의 크기가 유사함",
+      "occlusion_similarity": "다름: 학습에서는 차량과 밀착하고 시험에서는 사람이 단독으로 보임",
+      "background_similarity": "매우 높음: 동일 지형 소품과 나무 군집이 인접 프레임 수준으로 정렬됨",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "공통 객체와 배경이 모두 강하게 일치하며 차이는 학습 쪽 차량 추가와 작은 카메라 이동에 집중됨."
+    },
+    {
+      "pair_id": "P05",
+      "object_position_similarity": "높음: 공통 사람이 상단 중앙의 거의 같은 정규화 위치에 있음",
+      "object_size_similarity": "높음: 사람 상자의 크기와 세로 형태가 유사함",
+      "occlusion_similarity": "다름: 학습 사람은 차량 옆에 있고 시험 사람은 단독임",
+      "background_similarity": "매우 높음: 통나무와 주변 나무·지면 경계의 구도가 거의 같음",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "공통 사람의 위치·크기와 배경이 동시에 유사하여 파일이 다르더라도 시각적으로 독립된 장면으로 보기 어려움."
+    },
+    {
+      "pair_id": "P06",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S3에 사람 1명만 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "높음: 통나무·나무·바위와 지면 경계가 비슷하나 화면 이동이 P01보다 큼",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "객체 직접 중복은 없지만 동일 지형의 매우 유사한 카메라 구도가 시험 영상에 재등장함."
+    },
+    {
+      "pair_id": "P07",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S1에는 사람 2, 차량 1이 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "매우 높음: 나무 군집과 두 지면 색 영역의 경계가 거의 같은 위치임",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "배경은 사실상 동일하지만 학습 쪽이 빈 프레임이므로 객체 위치·크기 중복으로 분류하지 않음."
+    },
+    {
+      "pair_id": "P08",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S1에는 사람 2, 차량 1이 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "매우 높음: 동일한 나무 군집과 지면 경계가 작은 프레임 이동만 보임",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "객체 구성은 겹치지 않지만 배경 맥락이 학습 영상과 매우 가까워 독립 외부 시험으로 간주할 수 없음."
+    },
+    {
+      "pair_id": "P09",
+      "object_position_similarity": "높음: 공통 사람이 상단 중앙의 같은 영역에 있음",
+      "object_size_similarity": "높음: 공통 사람 상자의 크기가 유사함",
+      "occlusion_similarity": "다름: 학습에서는 차량과 붙어 있고 시험에서는 사람이 고립됨",
+      "background_similarity": "매우 높음: 같은 통나무·나무·바위 배열을 약간 이동한 구도임",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "공통 사람과 배경의 결합 구도가 매우 유사하고 dHash 4이므로 객체 포함 장면의 실질적 중복 가능성을 배제할 수 없음."
+    },
+    {
+      "pair_id": "P10",
+      "object_position_similarity": "높음: 공통 사람이 두 영상 모두 상단 중앙 부근에 있음",
+      "object_size_similarity": "높음: 공통 사람 상자의 폭·높이가 유사함",
+      "occlusion_similarity": "다름: 학습 사람은 차량과 인접하고 시험은 사람 단독임",
+      "background_similarity": "매우 높음: 나무 열·통나무·바위·갈색 지면의 상대 배치가 거의 동일함",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "학습 T17과 시험 S4가 같은 배경 진행과 유사한 사람 투영 크기·위치를 공유함."
+    },
+    {
+      "pair_id": "P11",
+      "object_position_similarity": "높음: 공통 사람이 상단 중앙의 거의 같은 위치에 있음",
+      "object_size_similarity": "높음: 사람 크기가 유사함",
+      "occlusion_similarity": "다름: 학습에만 인접 차량이 존재함",
+      "background_similarity": "매우 높음: 동일 소품 배치에 한 프레임 정도의 시점 차이만 나타남",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "공통 객체 위치·크기와 배경이 동시에 일치하여 독립 시험 장면으로 주장하기 어려움."
+    },
+    {
+      "pair_id": "P12",
+      "object_position_similarity": "높음: 공통 사람이 화면 중앙 부근의 유사 위치에 있음",
+      "object_size_similarity": "높음: 작은 사람 상자의 크기와 종횡비가 유사함",
+      "occlusion_similarity": "다름: 학습 사람은 차량과 부분 중첩하고 시험에서는 단독임",
+      "background_similarity": "매우 높음: 집·통나무·나무 군집과 지면 경계가 같은 이동 궤적처럼 보임",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "객체 수는 다르지만 공통 사람과 배경의 시각적 구성이 강하게 중복됨."
+    },
+    {
+      "pair_id": "P13",
+      "object_position_similarity": "높음: 공통 사람이 중앙 상단의 거의 같은 상대 위치에 있음",
+      "object_size_similarity": "높음: 공통 사람의 작은 상자 크기가 유사함",
+      "occlusion_similarity": "다름: 학습에만 사람과 겹친 차량이 있음",
+      "background_similarity": "매우 높음: 집·통나무·나무와 지면 경계의 배치가 거의 같음",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "공통 객체와 배경 구도가 모두 유사하며 단지 시험 쪽 차량이 빠진 차이가 큼."
+    },
+    {
+      "pair_id": "P14",
+      "object_position_similarity": "높음: 공통 사람이 중앙 부근의 유사 정규화 위치에 있음",
+      "object_size_similarity": "높음: 사람의 작은 세로형 상자가 유사함",
+      "occlusion_similarity": "다름: 학습 사람은 차량 앞에 겹치고 시험 사람은 단독임",
+      "background_similarity": "매우 높음: 동일 집·통나무·나무 군집이 작은 카메라 이동으로 나타남",
+      "classification": 3,
+      "risk": "높음",
+      "judgement_basis": "차량 유무 차이에도 공통 사람의 위치·크기와 배경이 함께 매우 유사함."
+    },
+    {
+      "pair_id": "P15",
+      "object_position_similarity": "비교 불가: 학습 영상은 빈 프레임이고 S4에는 사람 2명이 서로 다른 위치에 있음",
+      "object_size_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "occlusion_similarity": "비교 불가: 학습 영상에 객체가 없음",
+      "background_similarity": "높음: 통나무·나무·바위 및 우측 갈색 지면이 비슷하지만 카메라 이동은 분명함",
+      "classification": 1,
+      "risk": "중간",
+      "judgement_basis": "학습 쪽이 빈 프레임이라 객체 장면의 직접 중복은 아니나 배경 맥락은 동일 렌더러의 근접 구도임."
+    },
+    {
+      "pair_id": "P16",
+      "object_position_similarity": "부분 유사: 차량은 상단 중앙의 비슷한 위치이나 사람은 학습 상단·시험 하단으로 크게 다름",
+      "object_size_similarity": "부분 유사: 차량 크기는 유사하고 사람 크기도 비슷하나 위치가 다름",
+      "occlusion_similarity": "다름: 학습에서는 사람과 차량이 겹치고 시험에서는 멀리 분리됨",
+      "background_similarity": "높음: 동일 통나무·바위·나무 자산이 보이지만 화면 배치와 지면 경계가 이동함",
+      "classification": 2,
+      "risk": "중간",
+      "judgement_basis": "두 클래스와 공통 배경은 같지만 사람 위치와 가림 관계가 뚜렷하게 달라 전체 객체 구성은 충분히 다름."
+    }
+  ],
+  "final_judgement": "16쌍 중 정확 영상 SHA-256 중복은 0쌍이다. 직접 시각 검토에서는 배경만 유사한 쌍 6개, 객체가 있으나 구성이 충분히 다른 쌍 1개, 공통 객체의 위치·크기와 배경까지 매우 유사한 쌍 9개를 확인했다. 높은 유사성 9쌍은 T17의 4개 학습 프레임과 S4의 인접한 9개 프레임에 집중되어 있어, 객체 포함 장면의 실질적 중복 가능성이 존재한다. 따라서 정확 파일 중복이 없다는 사실만으로 학습자료와 S0~S4의 시각적 독립성을 주장할 수 없다.",
+  "independence_statement": "S0~S4는 시나리오 ID·시드·궤적·파일 해시가 분리된 기존 고정 평가 시나리오이지만, 학습자료와 같은 MATLAB 렌더러·단일 지형을 공유하고 T17–S4에서 객체·배경이 매우 유사한 쌍이 확인되었다. 그러므로 논문에서는 '기존에 사전 확정된 고정 평가 시나리오'로만 표현하며, '독립 시험자료', '완전히 보지 않은 시험자료' 또는 '외부 시험자료'로 표현하지 않는다.",
+  "allowed_claims": [
+    "학습·검증·S0~S4의 시나리오 ID와 정확 파일 해시는 분리되었다.",
+    "dHash 4 이하의 16개 경고를 GT 오버레이로 직접 검토했다.",
+    "동일 MATLAB 시뮬레이션 환경의 기존 고정 S0~S4에서 기술적 성능과 경계 구간을 측정했다.",
+    "근접 영상 위험을 숨기지 않고 객체 포함 고유사 쌍 9개를 공개했다."
+  ],
+  "forbidden_claims": [
+    "S0~S4가 학습자료와 시각적으로 독립된 시험자료라는 주장",
+    "S0~S4가 완전히 보지 않은 외부 시험자료라는 주장",
+    "정확 SHA 중복이 없으므로 자료 누출 가능성이 없다는 주장",
+    "현재 S0~S4 결과가 실제 비행환경 일반화나 통계적 우월성을 입증한다는 주장"
+  ]
+}

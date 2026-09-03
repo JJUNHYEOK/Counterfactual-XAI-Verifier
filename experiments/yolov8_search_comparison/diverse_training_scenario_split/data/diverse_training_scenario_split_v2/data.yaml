@@ -1,0 +1,6 @@
+path: C:\Users\lab\Counterfactual-XAI-Verifier\experiments\yolov8_search_comparison\diverse_training_scenario_split\data\diverse_training_scenario_split_v2\dataset
+train: images/train
+val: images/val
+names:
+  0: person
+  1: vehicle

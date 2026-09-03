@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "audited_partition_counts": {
+    "train": 360,
+    "val": 100,
+    "test": 905
+  },
+  "identity_collisions": {
+    "scenario_id": [],
+    "seed": [],
+    "trajectory": [],
+    "object_layout": [],
+    "within_new_scenario_id": 0,
+    "within_new_seed": 0,
+    "within_new_trajectory": 0,
+    "within_new_object_layout": 0
+  },
+  "identity_collision_count": 0,
+  "image_collisions": [],
+  "frame_pair_collisions": [],
+  "nonempty_label_collisions": [],
+  "empty_label_policy": "Empty label hashes are excluded from raw label collision failure; image+label pair hashes remain included.",
+  "fixed_evaluation_hashes": {
+    "plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+    "plan_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+    "manifest_sha256": {
+      "S0": "784100F07FEEE246FF12CF54AD2908947D7A85FF1499E98CB6DE700EA1DE980E",
+      "S1": "42F70B4B945B14C441933E0E9B8B5A5FF7F1AC72ECE567FFF590D200632429B8",
+      "S2": "491B06839B9202AB2D6F95F6E6B73E780818DE833440E76426C464386084F9E4",
+      "S3": "AF010E8245D308ECA25D3204D519E342976A9D601CC943201BC1C4A9A5147326",
+      "S4": "A6F176692E92B8A7CF3BCE2C353CD280C934B0707B224E8410D54BE8E13D9D46"
+    }
+  },
+  "passed": true
+}

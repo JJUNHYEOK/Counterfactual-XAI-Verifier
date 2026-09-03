@@ -1,0 +1,11 @@
+﻿iteration,new_environment,old_environment,new_map50,old_map50,map50_difference,new_verdict,old_verdict
+1,"{""camera_noise"": 0.02, ""fog_percent"": 5.0, ""illumination_lux"": 12000.0}","{""camera_noise"": 0.02, ""fog_percent"": 5.0, ""illumination_lux"": 12000.0}",0.9750427353718847,0.9750427353718847,0.0,PASS,PASS
+2,"{""camera_noise"": 0.22, ""fog_percent"": 35.0, ""illumination_lux"": 6000.0}","{""camera_noise"": 0.22, ""fog_percent"": 35.0, ""illumination_lux"": 6000.0}",0.9482792081769957,0.9482792081769957,0.0,PASS,PASS
+3,"{""camera_noise"": 0.42, ""fog_percent"": 65.0, ""illumination_lux"": 3000.0}","{""camera_noise"": 0.42, ""fog_percent"": 65.0, ""illumination_lux"": 3000.0}",0.742301720791823,0.742301720791823,0.0,PASS,PASS
+4,"{""camera_noise"": 0.6, ""fog_percent"": 95.0, ""illumination_lux"": 1500.0}","{""camera_noise"": 0.6, ""fog_percent"": 95.0, ""illumination_lux"": 1500.0}",0.0,0.0,0.0,FAIL,FAIL
+5,"{""camera_noise"": 0.51, ""fog_percent"": 80.0, ""illumination_lux"": 2250.0}","{""camera_noise"": 0.51, ""fog_percent"": 80.0, ""illumination_lux"": 2250.0}",0.1314206236253073,0.1314206236253073,0.0,FAIL,FAIL
+6,"{""camera_noise"": 0.465, ""fog_percent"": 72.5, ""illumination_lux"": 2625.0}","{""camera_noise"": 0.465, ""fog_percent"": 72.5, ""illumination_lux"": 2625.0}",0.5952222283270443,0.5952222283270443,0.0,PASS,PASS
+7,"{""camera_noise"": 0.4875, ""fog_percent"": 76.25, ""illumination_lux"": 2437.5}","{""camera_noise"": 0.4875, ""fog_percent"": 76.25, ""illumination_lux"": 2437.5}",0.3933561909690775,0.3933561909690775,0.0,MARGINAL,MARGINAL
+8,"{""camera_noise"": 0.4988, ""fog_percent"": 78.12, ""illumination_lux"": 2343.8}","{""camera_noise"": 0.4988, ""fog_percent"": 78.12, ""illumination_lux"": 2343.8}",0.2666256954327856,0.2666256954327856,0.0,MARGINAL,MARGINAL
+9,"{""camera_noise"": 0.5044, ""fog_percent"": 79.06, ""illumination_lux"": 2296.9}","{""camera_noise"": 0.5044, ""fog_percent"": 79.06, ""illumination_lux"": 2296.9}",0.20432785612627763,0.20432785612627763,0.0,FAIL,FAIL
+10,"{""camera_noise"": 0.5016, ""fog_percent"": 78.59, ""illumination_lux"": 2320.4}","{""camera_noise"": 0.5016, ""fog_percent"": 78.59, ""illumination_lux"": 2320.4}",0.23738517272609652,0.23738517272609652,0.0,FAIL,FAIL

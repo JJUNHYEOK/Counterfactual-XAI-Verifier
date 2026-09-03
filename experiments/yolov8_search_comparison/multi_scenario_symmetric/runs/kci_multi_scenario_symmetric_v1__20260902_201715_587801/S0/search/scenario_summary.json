@@ -1,0 +1,64 @@
+{
+  "session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "scenario_id": "S0",
+  "trajectory_name": "기준 동서 직선 순항",
+  "major_changes": [
+    "기존 대표 시나리오를 최종 렌더러로 독립 재실행"
+  ],
+  "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+  "initial_map50": 0.9750427353718847,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 78.12,
+    "illumination_lux": 2343.8,
+    "camera_noise": 0.4988,
+    "map50": 0.2666256954327856,
+    "verdict": "MARGINAL",
+    "cache_key": "143b00d4608f90a501ddb48d"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 78.59,
+    "illumination_lux": 2320.4,
+    "camera_noise": 0.5016,
+    "map50": 0.23738517272609652,
+    "verdict": "FAIL",
+    "cache_key": "3bd8f23832817f6014088599"
+  },
+  "gap_map50": 0.02924052270668906,
+  "gap_environment_normalized": 0.010947747747747785,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.40000000000009,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.02924052270668906
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 741.304759990425,
+  "scenario_driver_wall_seconds": 694.933367099613,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

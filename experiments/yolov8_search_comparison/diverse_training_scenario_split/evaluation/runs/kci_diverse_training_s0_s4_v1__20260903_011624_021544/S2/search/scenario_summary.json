@@ -1,0 +1,65 @@
+{
+  "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+  "scenario_id": "S2",
+  "trajectory_name": "고도 점진 하강 접근",
+  "major_changes": [
+    "18초 동안 고도 15 m 하강",
+    "진행방향 전방에 표적 간격 유지"
+  ],
+  "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+  "initial_map50": 0.9929078014184397,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 84.22,
+    "illumination_lux": 2039.1,
+    "camera_noise": 0.5353,
+    "map50": 0.2516547185317609,
+    "verdict": "MARGINAL",
+    "cache_key": "712c12c323850c3aa13de344"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 84.69,
+    "illumination_lux": 2015.7,
+    "camera_noise": 0.5381,
+    "map50": 0.12488415784363165,
+    "verdict": "FAIL",
+    "cache_key": "7b3c06bf8b7d68e60a45682d"
+  },
+  "gap_map50": 0.12677056068812925,
+  "gap_environment_normalized": 0.010947747747747769,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.399999999999864,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.12677056068812925
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 561.72786329452,
+  "scenario_driver_wall_seconds": 509.4253028985113,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

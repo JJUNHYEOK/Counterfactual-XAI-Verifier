@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "audited_against": {
+    "training_scenarios": 6,
+    "validation_scenarios": 2,
+    "held_out_S0": true,
+    "training_frame_manifest": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\frame_manifest.csv",
+    "empty_label_note": "Empty labels are excluded from raw label-hash collision because every empty file has the same unavoidable SHA-256; frame and image hashes remain audited."
+  },
+  "results": [
+    {
+      "scenario_id": "S0",
+      "scope": "known held-out reference (not a new-scenario leakage target)",
+      "seed_overlap": true,
+      "object_layout_overlap_with_S0": true,
+      "trajectory_overlap_with_S0": true,
+      "duplicate_image_hash_count": 0,
+      "duplicate_frame_hash_count": 0,
+      "duplicate_nonempty_label_hash_count": 0,
+      "passed": true
+    },
+    {
+      "scenario_id": "S1",
+      "scope": "S1-S4 versus six train, two validation, and S0",
+      "seed_overlap": false,
+      "object_layout_overlap_with_S0": false,
+      "trajectory_overlap_with_S0": false,
+      "duplicate_image_hash_count": 0,
+      "duplicate_frame_hash_count": 0,
+      "duplicate_nonempty_label_hash_count": 0,
+      "image_hash_examples": [],
+      "frame_hash_examples": [],
+      "label_hash_examples": [],
+      "passed": true
+    },
+    {
+      "scenario_id": "S2",
+      "scope": "S1-S4 versus six train, two validation, and S0",
+      "seed_overlap": false,
+      "object_layout_overlap_with_S0": false,
+      "trajectory_overlap_with_S0": false,
+      "duplicate_image_hash_count": 0,
+      "duplicate_frame_hash_count": 0,
+      "duplicate_nonempty_label_hash_count": 0,
+      "image_hash_examples": [],
+      "frame_hash_examples": [],
+      "label_hash_examples": [],
+      "passed": true
+    },
+    {
+      "scenario_id": "S3",
+      "scope": "S1-S4 versus six train, two validation, and S0",
+      "seed_overlap": false,
+      "object_layout_overlap_with_S0": false,
+      "trajectory_overlap_with_S0": false,
+      "duplicate_image_hash_count": 0,
+      "duplicate_frame_hash_count": 0,
+      "duplicate_nonempty_label_hash_count": 0,
+      "image_hash_examples": [],
+      "frame_hash_examples": [],
+      "label_hash_examples": [],
+      "passed": true
+    },
+    {
+      "scenario_id": "S4",
+      "scope": "S1-S4 versus six train, two validation, and S0",
+      "seed_overlap": false,
+      "object_layout_overlap_with_S0": false,
+      "trajectory_overlap_with_S0": false,
+      "duplicate_image_hash_count": 0,
+      "duplicate_frame_hash_count": 0,
+      "duplicate_nonempty_label_hash_count": 0,
+      "image_hash_examples": [],
+      "frame_hash_examples": [],
+      "label_hash_examples": [],
+      "passed": true
+    }
+  ],
+  "new_scenarios_passed": true
+}

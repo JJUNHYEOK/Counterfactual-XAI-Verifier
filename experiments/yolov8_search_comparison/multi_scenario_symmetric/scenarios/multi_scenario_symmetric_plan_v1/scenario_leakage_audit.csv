@@ -1,0 +1,2 @@
+﻿scenario_id,scope,seed_overlap,object_layout_overlap_with_S0,trajectory_overlap_with_S0,duplicate_image_hash_count,duplicate_frame_hash_count,duplicate_nonempty_label_hash_count,passed
+S0,known held-out reference (not a new-scenario leakage target),True,True,True,0,0,0,True

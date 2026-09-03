@@ -1,0 +1,65 @@
+{
+  "session_id": "kci_multi_scenario_symmetric_v1__20260902_201715_587801",
+  "scenario_id": "S1",
+  "trajectory_name": "남쪽에서 북쪽으로 횡방향 관측",
+  "major_changes": [
+    "UAV 진행축을 x축에서 y축으로 변경",
+    "표적을 측면 관측 폭에 맞춰 재배치"
+  ],
+  "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+  "initial_map50": 0.7952264779883924,
+  "initial_verdict": "PASS",
+  "initial_pass": true,
+  "first_fail_iteration": 4,
+  "search_success": true,
+  "final_nonfail_anchor": {
+    "fog_percent": 72.03,
+    "illumination_lux": 2648.4,
+    "camera_noise": 0.4622,
+    "map50": 0.25261324041811845,
+    "verdict": "MARGINAL",
+    "cache_key": "252bd94037f6294f5e9b1878"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 72.5,
+    "illumination_lux": 2625.0,
+    "camera_noise": 0.465,
+    "map50": 0.24448315911730545,
+    "verdict": "FAIL",
+    "cache_key": "6acd0cdd1c9861f30a079e12"
+  },
+  "gap_map50": 0.008130081300812997,
+  "gap_environment_normalized": 0.010947747747747785,
+  "boundary_physical_differences": {
+    "fog_percent_points": 0.46999999999999886,
+    "illumination_lux": 23.40000000000009,
+    "camera_noise": 0.0028000000000000247,
+    "map50": 0.008130081300812997
+  },
+  "environment_range_denominators": {
+    "fog_percent": {
+      "min": 0.0,
+      "max": 100.0,
+      "range": 100.0
+    },
+    "illumination_lux": {
+      "min": 200.0,
+      "max": 15000.0,
+      "range": 14800.0
+    },
+    "camera_noise": {
+      "min": 0.0,
+      "max": 0.6,
+      "range": 0.6
+    }
+  },
+  "evaluation_count": 10,
+  "actual_new_inference_count": 9,
+  "evaluation_store_use_count": 1,
+  "total_execution_seconds": 610.0193905985719,
+  "scenario_driver_wall_seconds": 563.2818582002074,
+  "nonmonotonic_map_increase_count": 0,
+  "nonmonotonic_map_increase_events": [],
+  "failure_or_unsearchable_reason": null,
+  "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+}

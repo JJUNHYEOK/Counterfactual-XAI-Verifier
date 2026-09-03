@@ -1,0 +1,18 @@
+{
+  "scenario_id_overlap_train_val": [],
+  "image_sha256_overlap_train_val": [],
+  "held_out_test_present_in_generated_rows": false,
+  "passed": true,
+  "held_out_test": {
+    "scenario_id": "mountain_uav_default_layout",
+    "split": "test",
+    "scenario_variant": 0,
+    "seed": 42,
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02,
+    "evaluated_frames": 181,
+    "included_in_training_dataset": false,
+    "source_manifest": "baseline_validation/raw/_shared_evaluations/cache_20260902_121729_173239/ed54cdee262b7169997e/frame_manifest.json"
+  }
+}

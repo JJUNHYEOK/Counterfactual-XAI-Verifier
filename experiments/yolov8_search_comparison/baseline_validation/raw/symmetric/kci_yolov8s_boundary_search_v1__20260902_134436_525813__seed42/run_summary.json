@@ -1,0 +1,30 @@
+{
+  "experiment_id": "kci_yolov8s_boundary_search_v1",
+  "session_id": "kci_yolov8s_boundary_search_v1__20260902_134436_525813__seed42",
+  "search_method": "symmetric",
+  "detector": "yolov8",
+  "scenario_id": "mountain_uav_default_layout",
+  "random_seed": 42,
+  "repetition": 1,
+  "evaluation_count": 1,
+  "first_fail_evaluation": 1,
+  "boundary_success": false,
+  "gap_map50": null,
+  "gap_environment_normalized": null,
+  "final_nonfail_anchor": null,
+  "final_fail_anchor": {
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02,
+    "map50": 0.17796610169491525,
+    "verdict": "FAIL",
+    "cache_key": "ed54cdee262b7169997e"
+  },
+  "stop_reason": "stop_unbracketed: FAIL exists but no PASS/MARGINAL anchor",
+  "accounted_total_seconds": 91.08063649741814,
+  "simulation_total_seconds": 84.7489061,
+  "yolov8_inference_total_seconds": 6.3287154994904995,
+  "next_scenario_total_seconds": 4.999339580535889e-06,
+  "driver_wall_seconds": 6.371975900605321,
+  "statistical_note": "Single deterministic scenario. No artificial 30-run replication and no inferential statistics are reported."
+}

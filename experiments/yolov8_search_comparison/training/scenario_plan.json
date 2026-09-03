@@ -1,0 +1,34 @@
+{
+  "plan_id": "yolov8s_sim_scenario_split_v1",
+  "created_for": "KCI follow-up experiment",
+  "frame_stride": 3,
+  "ground_truth_mode": "rendered_instance_mask_v1",
+  "class_names": {
+    "0": "person",
+    "1": "vehicle"
+  },
+  "split_policy": "Every rendered 181-frame trajectory belongs to exactly one split; sampled adjacent frames never cross splits.",
+  "variation_policy": "Nonzero scenario_variant deterministically changes UAV xyz offset, per-object xy placement, and walking phase while preserving object geometry.",
+  "scenarios": [
+    {"scenario_id": "train_v01_clear_high", "split": "train", "scenario_variant": 1, "seed": 101, "fog_percent": 0.0, "illumination_lux": 15000.0, "camera_noise": 0.00},
+    {"scenario_id": "train_v02_clear", "split": "train", "scenario_variant": 2, "seed": 102, "fog_percent": 10.0, "illumination_lux": 13000.0, "camera_noise": 0.01},
+    {"scenario_id": "train_v03_light", "split": "train", "scenario_variant": 3, "seed": 103, "fog_percent": 18.0, "illumination_lux": 11000.0, "camera_noise": 0.03},
+    {"scenario_id": "train_v04_moderate", "split": "train", "scenario_variant": 4, "seed": 104, "fog_percent": 28.0, "illumination_lux": 9000.0, "camera_noise": 0.06},
+    {"scenario_id": "train_v05_hard", "split": "train", "scenario_variant": 5, "seed": 105, "fog_percent": 40.0, "illumination_lux": 7000.0, "camera_noise": 0.10},
+    {"scenario_id": "train_v06_harder", "split": "train", "scenario_variant": 6, "seed": 106, "fog_percent": 55.0, "illumination_lux": 5000.0, "camera_noise": 0.16},
+    {"scenario_id": "val_v07_clean", "split": "val", "scenario_variant": 7, "seed": 207, "fog_percent": 8.0, "illumination_lux": 14000.0, "camera_noise": 0.02},
+    {"scenario_id": "val_v08_moderate", "split": "val", "scenario_variant": 8, "seed": 208, "fog_percent": 32.0, "illumination_lux": 8000.0, "camera_noise": 0.08}
+  ],
+  "held_out_test": {
+    "scenario_id": "mountain_uav_default_layout",
+    "split": "test",
+    "scenario_variant": 0,
+    "seed": 42,
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02,
+    "evaluated_frames": 181,
+    "included_in_training_dataset": false,
+    "source_manifest": "baseline_validation/raw/_shared_evaluations/cache_20260902_121729_173239/ed54cdee262b7169997e/frame_manifest.json"
+  }
+}

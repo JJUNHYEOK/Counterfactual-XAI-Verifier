@@ -1,0 +1,30 @@
+﻿name,passed,detail
+fixed_weights_sha256,True,C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA
+five_registered_scenarios,True,5
+scenario_configs_unchanged,True,"{""S0"": ""FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719"", ""S1"": ""5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3"", ""S2"": ""401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E"", ""S3"": ""6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6"", ""S4"": ""24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0""}"
+all_gt_scenarios_valid,True,"[[""S0"", true], [""S1"", true], [""S2"", true], [""S3"", true], [""S4"", true]]"
+all_gt_counts_minimum_20,True,"[[""S0"", 118, 131], [""S1"", 287, 123], [""S2"", 170, 141], [""S3"", 154, 134], [""S4"", 172, 29]]"
+gt_geometry_and_alignment,True,0 invalid boxes; 181 aligned frames per scenario
+new_scenario_leakage_audit,True,"[[""S0"", true], [""S1"", true], [""S2"", true], [""S3"", true], [""S4"", true]]"
+zero_exact_content_overlap,True,S1-S4 image/frame/nonempty-label overlaps are zero
+five_initial_pass,True,5
+five_search_success,True,1.0
+fifty_iteration_records,True,50
+symmetric_only,True,all decisions are common pre-FAIL or 50:50 midpoint
+fixed_inference_and_gt,True,all 50 records
+scenario_specific_evaluation_keys,True,"{""records"": 50, ""unique_keys"": 50}"
+gap_formulas_and_anchor_sides,True,"[{""scenario_id"": ""S0"", ""gap_map"": 0.02924052270668906, ""gap_env"": 0.010947747747747785, ""passed"": true}, {""scenario_id"": ""S1"", ""gap_map"": 0.008130081300812997, ""gap_env"": 0.010947747747747785, ""passed"": true}, {""scenario_id"": ""S2"", ""gap_map"": 0.02768043387567798, ""gap_env"": 0.010954504504504442, ""passed"": true}, {""scenario_id"": ""S3"", ""gap_map"": 0.03392130257801901, ""gap_env"": 0.010954504504504442, ""passed"": true}, {""scenario_id"": ""S4"", ""gap_map"": 0.02305533279871691, ""gap_env"": 0.010954504504504536, ""passed"": true}]"
+first_fail_statistics,True,"{""count"": 5, ""mean"": 4.0, ""population_std"": 0.0, ""median"": 4.0, ""min"": 4.0, ""max"": 4.0, ""range"": 0.0}"
+nonmonotonic_event_count,True,S3 only
+s0_independent_reproduction,True,0.0
+fifteen_revalidation_cases,True,15
+all_revalidation_verdicts_match,True,15
+revalidation_is_fresh,True,"15 independent stores, 0 cache hits"
+revalidation_map_difference_recorded,True,0.0
+eight_required_figures,True,"[""01_five_trajectory_comparison.png"", ""02_map_by_iteration.png"", ""03_environment_by_iteration.png"", ""04_final_gap_map.png"", ""05_final_gap_env.png"", ""06_initial_pass_examples.png"", ""07_final_boundary_examples.png"", ""08_search_success_rate.png""]"
+figures_at_least_300dpi_nominal,True,"[{""file"": ""01_five_trajectory_comparison.png"", ""width"": 3570, ""height"": 1406, ""dpi"": [299.9994, 299.9994]}, {""file"": ""02_map_by_iteration.png"", ""width"": 2520, ""height"": 1525, ""dpi"": [299.9994, 299.9994]}, {""file"": ""03_environment_by_iteration.png"", ""width"": 2520, ""height"": 2666, ""dpi"": [299.9994, 299.9994]}, {""file"": ""04_final_gap_map.png"", ""width"": 2131, ""height"": 1346, ""dpi"": [299.9994, 299.9994]}, {""file"": ""05_final_gap_env.png"", ""width"": 2131, ""height"": 1346, ""dpi"": [299.9994, 299.9994]}, {""file"": ""06_initial_pass_examples.png"", ""width"": 5070, ""height"": 885, ""dpi"": [299.9994, 299.9994]}, {""file"": ""07_final_boundary_examples.png"", ""width"": 2385, ""height"": 3543, ""dpi"": [299.9994, 299.9994]}, {""file"": ""08_search_success_rate.png"", ""width"": 1920, ""height"": 1406, ""dpi"": [299.9994, 299.9994]}]"
+paper_sections_complete,True,sections 4.1-5.6
+paper_excludes_out_of_scope_terms,True,no out-of-scope comparison text
+aggregate_csv_row_counts,True,"5 summary rows, 50 iteration rows"
+all_multi_scenario_json_parse,True,"{""count"": 208, ""errors"": []}"
+all_unit_tests,True,"{""count"": 34, ""returncode"": 0}"

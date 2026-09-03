@@ -1,0 +1,567 @@
+{
+  "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+  "passed": true,
+  "passed_count": 26,
+  "failed_count": 0,
+  "unit_test_count": 45,
+  "checks": [
+    {
+      "name": "scenario_level_split_18_train_5_validation",
+      "passed": true,
+      "detail": {
+        "plan_id": "diverse_training_scenario_split_v2",
+        "policy": "Each scenario belongs wholly to train or validation. Fixed S0-S4 remain evaluation-only.",
+        "train_scenarios": [
+          "T01_east_level_low",
+          "T02_east_level_high",
+          "T03_east_ascending",
+          "T04_east_descending",
+          "T05_west_retreat_low",
+          "T06_west_retreat_high",
+          "T07_north_lateral",
+          "T08_south_lateral",
+          "T09_diagonal_swnE",
+          "T10_diagonal_nwse",
+          "T11_far_to_near",
+          "T12_near_to_far",
+          "T13_high_short",
+          "T14_low_close",
+          "T15_lateral_ascending",
+          "T16_lateral_descending",
+          "T17_partial_occlusion",
+          "T18_wide_diagonal"
+        ],
+        "validation_scenarios": [
+          "V01_east_ascending",
+          "V02_west_retreat",
+          "V03_north_lateral",
+          "V04_diagonal_descending",
+          "V05_occluded_approach"
+        ],
+        "fixed_test_scenarios": [
+          "S0",
+          "S1",
+          "S2",
+          "S3",
+          "S4"
+        ],
+        "scenario_overlap": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "dataset_counts_360_train_100_validation",
+      "passed": true,
+      "detail": {
+        "train": 360,
+        "validation": 100
+      }
+    },
+    {
+      "name": "uniform_20_frame_selection",
+      "passed": true,
+      "detail": [
+        1,
+        10,
+        20,
+        29,
+        39,
+        48,
+        58,
+        67,
+        77,
+        86,
+        96,
+        105,
+        115,
+        124,
+        134,
+        143,
+        153,
+        162,
+        172,
+        181
+      ]
+    },
+    {
+      "name": "both_classes_in_every_scenario",
+      "passed": true,
+      "detail": [
+        [
+          "T01_east_level_low",
+          13,
+          14,
+          10
+        ],
+        [
+          "T02_east_level_high",
+          21,
+          20,
+          19
+        ],
+        [
+          "T03_east_ascending",
+          13,
+          15,
+          12
+        ],
+        [
+          "T04_east_descending",
+          15,
+          17,
+          14
+        ],
+        [
+          "T05_west_retreat_low",
+          14,
+          14,
+          10
+        ],
+        [
+          "T06_west_retreat_high",
+          38,
+          32,
+          18
+        ],
+        [
+          "T07_north_lateral",
+          25,
+          27,
+          17
+        ],
+        [
+          "T08_south_lateral",
+          40,
+          42,
+          20
+        ],
+        [
+          "T09_diagonal_swnE",
+          12,
+          14,
+          9
+        ],
+        [
+          "T10_diagonal_nwse",
+          13,
+          16,
+          12
+        ],
+        [
+          "T11_far_to_near",
+          16,
+          15,
+          14
+        ],
+        [
+          "T12_near_to_far",
+          24,
+          20,
+          20
+        ],
+        [
+          "T13_high_short",
+          31,
+          34,
+          18
+        ],
+        [
+          "T14_low_close",
+          4,
+          7,
+          4
+        ],
+        [
+          "T15_lateral_ascending",
+          24,
+          26,
+          19
+        ],
+        [
+          "T16_lateral_descending",
+          22,
+          25,
+          13
+        ],
+        [
+          "T17_partial_occlusion",
+          17,
+          19,
+          16
+        ],
+        [
+          "T18_wide_diagonal",
+          11,
+          17,
+          10
+        ],
+        [
+          "V01_east_ascending",
+          18,
+          17,
+          14
+        ],
+        [
+          "V02_west_retreat",
+          35,
+          33,
+          20
+        ],
+        [
+          "V03_north_lateral",
+          25,
+          28,
+          17
+        ],
+        [
+          "V04_diagonal_descending",
+          16,
+          15,
+          14
+        ],
+        [
+          "V05_occluded_approach",
+          12,
+          15,
+          12
+        ]
+      ]
+    },
+    {
+      "name": "ground_truth_coordinate_class_alignment",
+      "passed": true,
+      "detail": "all visible-pixel boxes and frame-label pairs valid"
+    },
+    {
+      "name": "five_diagnostics_per_scenario",
+      "passed": true,
+      "detail": 115
+    },
+    {
+      "name": "train_validation_test_identity_separation",
+      "passed": true,
+      "detail": {
+        "scenario_id": [],
+        "seed": [],
+        "trajectory": [],
+        "object_layout": [],
+        "within_new_scenario_id": 0,
+        "within_new_seed": 0,
+        "within_new_trajectory": 0,
+        "within_new_object_layout": 0
+      }
+    },
+    {
+      "name": "exact_content_duplicate_audit",
+      "passed": true,
+      "detail": {
+        "images": 0,
+        "frames": 0,
+        "nonempty_labels": 0
+      }
+    },
+    {
+      "name": "near_duplicate_audit_and_structural_review",
+      "passed": true,
+      "detail": [
+        [
+          "train-vs-validation",
+          5,
+          0
+        ],
+        [
+          "train-vs-S0-S4",
+          1,
+          16
+        ],
+        [
+          "validation-vs-S0-S4",
+          5,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "pre_registered_hashes_unchanged",
+      "passed": true,
+      "detail": "9C8837C3118CE0F53930F7DA091AC5B392FFC52390E6D7551D15445D38ABD55D"
+    },
+    {
+      "name": "new_weight_hash",
+      "passed": true,
+      "detail": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E"
+    },
+    {
+      "name": "validation_only_weight_selection",
+      "passed": true,
+      "detail": {
+        "person_ap50": 0.974423076923077,
+        "vehicle_ap50": 0.9624905061627326,
+        "map50": 0.9684567915429048,
+        "map50_95": 0.8659240720818013,
+        "mean_precision": 0.9843583246460694,
+        "mean_recall": 0.9580712788259957,
+        "per_class_ap50": {
+          "person": 0.974423076923077,
+          "vehicle": 0.9624905061627326
+        },
+        "selection_scope": "Five pre-registered validation scenarios only; S0-S4 were not accessed."
+      }
+    },
+    {
+      "name": "global_initial_pass_gate",
+      "passed": true,
+      "detail": {
+        "pass_count": 5,
+        "search_started": true
+      }
+    },
+    {
+      "name": "fifty_search_records",
+      "passed": true,
+      "detail": 50
+    },
+    {
+      "name": "fixed_threshold_verdicts",
+      "passed": true,
+      "detail": "PASS>=0.50; MARGINAL>=0.25; FAIL<0.25"
+    },
+    {
+      "name": "symmetric_midpoint_policy",
+      "passed": true,
+      "detail": "all 50 policy labels"
+    },
+    {
+      "name": "ten_unique_new_weight_evaluations_per_scenario",
+      "passed": true,
+      "detail": "10 content-addressed evaluation files per scenario"
+    },
+    {
+      "name": "evaluation_cache_separated_from_old_weight",
+      "passed": true,
+      "detail": {
+        "old_keys": 50,
+        "new_keys": 50,
+        "intersection": 0
+      }
+    },
+    {
+      "name": "gap_formulas_and_boundary_sides",
+      "passed": true,
+      "detail": [
+        {
+          "scenario": "S0",
+          "gap_map50": 0.14074078427192904,
+          "gap_env": 0.010954504504504536,
+          "passed": true
+        },
+        {
+          "scenario": "S1",
+          "gap_map50": 0.09035784141043285,
+          "gap_env": 0.010947747747747785,
+          "passed": true
+        },
+        {
+          "scenario": "S2",
+          "gap_map50": 0.12677056068812925,
+          "gap_env": 0.010947747747747769,
+          "passed": true
+        },
+        {
+          "scenario": "S3",
+          "gap_map50": 0.07047917617537192,
+          "gap_env": 0.010947747747747785,
+          "passed": true
+        },
+        {
+          "scenario": "S4",
+          "gap_map50": 0.06478916949150901,
+          "gap_env": 0.010947747747747785,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "population_standard_deviation_explicit",
+      "passed": true,
+      "detail": {
+        "count": 5,
+        "mean": 0.09862750640747442,
+        "population_std": 0.030236760990522204,
+        "median": 0.09035784141043285,
+        "min": 0.06478916949150901,
+        "max": 0.14074078427192904,
+        "range": 0.07595161478042003
+      }
+    },
+    {
+      "name": "all_existing_results_preserved",
+      "passed": true,
+      "detail": {
+        "all_unchanged": true,
+        "checks": [
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\scenario_plan.json",
+            "exists": true,
+            "expected_sha256": "800B108285F4A1654D643C0FED81BF83B60E17DB8FA5E84A57B9714B3C793ACE",
+            "actual_sha256": "800B108285F4A1654D643C0FED81BF83B60E17DB8FA5E84A57B9714B3C793ACE",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\frame_manifest.csv",
+            "exists": true,
+            "expected_sha256": "8FFF0053AAED51AF3AD7E997F74D90C76732B7EF87D40467589A44CC4DCC637D",
+            "actual_sha256": "8FFF0053AAED51AF3AD7E997F74D90C76732B7EF87D40467589A44CC4DCC637D",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\args.yaml",
+            "exists": true,
+            "expected_sha256": "03D203B6C525CAD61FB49673AF780E9DC37DB385053545B8F0A95234160AA18B",
+            "actual_sha256": "03D203B6C525CAD61FB49673AF780E9DC37DB385053545B8F0A95234160AA18B",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\training\\yolov8s_sim_20260902\\runs\\full_yolov8s_seed42\\weights\\best.pt",
+            "exists": true,
+            "expected_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+            "actual_sha256": "C5C549611CBE39EBCDB051863EE80F92AE0072266FEEB71A21CC7AABEBF57ECA",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+            "exists": true,
+            "expected_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+            "actual_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\aggregated\\kci_multi_scenario_symmetric_v1__20260902_201715_587801\\multi_scenario_results.json",
+            "exists": true,
+            "expected_sha256": "EB55AC15025B2BA3BF05CCCCC16264D72F36DC56D5DE581BC329616A88964E57",
+            "actual_sha256": "EB55AC15025B2BA3BF05CCCCC16264D72F36DC56D5DE581BC329616A88964E57",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\aggregated\\kci_multi_scenario_symmetric_v1__20260902_201715_587801\\all_iteration_results.csv",
+            "exists": true,
+            "expected_sha256": "AB3AD2556121B34A415C65036CE95419569D7714109261841D0B33C58C7007DA",
+            "actual_sha256": "AB3AD2556121B34A415C65036CE95419569D7714109261841D0B33C58C7007DA",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S0.json",
+            "exists": true,
+            "expected_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+            "actual_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S0\\initial_condition\\frame_manifest.json",
+            "exists": true,
+            "expected_sha256": "784100F07FEEE246FF12CF54AD2908947D7A85FF1499E98CB6DE700EA1DE980E",
+            "actual_sha256": "784100F07FEEE246FF12CF54AD2908947D7A85FF1499E98CB6DE700EA1DE980E",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S1.json",
+            "exists": true,
+            "expected_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+            "actual_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S1\\initial_condition\\frame_manifest.json",
+            "exists": true,
+            "expected_sha256": "42F70B4B945B14C441933E0E9B8B5A5FF7F1AC72ECE567FFF590D200632429B8",
+            "actual_sha256": "42F70B4B945B14C441933E0E9B8B5A5FF7F1AC72ECE567FFF590D200632429B8",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S2.json",
+            "exists": true,
+            "expected_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+            "actual_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S2\\initial_condition\\frame_manifest.json",
+            "exists": true,
+            "expected_sha256": "491B06839B9202AB2D6F95F6E6B73E780818DE833440E76426C464386084F9E4",
+            "actual_sha256": "491B06839B9202AB2D6F95F6E6B73E780818DE833440E76426C464386084F9E4",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S3.json",
+            "exists": true,
+            "expected_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+            "actual_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S3\\initial_condition\\frame_manifest.json",
+            "exists": true,
+            "expected_sha256": "AF010E8245D308ECA25D3204D519E342976A9D601CC943201BC1C4A9A5147326",
+            "actual_sha256": "AF010E8245D308ECA25D3204D519E342976A9D601CC943201BC1C4A9A5147326",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_configs\\S4.json",
+            "exists": true,
+            "expected_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+            "actual_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+            "unchanged": true
+          },
+          {
+            "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios\\multi_scenario_symmetric_plan_v2\\S4\\initial_condition\\frame_manifest.json",
+            "exists": true,
+            "expected_sha256": "A6F176692E92B8A7CF3BCE2C353CD280C934B0707B224E8410D54BE8E13D9D46",
+            "actual_sha256": "A6F176692E92B8A7CF3BCE2C353CD280C934B0707B224E8410D54BE8E13D9D46",
+            "unchanged": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "required_figures_300dpi",
+      "passed": true,
+      "detail": [
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\figures\\kci_diverse_training_s0_s4_v1__20260903_011624_021544\\01_training_curves.png",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\figures\\kci_diverse_training_s0_s4_v1__20260903_011624_021544\\02_map_search_trajectories.png",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\figures\\kci_diverse_training_s0_s4_v1__20260903_011624_021544\\03_environment_search_trajectories.png",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\figures\\kci_diverse_training_s0_s4_v1__20260903_011624_021544\\04_final_nonfail_fail_examples.png"
+      ]
+    },
+    {
+      "name": "json_csv_parse",
+      "passed": true,
+      "detail": {
+        "json_errors": [],
+        "csv_errors": []
+      }
+    },
+    {
+      "name": "unit_tests",
+      "passed": true,
+      "detail": {
+        "test_count": 45
+      }
+    },
+    {
+      "name": "git_diff_check",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "required_documents_created",
+      "passed": true,
+      "detail": [
+        "final_execution_report_ko.md",
+        "training_report_ko.md",
+        "paper_sections_4_5_ko.md",
+        "limitations_and_claims_ko.md",
+        "README.md"
+      ]
+    }
+  ]
+}

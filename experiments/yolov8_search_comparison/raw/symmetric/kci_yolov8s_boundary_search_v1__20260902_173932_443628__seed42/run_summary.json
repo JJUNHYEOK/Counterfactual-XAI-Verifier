@@ -1,0 +1,40 @@
+{
+  "experiment_id": "kci_yolov8s_boundary_search_v1",
+  "session_id": "kci_yolov8s_boundary_search_v1__20260902_173932_443628__seed42",
+  "search_method": "symmetric",
+  "detector": "yolov8",
+  "scenario_id": "mountain_uav_default_layout",
+  "random_seed": 42,
+  "repetition": 1,
+  "evaluation_count": 10,
+  "logical_evaluation_count": 10,
+  "actual_new_evaluation_count": 10,
+  "cache_hit_count": 0,
+  "first_fail_evaluation": 4,
+  "boundary_success": true,
+  "gap_map50": 0.02924052270668906,
+  "gap_environment_normalized": 0.010947747747747785,
+  "final_nonfail_anchor": {
+    "fog_percent": 78.12,
+    "illumination_lux": 2343.8,
+    "camera_noise": 0.4988,
+    "map50": 0.2666256954327856,
+    "verdict": "MARGINAL",
+    "cache_key": "28e043a680d9497e02b5"
+  },
+  "final_fail_anchor": {
+    "fog_percent": 78.59,
+    "illumination_lux": 2320.4,
+    "camera_noise": 0.5016,
+    "map50": 0.23738517272609652,
+    "verdict": "FAIL",
+    "cache_key": "1a7419550bbbfcda9f06"
+  },
+  "stop_reason": "maximum_evaluations_reached",
+  "accounted_total_seconds": 542.2771573011325,
+  "simulation_total_seconds": 494.6189698,
+  "yolov8_inference_total_seconds": 47.63977510482073,
+  "next_scenario_total_seconds": 0.00041289813816547394,
+  "driver_wall_seconds": 553.7971295006573,
+  "statistical_note": "Single deterministic scenario. No artificial 30-run replication and no inferential statistics are reported."
+}

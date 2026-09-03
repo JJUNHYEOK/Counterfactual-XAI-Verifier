@@ -1,0 +1,13 @@
+{
+  "person_ap50": 0.974423076923077,
+  "vehicle_ap50": 0.9624905061627326,
+  "map50": 0.9684567915429048,
+  "map50_95": 0.8659240720818013,
+  "mean_precision": 0.9843583246460694,
+  "mean_recall": 0.9580712788259957,
+  "per_class_ap50": {
+    "person": 0.974423076923077,
+    "vehicle": 0.9624905061627326
+  },
+  "selection_scope": "Five pre-registered validation scenarios only; S0-S4 were not accessed."
+}

@@ -1,0 +1,647 @@
+{
+  "overall": {
+    "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+    "completed_at_utc": "2026-09-02T16:59:57.675695+00:00",
+    "scenario_count": 5,
+    "initial_pass_count": 5,
+    "initial_pass_rate": 1.0,
+    "search_success_count": 5,
+    "search_success_rate": 1.0,
+    "first_fail_iteration_statistics": {
+      "count": 5,
+      "mean": 4.0,
+      "population_std": 0.0,
+      "median": 4.0,
+      "min": 4.0,
+      "max": 4.0,
+      "range": 0.0
+    },
+    "gap_map50_statistics": {
+      "count": 5,
+      "mean": 0.09862750640747442,
+      "population_std": 0.030236760990522204,
+      "median": 0.09035784141043285,
+      "min": 0.06478916949150901,
+      "max": 0.14074078427192904,
+      "range": 0.07595161478042003
+    },
+    "gap_environment_statistics": {
+      "count": 5,
+      "mean": 0.010949099099099132,
+      "population_std": 2.702702702702016e-06,
+      "median": 0.010947747747747785,
+      "min": 0.010947747747747769,
+      "max": 0.010954504504504536,
+      "range": 6.756756756766749e-06
+    },
+    "total_evaluation_count": 50,
+    "mean_execution_seconds_per_scenario": 569.9958539373181,
+    "scenario_with_nonmonotonic_increase_count": 1,
+    "environment_bounds": {
+      "fog_percent": [
+        0.0,
+        100.0
+      ],
+      "illumination_lux": [
+        200.0,
+        15000.0
+      ],
+      "camera_noise": [
+        0.0,
+        0.6
+      ]
+    },
+    "scope_note": "Five deterministic MATLAB simulation scenarios only; no statistical significance or general superiority claim is made."
+  },
+  "scenarios": [
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S0",
+      "trajectory_name": "기준 동서 직선 순항",
+      "major_changes": [
+        "기존 대표 시나리오를 최종 렌더러로 독립 재실행"
+      ],
+      "scenario_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+      "initial_map50": 0.991945917971277,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "final_nonfail_anchor": {
+        "fog_percent": 84.69,
+        "illumination_lux": 2015.7,
+        "camera_noise": 0.5381,
+        "map50": 0.31080168624917237,
+        "verdict": "MARGINAL",
+        "cache_key": "3092a7104f186e844cce5134"
+      },
+      "final_fail_anchor": {
+        "fog_percent": 85.16,
+        "illumination_lux": 1992.2,
+        "camera_noise": 0.5409,
+        "map50": 0.17006090197724333,
+        "verdict": "FAIL",
+        "cache_key": "3c5f5ac40e5c58b1e675f233"
+      },
+      "gap_map50": 0.14074078427192904,
+      "gap_environment_normalized": 0.010954504504504536,
+      "boundary_physical_differences": {
+        "fog_percent_points": 0.46999999999999886,
+        "illumination_lux": 23.5,
+        "camera_noise": 0.0028000000000000247,
+        "map50": 0.14074078427192904
+      },
+      "environment_range_denominators": {
+        "fog_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "range": 100.0
+        },
+        "illumination_lux": {
+          "min": 200.0,
+          "max": 15000.0,
+          "range": 14800.0
+        },
+        "camera_noise": {
+          "min": 0.0,
+          "max": 0.6,
+          "range": 0.6
+        }
+      },
+      "evaluation_count": 10,
+      "actual_new_inference_count": 9,
+      "evaluation_store_use_count": 1,
+      "total_execution_seconds": 567.6327720969246,
+      "scenario_driver_wall_seconds": 514.9789022002369,
+      "nonmonotonic_map_increase_count": 0,
+      "nonmonotonic_map_increase_events": [],
+      "failure_or_unsearchable_reason": null,
+      "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S1",
+      "trajectory_name": "남쪽에서 북쪽으로 횡방향 관측",
+      "major_changes": [
+        "UAV 진행축을 x축에서 y축으로 변경",
+        "표적을 측면 관측 폭에 맞춰 재배치"
+      ],
+      "scenario_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+      "initial_map50": 0.9872241579558653,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "final_nonfail_anchor": {
+        "fog_percent": 83.28,
+        "illumination_lux": 2085.9,
+        "camera_noise": 0.5297,
+        "map50": 0.3314397751538534,
+        "verdict": "MARGINAL",
+        "cache_key": "2dad425ab0a9bb0c425dd720"
+      },
+      "final_fail_anchor": {
+        "fog_percent": 83.75,
+        "illumination_lux": 2062.5,
+        "camera_noise": 0.5325,
+        "map50": 0.24108193374342057,
+        "verdict": "FAIL",
+        "cache_key": "a65cdd54a4a4303aad57e726"
+      },
+      "gap_map50": 0.09035784141043285,
+      "gap_environment_normalized": 0.010947747747747785,
+      "boundary_physical_differences": {
+        "fog_percent_points": 0.46999999999999886,
+        "illumination_lux": 23.40000000000009,
+        "camera_noise": 0.0028000000000000247,
+        "map50": 0.09035784141043285
+      },
+      "environment_range_denominators": {
+        "fog_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "range": 100.0
+        },
+        "illumination_lux": {
+          "min": 200.0,
+          "max": 15000.0,
+          "range": 14800.0
+        },
+        "camera_noise": {
+          "min": 0.0,
+          "max": 0.6,
+          "range": 0.6
+        }
+      },
+      "evaluation_count": 10,
+      "actual_new_inference_count": 9,
+      "evaluation_store_use_count": 1,
+      "total_execution_seconds": 523.0960194983,
+      "scenario_driver_wall_seconds": 471.8192226998508,
+      "nonmonotonic_map_increase_count": 0,
+      "nonmonotonic_map_increase_events": [],
+      "failure_or_unsearchable_reason": null,
+      "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S2",
+      "trajectory_name": "고도 점진 하강 접근",
+      "major_changes": [
+        "18초 동안 고도 15 m 하강",
+        "진행방향 전방에 표적 간격 유지"
+      ],
+      "scenario_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+      "initial_map50": 0.9929078014184397,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "final_nonfail_anchor": {
+        "fog_percent": 84.22,
+        "illumination_lux": 2039.1,
+        "camera_noise": 0.5353,
+        "map50": 0.2516547185317609,
+        "verdict": "MARGINAL",
+        "cache_key": "712c12c323850c3aa13de344"
+      },
+      "final_fail_anchor": {
+        "fog_percent": 84.69,
+        "illumination_lux": 2015.7,
+        "camera_noise": 0.5381,
+        "map50": 0.12488415784363165,
+        "verdict": "FAIL",
+        "cache_key": "7b3c06bf8b7d68e60a45682d"
+      },
+      "gap_map50": 0.12677056068812925,
+      "gap_environment_normalized": 0.010947747747747769,
+      "boundary_physical_differences": {
+        "fog_percent_points": 0.46999999999999886,
+        "illumination_lux": 23.399999999999864,
+        "camera_noise": 0.0028000000000000247,
+        "map50": 0.12677056068812925
+      },
+      "environment_range_denominators": {
+        "fog_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "range": 100.0
+        },
+        "illumination_lux": {
+          "min": 200.0,
+          "max": 15000.0,
+          "range": 14800.0
+        },
+        "camera_noise": {
+          "min": 0.0,
+          "max": 0.6,
+          "range": 0.6
+        }
+      },
+      "evaluation_count": 10,
+      "actual_new_inference_count": 9,
+      "evaluation_store_use_count": 1,
+      "total_execution_seconds": 561.72786329452,
+      "scenario_driver_wall_seconds": 509.4253028985113,
+      "nonmonotonic_map_increase_count": 0,
+      "nonmonotonic_map_increase_events": [],
+      "failure_or_unsearchable_reason": null,
+      "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S3",
+      "trajectory_name": "남서-북동 대각선 통과",
+      "major_changes": [
+        "x와 y를 동시에 변화시키는 대각선 경로",
+        "대각선 통로를 따라 표적 배치"
+      ],
+      "scenario_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+      "initial_map50": 0.9860438069393294,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "final_nonfail_anchor": {
+        "fog_percent": 83.75,
+        "illumination_lux": 2062.5,
+        "camera_noise": 0.5325,
+        "map50": 0.2569162835838678,
+        "verdict": "MARGINAL",
+        "cache_key": "9aad953658190a35f178b429"
+      },
+      "final_fail_anchor": {
+        "fog_percent": 84.22,
+        "illumination_lux": 2039.1,
+        "camera_noise": 0.5353,
+        "map50": 0.1864371074084959,
+        "verdict": "FAIL",
+        "cache_key": "2a66c266bf23551f89281277"
+      },
+      "gap_map50": 0.07047917617537192,
+      "gap_environment_normalized": 0.010947747747747785,
+      "boundary_physical_differences": {
+        "fog_percent_points": 0.46999999999999886,
+        "illumination_lux": 23.40000000000009,
+        "camera_noise": 0.0028000000000000247,
+        "map50": 0.07047917617537192
+      },
+      "environment_range_denominators": {
+        "fog_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "range": 100.0
+        },
+        "illumination_lux": {
+          "min": 200.0,
+          "max": 15000.0,
+          "range": 14800.0
+        },
+        "camera_noise": {
+          "min": 0.0,
+          "max": 0.6,
+          "range": 0.6
+        }
+      },
+      "evaluation_count": 10,
+      "actual_new_inference_count": 9,
+      "evaluation_store_use_count": 1,
+      "total_execution_seconds": 578.2676465937417,
+      "scenario_driver_wall_seconds": 527.7051793988794,
+      "nonmonotonic_map_increase_count": 1,
+      "nonmonotonic_map_increase_events": [
+        {
+          "from_iteration": 1,
+          "to_iteration": 2,
+          "from_environment": {
+            "fog_percent": 5.0,
+            "illumination_lux": 12000.0,
+            "camera_noise": 0.02
+          },
+          "to_environment": {
+            "fog_percent": 35.0,
+            "illumination_lux": 6000.0,
+            "camera_noise": 0.22
+          },
+          "from_map50": 0.9860438069393294,
+          "to_map50": 0.9892069020141891,
+          "map50_increase": 0.0031630950748597897
+        }
+      ],
+      "failure_or_unsearchable_reason": null,
+      "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S4",
+      "trajectory_name": "원거리 시작 후 전방 접근",
+      "major_changes": [
+        "S0보다 27 m 먼 위치에서 시작",
+        "접근 거리에 따라 표적 영상 크기가 증가하도록 표적열 확장"
+      ],
+      "scenario_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+      "initial_map50": 0.968223736968725,
+      "initial_verdict": "PASS",
+      "initial_pass": true,
+      "first_fail_iteration": 4,
+      "search_success": true,
+      "final_nonfail_anchor": {
+        "fog_percent": 83.75,
+        "illumination_lux": 2062.5,
+        "camera_noise": 0.5325,
+        "map50": 0.25942420233051744,
+        "verdict": "MARGINAL",
+        "cache_key": "0b057c6a017e56f3d375c840"
+      },
+      "final_fail_anchor": {
+        "fog_percent": 84.22,
+        "illumination_lux": 2039.1,
+        "camera_noise": 0.5353,
+        "map50": 0.19463503283900843,
+        "verdict": "FAIL",
+        "cache_key": "b36f1e7a43efadf42b0314b8"
+      },
+      "gap_map50": 0.06478916949150901,
+      "gap_environment_normalized": 0.010947747747747785,
+      "boundary_physical_differences": {
+        "fog_percent_points": 0.46999999999999886,
+        "illumination_lux": 23.40000000000009,
+        "camera_noise": 0.0028000000000000247,
+        "map50": 0.06478916949150901
+      },
+      "environment_range_denominators": {
+        "fog_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "range": 100.0
+        },
+        "illumination_lux": {
+          "min": 200.0,
+          "max": 15000.0,
+          "range": 14800.0
+        },
+        "camera_noise": {
+          "min": 0.0,
+          "max": 0.6,
+          "range": 0.6
+        }
+      },
+      "evaluation_count": 10,
+      "actual_new_inference_count": 9,
+      "evaluation_store_use_count": 1,
+      "total_execution_seconds": 619.2549682031042,
+      "scenario_driver_wall_seconds": 567.4833038989455,
+      "nonmonotonic_map_increase_count": 0,
+      "nonmonotonic_map_increase_events": [],
+      "failure_or_unsearchable_reason": null,
+      "boundary_interpretation": "The boundary is the interval between final non-failure (PASS or MARGINAL) and FAIL anchors, not a single exact environment point."
+    }
+  ],
+  "initial_evaluations": [
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S0",
+      "trajectory_name": "기준 동서 직선 순항",
+      "iteration": 0,
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02,
+      "person_ap50": 0.9915254237288136,
+      "vehicle_ap50": 0.9923664122137403,
+      "map50": 0.991945917971277,
+      "person_gt_count": 118,
+      "vehicle_gt_count": 131,
+      "person_detection_count": 118,
+      "vehicle_detection_count": 131,
+      "person_tp": 117,
+      "person_fp": 1,
+      "person_fn": 1,
+      "vehicle_tp": 130,
+      "vehicle_fp": 1,
+      "vehicle_fn": 1,
+      "total_tp": 247,
+      "total_fp": 2,
+      "total_fn": 2,
+      "precision": 0.9919678714859438,
+      "recall": 0.9919678714859438,
+      "person_precision": 0.9915254237288136,
+      "person_recall": 0.9915254237288136,
+      "vehicle_precision": 0.9923664122137404,
+      "vehicle_recall": 0.9923664122137404,
+      "maximum_iou": 0.9945673770647837,
+      "mean_iou": 0.9517355358081473,
+      "verdict": "PASS",
+      "nonfail_anchor": null,
+      "fail_anchor": null,
+      "next_environment": null,
+      "next_condition_calculation": "independent_initial_condition_evaluation_before_search",
+      "simulation_seconds": 0.1815989,
+      "frame_rendering_seconds": 60.3454632,
+      "yolov8_inference_seconds": 4.275711201131344,
+      "metric_scoring_seconds": 0.0032278988510370255,
+      "policy_seconds": 0.0,
+      "total_execution_seconds": 64.80600119998238,
+      "evaluation_store_used": true,
+      "evaluation_cache_key": "ddebb7b53ebc6de9961c12db",
+      "trajectory_config_sha256": "FB600B8226D0FB0957C01E8F2D61B14B1980FEF489668CDEACAF3E17F0EF5719",
+      "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+      "gt_version": "rendered_instance_mask_v1"
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S1",
+      "trajectory_name": "남쪽에서 북쪽으로 횡방향 관측",
+      "iteration": 0,
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02,
+      "person_ap50": 0.9825783972125436,
+      "vehicle_ap50": 0.991869918699187,
+      "map50": 0.9872241579558653,
+      "person_gt_count": 287,
+      "vehicle_gt_count": 123,
+      "person_detection_count": 283,
+      "vehicle_detection_count": 124,
+      "person_tp": 282,
+      "person_fp": 1,
+      "person_fn": 5,
+      "vehicle_tp": 122,
+      "vehicle_fp": 2,
+      "vehicle_fn": 1,
+      "total_tp": 404,
+      "total_fp": 3,
+      "total_fn": 6,
+      "precision": 0.9926289926289926,
+      "recall": 0.9853658536585366,
+      "person_precision": 0.9964664310954063,
+      "person_recall": 0.9825783972125436,
+      "vehicle_precision": 0.9838709677419355,
+      "vehicle_recall": 0.991869918699187,
+      "maximum_iou": 0.9874462472743946,
+      "mean_iou": 0.9257069432952665,
+      "verdict": "PASS",
+      "nonfail_anchor": null,
+      "fail_anchor": null,
+      "next_environment": null,
+      "next_condition_calculation": "independent_initial_condition_evaluation_before_search",
+      "simulation_seconds": 0.0386152,
+      "frame_rendering_seconds": 47.6821056,
+      "yolov8_inference_seconds": 4.421248398721218,
+      "metric_scoring_seconds": 0.004294900223612785,
+      "policy_seconds": 0.0,
+      "total_execution_seconds": 52.14626409894483,
+      "evaluation_store_used": true,
+      "evaluation_cache_key": "09917ba4a92bc446877adf97",
+      "trajectory_config_sha256": "5926015C23C35070FE89B66705438DDE8B02253C42BDDE2B74D34EB0C23BCDF3",
+      "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+      "gt_version": "rendered_instance_mask_v1"
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S2",
+      "trajectory_name": "고도 점진 하강 접근",
+      "iteration": 0,
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02,
+      "person_ap50": 1.0,
+      "vehicle_ap50": 0.9858156028368794,
+      "map50": 0.9929078014184397,
+      "person_gt_count": 170,
+      "vehicle_gt_count": 141,
+      "person_detection_count": 172,
+      "vehicle_detection_count": 140,
+      "person_tp": 170,
+      "person_fp": 2,
+      "person_fn": 0,
+      "vehicle_tp": 139,
+      "vehicle_fp": 1,
+      "vehicle_fn": 2,
+      "total_tp": 309,
+      "total_fp": 3,
+      "total_fn": 2,
+      "precision": 0.9903846153846154,
+      "recall": 0.9935691318327974,
+      "person_precision": 0.9883720930232558,
+      "person_recall": 1.0,
+      "vehicle_precision": 0.9928571428571429,
+      "vehicle_recall": 0.9858156028368794,
+      "maximum_iou": 0.9946052604472041,
+      "mean_iou": 0.9436414591296793,
+      "verdict": "PASS",
+      "nonfail_anchor": null,
+      "fail_anchor": null,
+      "next_environment": null,
+      "next_condition_calculation": "independent_initial_condition_evaluation_before_search",
+      "simulation_seconds": 0.0263354,
+      "frame_rendering_seconds": 48.6035113,
+      "yolov8_inference_seconds": 4.491414500400424,
+      "metric_scoring_seconds": 0.0036657005548477173,
+      "policy_seconds": 0.0,
+      "total_execution_seconds": 53.12492690095527,
+      "evaluation_store_used": true,
+      "evaluation_cache_key": "4fa2c452c9b3217e0ad2702c",
+      "trajectory_config_sha256": "401342D194C445434F18A95F3A6CA2A844E2D4E587D49DEA3EFB73EC9F5F9F6E",
+      "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+      "gt_version": "rendered_instance_mask_v1"
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S3",
+      "trajectory_name": "남서-북동 대각선 통과",
+      "iteration": 0,
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02,
+      "person_ap50": 0.987012987012987,
+      "vehicle_ap50": 0.9850746268656716,
+      "map50": 0.9860438069393294,
+      "person_gt_count": 154,
+      "vehicle_gt_count": 134,
+      "person_detection_count": 153,
+      "vehicle_detection_count": 132,
+      "person_tp": 152,
+      "person_fp": 1,
+      "person_fn": 2,
+      "vehicle_tp": 132,
+      "vehicle_fp": 0,
+      "vehicle_fn": 2,
+      "total_tp": 284,
+      "total_fp": 1,
+      "total_fn": 4,
+      "precision": 0.9964912280701754,
+      "recall": 0.9861111111111112,
+      "person_precision": 0.9934640522875817,
+      "person_recall": 0.987012987012987,
+      "vehicle_precision": 1.0,
+      "vehicle_recall": 0.9850746268656716,
+      "maximum_iou": 0.9906987574071654,
+      "mean_iou": 0.9400880169976945,
+      "verdict": "PASS",
+      "nonfail_anchor": null,
+      "fail_anchor": null,
+      "next_environment": null,
+      "next_condition_calculation": "independent_initial_condition_evaluation_before_search",
+      "simulation_seconds": 0.0242348,
+      "frame_rendering_seconds": 46.9696163,
+      "yolov8_inference_seconds": 4.3617398999631405,
+      "metric_scoring_seconds": 0.0034231003373861313,
+      "policy_seconds": 0.0,
+      "total_execution_seconds": 51.35901410030053,
+      "evaluation_store_used": true,
+      "evaluation_cache_key": "e90544f67befd8826d828418",
+      "trajectory_config_sha256": "6D8116DE430379AF03C26E0F1DA6DC6AAA4F3749C74425BC01BD15C30022BCC6",
+      "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+      "gt_version": "rendered_instance_mask_v1"
+    },
+    {
+      "session_id": "kci_diverse_training_s0_s4_v1__20260903_011624_021544",
+      "scenario_id": "S4",
+      "trajectory_name": "원거리 시작 후 전방 접근",
+      "iteration": 0,
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02,
+      "person_ap50": 0.9709302325581395,
+      "vehicle_ap50": 0.9655172413793104,
+      "map50": 0.968223736968725,
+      "person_gt_count": 172,
+      "vehicle_gt_count": 29,
+      "person_detection_count": 167,
+      "vehicle_detection_count": 28,
+      "person_tp": 167,
+      "person_fp": 0,
+      "person_fn": 5,
+      "vehicle_tp": 28,
+      "vehicle_fp": 0,
+      "vehicle_fn": 1,
+      "total_tp": 195,
+      "total_fp": 0,
+      "total_fn": 6,
+      "precision": 1.0,
+      "recall": 0.9701492537313433,
+      "person_precision": 1.0,
+      "person_recall": 0.9709302325581395,
+      "vehicle_precision": 1.0,
+      "vehicle_recall": 0.9655172413793104,
+      "maximum_iou": 0.9915643617773817,
+      "mean_iou": 0.9044107955410021,
+      "verdict": "PASS",
+      "nonfail_anchor": null,
+      "fail_anchor": null,
+      "next_environment": null,
+      "next_condition_calculation": "independent_initial_condition_evaluation_before_search",
+      "simulation_seconds": 0.0287818,
+      "frame_rendering_seconds": 48.2072315,
+      "yolov8_inference_seconds": 4.2862308993935585,
+      "metric_scoring_seconds": 0.0024817995727062225,
+      "policy_seconds": 0.0,
+      "total_execution_seconds": 52.52472599896626,
+      "evaluation_store_used": true,
+      "evaluation_cache_key": "747098a5f35994c17088e627",
+      "trajectory_config_sha256": "24B44E97EF1D5F50A2FC370C5B1BCEDA959B649E230BCBD268536176979A19B0",
+      "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+      "gt_version": "rendered_instance_mask_v1"
+    }
+  ]
+}

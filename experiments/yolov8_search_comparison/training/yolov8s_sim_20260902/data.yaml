@@ -1,0 +1,6 @@
+path: C:\Users\lab\Counterfactual-XAI-Verifier\experiments\yolov8_search_comparison\training\yolov8s_sim_20260902\dataset
+train: images/train
+val: images/val
+names:
+  0: person
+  1: vehicle

@@ -1,0 +1,51 @@
+{
+  "created_at_utc": "2026-09-02T16:16:07.044164+00:00",
+  "training_summary_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537_training_summary.json",
+  "training_summary_sha256": "18BCB5631E674F02E9F6ECDF5FC2C98468EF74F1841E9FA1E14EA6DA4A9C378A",
+  "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537\\weights\\best.pt",
+  "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+  "fixed_plan_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\config\\multi_scenario_symmetric_plan_v2\\scenario_plan.json",
+  "fixed_plan_sha256": "800A57DC363644676BC0398FBE05611B425B32D78F5CFCD5F97E59F6099CD21A",
+  "fixed_scenario_root": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\multi_scenario_symmetric\\scenarios",
+  "render_and_gt_reuse_allowed": true,
+  "reuse_checks": [
+    {
+      "scenario_id": "S0",
+      "scenario_config_unchanged": true,
+      "manifest_unchanged": true,
+      "rendered_frame_count": 181,
+      "expected_rendered_frame_count": 181
+    },
+    {
+      "scenario_id": "S1",
+      "scenario_config_unchanged": true,
+      "manifest_unchanged": true,
+      "rendered_frame_count": 181,
+      "expected_rendered_frame_count": 181
+    },
+    {
+      "scenario_id": "S2",
+      "scenario_config_unchanged": true,
+      "manifest_unchanged": true,
+      "rendered_frame_count": 181,
+      "expected_rendered_frame_count": 181
+    },
+    {
+      "scenario_id": "S3",
+      "scenario_config_unchanged": true,
+      "manifest_unchanged": true,
+      "rendered_frame_count": 181,
+      "expected_rendered_frame_count": 181
+    },
+    {
+      "scenario_id": "S4",
+      "scenario_config_unchanged": true,
+      "manifest_unchanged": true,
+      "rendered_frame_count": 181,
+      "expected_rendered_frame_count": 181
+    }
+  ],
+  "old_detection_or_metric_cache_reuse_allowed": false,
+  "new_runs_root": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\evaluation\\runs",
+  "new_aggregated_root": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\evaluation\\aggregated"
+}

@@ -1,4 +1,4 @@
-function img = render_eo_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
+function [img, instance_bboxes] = render_eo_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size)
 % render_eo_image — EO 카메라 이미지 dispatcher (2D synthetic vs 3D capture).
 %
 % USE_3D=true 면 eo_camera_3d_render (진짜 3D 1인칭 시점 캡처),
@@ -11,6 +11,7 @@ function img = render_eo_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intr
 
 USE_3D         = true;   % toggle: true = 3D 1st person, false = 2D synthetic
 RENDER_EVERY_N = 1;      % capture every N frames in 3D mode (≥1)
+instance_bboxes = zeros(size(obs_xyz, 1), 4);
 
 persistent cached_img frame_counter
 if isempty(frame_counter), frame_counter = 0; end
@@ -24,9 +25,19 @@ end
 % 3D mode
 if isempty(cached_img) || mod(frame_counter, RENDER_EVERY_N) == 1 || RENDER_EVERY_N <= 1
     try
-        img = eo_camera_3d_render(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size);
+        if nargout > 1
+            [img, instance_bboxes] = eo_camera_3d_render( ...
+                uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size);
+        else
+            img = eo_camera_3d_render(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size);
+        end
         cached_img = img;
     catch ME
+        if nargout > 1
+            % Pixel-exact GT cannot be recovered from the legacy 2-D fallback.
+            % Fail loudly rather than silently exporting empty training labels.
+            rethrow(ME);
+        end
         warning("eo_camera_3d_render failed (%s); falling back to 2D", ME.message);
         img = render_camera_image(uav, obs_xyz, obs_rh, fog, illum, noise, cam_intrin, img_size);
         cached_img = img;
