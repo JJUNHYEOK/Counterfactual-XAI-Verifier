@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "IVS05",
+  "seed": 9705,
+  "split": "independent_direct_shap_variable_validation",
+  "duration_seconds": 18.0,
+  "total_frames": 181,
+  "trajectory": {
+    "name": "locked independent direct-Shapley trajectory IVS05",
+    "start_xyz": [
+      -36,
+      -20,
+      45
+    ],
+    "end_xyz": [
+      18,
+      -6,
+      51
+    ]
+  },
+  "camera": {
+    "boresight": "+x world axis, pitched downward",
+    "image_size": [
+      640,
+      360
+    ],
+    "intrinsics": [
+      600.0,
+      600.0,
+      320.0,
+      180.0,
+      48.0
+    ]
+  },
+  "objects": [
+    {
+      "object_id": 1,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        -8.0,
+        -13.0
+      ],
+      "radius_height": [
+        0.5192,
+        1.9824
+      ]
+    },
+    {
+      "object_id": 2,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        -5.2,
+        -11.2
+      ],
+      "radius_height": [
+        1.18,
+        1.6756
+      ]
+    },
+    {
+      "object_id": 3,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        14.0,
+        -9.0
+      ],
+      "radius_height": [
+        0.5782,
+        2.0768
+      ]
+    },
+    {
+      "object_id": 4,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        17.1,
+        -10.7
+      ],
+      "radius_height": [
+        1.3216,
+        1.7936
+      ]
+    },
+    {
+      "object_id": 5,
+      "class_id": 1,
+      "class_name": "person",
+      "xy": [
+        39.0,
+        -5.0
+      ],
+      "radius_height": [
+        0.6372,
+        2.1712
+      ]
+    },
+    {
+      "object_id": 6,
+      "class_id": 2,
+      "class_name": "vehicle",
+      "xy": [
+        42.4,
+        -3.4
+      ],
+      "radius_height": [
+        1.4632,
+        1.9116
+      ]
+    }
+  ],
+  "person_motion": {
+    "radius_m": 0.64,
+    "omega_rad_s": 0.9,
+    "phase_offset_rad": 3.1
+  },
+  "gt_version": "rendered_instance_mask_v1",
+  "terrain_condition": "fixed geometry_reference_v1 terrain; renderer does not expose a scenario-level terrain selector",
+  "diversity_factors": [
+    "near low ascending approach; largest planned objects",
+    "object_scale=1.18",
+    "camera_pitch=48"
+  ],
+  "selection_basis": "result-blind scene metadata only; no normal or degraded mAP used"
+}

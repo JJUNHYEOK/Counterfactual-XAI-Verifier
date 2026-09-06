@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "locked_at_utc": "2026-09-06T07:48:00.393326+00:00",
+  "status": "LOCKED_BEFORE_ANY_INDEPENDENT_RESULT",
+  "scene_count": 10,
+  "conditions_per_scene": 11,
+  "total_conditions": 110,
+  "technical_requirements": [
+    "all 110 results and completion manifests verified",
+    "all scene/config/environment/weight/evaluation hashes match",
+    "protected-file mismatches=0",
+    "exact Shapley additivity and independent permutation recalculation pass"
+  ],
+  "scene_rule": {
+    "shapley_top_tolerance": 1e-12,
+    "actual_tie_tolerance_map": 0.01,
+    "MATCH": "actual first exceeds second by >0.01 mAP and the unique Shapley top is the actual top",
+    "INCONCLUSIVE": "actual first-second difference <=0.01 mAP or the Shapley top is not unique within 1e-12",
+    "MISMATCH": "a variable other than the unique Shapley top causes >0.01 mAP more degradation"
+  },
+  "overall_rule": {
+    "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS": "technical requirements pass and MATCH>=7 of 10",
+    "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL": "technical requirements pass, MATCH<7, and at least one MISMATCH",
+    "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE": "technical requirements pass, MATCH<7, MISMATCH=0, and the shortfall is due only to INCONCLUSIVE scenes",
+    "TECHNICAL_INCOMPLETE": "any technical requirement is incomplete or fails"
+  },
+  "auxiliary_only": [
+    "direction agreement",
+    "per-scene and aggregate Spearman rank correlation"
+  ],
+  "post_result_rule_changes_forbidden": true
+}

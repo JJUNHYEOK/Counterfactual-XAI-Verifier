@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "validated_at_utc": "2026-09-06T07:48:19.409641+00:00",
+  "status": "MOCK_VALIDATION_PASS",
+  "tests": [
+    {
+      "test": "exact_shapley_two_independent_algorithms_and_additivity",
+      "passed": true,
+      "scores": {
+        "fog": 0.10999999999999997,
+        "illumination": 0.04999999999999998,
+        "noise": 0.03999999999999997
+      },
+      "expected": {
+        "fog": 0.11,
+        "illumination": 0.05,
+        "noise": 0.04
+      },
+      "subset_terms": 12,
+      "permutation_terms": 18
+    },
+    {
+      "test": "scene_gate_statuses",
+      "passed": true,
+      "statuses": [
+        "MATCH",
+        "INCONCLUSIVE",
+        "MISMATCH",
+        "INCONCLUSIVE"
+      ]
+    },
+    {
+      "test": "overall_gate_statuses",
+      "passed": true,
+      "actual": {
+        "pass": "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS",
+        "fail": "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL",
+        "inconclusive": "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE",
+        "technical": "TECHNICAL_INCOMPLETE"
+      },
+      "expected": {
+        "pass": "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS",
+        "fail": "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL",
+        "inconclusive": "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE",
+        "technical": "TECHNICAL_INCOMPLETE"
+      }
+    },
+    {
+      "test": "supervisor_six_case_safety",
+      "passed": true,
+      "cases": [
+        {
+          "case": "direct_worker",
+          "eligible": true,
+          "expected": true,
+          "passed": true,
+          "reason": "direct Popen identity matched",
+          "real_process_termination_performed": false
+        },
+        {
+          "case": "other_repository_python",
+          "eligible": false,
+          "expected": false,
+          "passed": true,
+          "reason": "no direct Popen handle",
+          "real_process_termination_performed": false
+        },
+        {
+          "case": "new_unowned_python",
+          "eligible": false,
+          "expected": false,
+          "passed": true,
+          "reason": "no direct Popen handle",
+          "real_process_termination_performed": false
+        },
+        {
+          "case": "unowned_matlab",
+          "eligible": false,
+          "expected": false,
+          "passed": true,
+          "reason": "no direct Popen handle",
+          "real_process_termination_performed": false
+        },
+        {
+          "case": "same_pid_different_creation",
+          "eligible": false,
+          "expected": false,
+          "passed": true,
+          "reason": "creation-time mismatch",
+          "real_process_termination_performed": false
+        },
+        {
+          "case": "insufficient_identity",
+          "eligible": false,
+          "expected": false,
+          "passed": true,
+          "reason": "identity information incomplete",
+          "real_process_termination_performed": false
+        }
+      ]
+    }
+  ],
+  "real_process_termination_performed": false,
+  "matlab_started": false,
+  "rendering_started": false,
+  "yolo_started": false
+}

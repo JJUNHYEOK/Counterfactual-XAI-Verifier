@@ -1,0 +1,466 @@
+{
+  "schema_version": "1.0",
+  "validated_at_utc": "2026-09-06T07:53:58.860955+00:00",
+  "status": "STATIC_VALIDATION_PASS",
+  "checks": [
+    {
+      "check": "python_compile",
+      "passed": true,
+      "evidence": [
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\build_preparation.py",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\independent_validation_worker.py",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\run_independent_validation_managed.py",
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\static_validate.py"
+      ]
+    },
+    {
+      "check": "forbidden_imports_absent",
+      "passed": true,
+      "evidence": {
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\build_preparation.py": [],
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\independent_validation_worker.py": [],
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\run_independent_validation_managed.py": [],
+        "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\static_validate.py": []
+      }
+    },
+    {
+      "check": "worker_import_has_no_scientific_execution_module",
+      "passed": true,
+      "evidence": [
+        "__future__",
+        "argparse",
+        "csv",
+        "hashlib",
+        "itertools",
+        "json",
+        "math",
+        "os",
+        "subprocess",
+        "sys",
+        "time",
+        "traceback",
+        "datetime",
+        "pathlib",
+        "typing"
+      ]
+    },
+    {
+      "check": "powershell_syntax",
+      "passed": true,
+      "evidence": {
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      }
+    },
+    {
+      "check": "fixed_p",
+      "passed": true,
+      "evidence": {
+        "fog_percent": 5.0,
+        "illumination_lux": 12000.0,
+        "camera_noise": 0.02
+      }
+    },
+    {
+      "check": "fixed_q",
+      "passed": true,
+      "evidence": {
+        "fog_percent": 76.0,
+        "illumination_lux": 2450.0,
+        "camera_noise": 0.49
+      }
+    },
+    {
+      "check": "no_rf_surrogate_virtual_map",
+      "passed": true,
+      "evidence": false
+    },
+    {
+      "check": "scenario_count_and_ids",
+      "passed": true,
+      "evidence": [
+        "IVS00",
+        "IVS01",
+        "IVS02",
+        "IVS03",
+        "IVS04",
+        "IVS05",
+        "IVS06",
+        "IVS07",
+        "IVS08",
+        "IVS09"
+      ]
+    },
+    {
+      "check": "excluded_scenes_not_used",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "check": "result_blind_and_unique_scenes",
+      "passed": true,
+      "evidence": 10
+    },
+    {
+      "check": "scenario_static_schema_geometry_and_hash",
+      "passed": true,
+      "evidence": {
+        "terrain_bounds": {
+          "x_min": -100.0,
+          "x_max": 100.0,
+          "y_min": -100.0,
+          "y_max": 100.0,
+          "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\geometry_reference_v1.mat",
+          "sha256": "DE9CCEA4CECA2364B3ADC25547BEC4514EF3829507C315CCD2282C01C953BFC5"
+        },
+        "scenarios": [
+          {
+            "scenario_id": "IVS00",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS01",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS02",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS03",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": false,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS04",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS05",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS06",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS07",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS08",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          },
+          {
+            "scenario_id": "IVS09",
+            "within_renderer_geometry": true,
+            "within_prior_observed_metadata_envelope_auxiliary": true,
+            "object_schema_valid": true,
+            "file_hash_ok": true
+          }
+        ],
+        "note": "prior observed metadata envelope is auxiliary, not a renderer hard bound"
+      }
+    },
+    {
+      "check": "scenario_structures_unique",
+      "passed": true,
+      "evidence": [
+        "28D5AB407243419C523F7E7883911CA70C24F6AC3149163EB842D6E979FE5BEE",
+        "F75BA504736828AFB43B0BAC07B29CEF52E69899B12D489E102D37CEB4FE62EF",
+        "F03CF1FBD7776F7529D58EBDF8E3796AA0F7CCD64A5EED39961A19B3CA6F0640",
+        "40ABC8EEB79DDEEED458A0C127F41147A4944EC6F9C08BFB9FB9FD671E5CF46B",
+        "16833C4D3258606EC876AEC42FE655684905AE5E2C439A66A3DDA50A27AE1825",
+        "83B4D1DECFD84FFBCBB2331D9BA57C99A42F7E82D80E9E18FC01A4E2BA0EEC2D",
+        "6401C835F035CE2EB7583E1B82FD1C4F8B20D94674998E3D3A585D2437302A11",
+        "817E191DCD5A0B42EA7E460994C255E182A6026091FF7B9B5707EACD22BE1E9E",
+        "C4FDAD79D1F2F5788EE9B5BAC8144FAE3F7AAA85411661314DB5EF973D164171",
+        "CE762846F54109D6E608DC5DF1E71AAB6A1E3E30308B396D92925854035B5343"
+      ]
+    },
+    {
+      "check": "condition_count_unique",
+      "passed": true,
+      "evidence": 110
+    },
+    {
+      "check": "condition_roles_values_and_uniqueness",
+      "passed": true,
+      "evidence": [
+        {
+          "scenario_id": "IVS00",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS01",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS02",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS03",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS04",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS05",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS06",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS07",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS08",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        },
+        {
+          "scenario_id": "IVS09",
+          "count": 11,
+          "cube_ok": true,
+          "validation_ok": true,
+          "unique_environment_count": true
+        }
+      ]
+    },
+    {
+      "check": "no_reuse_candidates",
+      "passed": true,
+      "evidence": 0
+    },
+    {
+      "check": "logical_frame_count",
+      "passed": true,
+      "evidence": 19910
+    },
+    {
+      "check": "mock_tests",
+      "passed": true,
+      "evidence": [
+        {
+          "test": "exact_shapley_two_independent_algorithms_and_additivity",
+          "passed": true,
+          "scores": {
+            "fog": 0.10999999999999997,
+            "illumination": 0.04999999999999998,
+            "noise": 0.03999999999999997
+          },
+          "expected": {
+            "fog": 0.11,
+            "illumination": 0.05,
+            "noise": 0.04
+          },
+          "subset_terms": 12,
+          "permutation_terms": 18
+        },
+        {
+          "test": "scene_gate_statuses",
+          "passed": true,
+          "statuses": [
+            "MATCH",
+            "INCONCLUSIVE",
+            "MISMATCH",
+            "INCONCLUSIVE"
+          ]
+        },
+        {
+          "test": "overall_gate_statuses",
+          "passed": true,
+          "actual": {
+            "pass": "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS",
+            "fail": "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL",
+            "inconclusive": "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE",
+            "technical": "TECHNICAL_INCOMPLETE"
+          },
+          "expected": {
+            "pass": "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS",
+            "fail": "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL",
+            "inconclusive": "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE",
+            "technical": "TECHNICAL_INCOMPLETE"
+          }
+        },
+        {
+          "test": "supervisor_six_case_safety",
+          "passed": true,
+          "cases": [
+            {
+              "case": "direct_worker",
+              "eligible": true,
+              "expected": true,
+              "passed": true,
+              "reason": "direct Popen identity matched",
+              "real_process_termination_performed": false
+            },
+            {
+              "case": "other_repository_python",
+              "eligible": false,
+              "expected": false,
+              "passed": true,
+              "reason": "no direct Popen handle",
+              "real_process_termination_performed": false
+            },
+            {
+              "case": "new_unowned_python",
+              "eligible": false,
+              "expected": false,
+              "passed": true,
+              "reason": "no direct Popen handle",
+              "real_process_termination_performed": false
+            },
+            {
+              "case": "unowned_matlab",
+              "eligible": false,
+              "expected": false,
+              "passed": true,
+              "reason": "no direct Popen handle",
+              "real_process_termination_performed": false
+            },
+            {
+              "case": "same_pid_different_creation",
+              "eligible": false,
+              "expected": false,
+              "passed": true,
+              "reason": "creation-time mismatch",
+              "real_process_termination_performed": false
+            },
+            {
+              "case": "insufficient_identity",
+              "eligible": false,
+              "expected": false,
+              "passed": true,
+              "reason": "identity information incomplete",
+              "real_process_termination_performed": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "check": "source_manifest_hashes",
+      "passed": true,
+      "evidence": {
+        "records": 38,
+        "mismatches": []
+      }
+    },
+    {
+      "check": "protected_129_unchanged",
+      "passed": true,
+      "evidence": {
+        "records": 129,
+        "mismatches": []
+      }
+    },
+    {
+      "check": "locked_gate_thresholds",
+      "passed": true,
+      "evidence": {
+        "schema_version": "1.0",
+        "locked_at_utc": "2026-09-06T07:48:00.393326+00:00",
+        "status": "LOCKED_BEFORE_ANY_INDEPENDENT_RESULT",
+        "scene_count": 10,
+        "conditions_per_scene": 11,
+        "total_conditions": 110,
+        "technical_requirements": [
+          "all 110 results and completion manifests verified",
+          "all scene/config/environment/weight/evaluation hashes match",
+          "protected-file mismatches=0",
+          "exact Shapley additivity and independent permutation recalculation pass"
+        ],
+        "scene_rule": {
+          "shapley_top_tolerance": 1e-12,
+          "actual_tie_tolerance_map": 0.01,
+          "MATCH": "actual first exceeds second by >0.01 mAP and the unique Shapley top is the actual top",
+          "INCONCLUSIVE": "actual first-second difference <=0.01 mAP or the Shapley top is not unique within 1e-12",
+          "MISMATCH": "a variable other than the unique Shapley top causes >0.01 mAP more degradation"
+        },
+        "overall_rule": {
+          "INDEPENDENT_SHAP_VARIABLE_SELECTION_PASS": "technical requirements pass and MATCH>=7 of 10",
+          "INDEPENDENT_SHAP_VARIABLE_SELECTION_FAIL": "technical requirements pass, MATCH<7, and at least one MISMATCH",
+          "INDEPENDENT_SHAP_VARIABLE_SELECTION_INCONCLUSIVE": "technical requirements pass, MATCH<7, MISMATCH=0, and the shortfall is due only to INCONCLUSIVE scenes",
+          "TECHNICAL_INCOMPLETE": "any technical requirement is incomplete or fails"
+        },
+        "auxiliary_only": [
+          "direction agreement",
+          "per-scene and aggregate Spearman rank correlation"
+        ],
+        "post_result_rule_changes_forbidden": true
+      }
+    },
+    {
+      "check": "output_absent_and_no_execution",
+      "passed": true,
+      "evidence": {
+        "output_exists": false,
+        "matlab_or_yolo_invoked_by_validator": false
+      }
+    }
+  ],
+  "matlab_started": false,
+  "rendering_started": false,
+  "yolo_started": false,
+  "actual_shapley_started": false
+}

@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0",
+  "locked_at_utc": "2026-09-06T07:48:00.393326+00:00",
+  "status": "LOCKED_BEFORE_ANY_INDEPENDENT_RESULT",
+  "worktree": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k",
+  "git_branch": "kci",
+  "scenes": [
+    {
+      "scenario_id": "IVS00",
+      "seed": 9700,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS00.json",
+      "scenario_config_sha256": "A02D2B09243FA03AAB42F67D2C5DBB011F609D2449CE2052CA3B5A4E8212CC46",
+      "structure_sha256": "28D5AB407243419C523F7E7883911CA70C24F6AC3149163EB842D6E979FE5BEE"
+    },
+    {
+      "scenario_id": "IVS01",
+      "seed": 9701,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS01.json",
+      "scenario_config_sha256": "8ABD032BE8118706CCDF421DD1F9D70A04506B66EABEA5C039FA3F390A867CE4",
+      "structure_sha256": "F75BA504736828AFB43B0BAC07B29CEF52E69899B12D489E102D37CEB4FE62EF"
+    },
+    {
+      "scenario_id": "IVS02",
+      "seed": 9702,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS02.json",
+      "scenario_config_sha256": "B7912B5EA7C149D70D15AEADA1A9B8F48562A3F8A56307274E698AE4E42C2B19",
+      "structure_sha256": "F03CF1FBD7776F7529D58EBDF8E3796AA0F7CCD64A5EED39961A19B3CA6F0640"
+    },
+    {
+      "scenario_id": "IVS03",
+      "seed": 9703,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS03.json",
+      "scenario_config_sha256": "65E196E6E87509B0A849C848C8B42E43A04E69E5A0E25ED4EFF43B30A00D58FB",
+      "structure_sha256": "40ABC8EEB79DDEEED458A0C127F41147A4944EC6F9C08BFB9FB9FD671E5CF46B"
+    },
+    {
+      "scenario_id": "IVS04",
+      "seed": 9704,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS04.json",
+      "scenario_config_sha256": "9A8968E48B601331184BDD6DAA7FE41772BCDE8723B14893DFFCA61D05F693C7",
+      "structure_sha256": "16833C4D3258606EC876AEC42FE655684905AE5E2C439A66A3DDA50A27AE1825"
+    },
+    {
+      "scenario_id": "IVS05",
+      "seed": 9705,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS05.json",
+      "scenario_config_sha256": "63334935D541E95406DE1EC8DA15E849A6ED2DA51BD7C4A08946A479DC7CDBAC",
+      "structure_sha256": "83B4D1DECFD84FFBCBB2331D9BA57C99A42F7E82D80E9E18FC01A4E2BA0EEC2D"
+    },
+    {
+      "scenario_id": "IVS06",
+      "seed": 9706,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS06.json",
+      "scenario_config_sha256": "9B9904D2B6A192374C9A6A1390BADEA26B1668D5F92C4A8064219C1133919E74",
+      "structure_sha256": "6401C835F035CE2EB7583E1B82FD1C4F8B20D94674998E3D3A585D2437302A11"
+    },
+    {
+      "scenario_id": "IVS07",
+      "seed": 9707,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS07.json",
+      "scenario_config_sha256": "E209512FDD98B5EA649E685969EE2DCDFF15EBFF399212DB2972C3BD88F10832",
+      "structure_sha256": "817E191DCD5A0B42EA7E460994C255E182A6026091FF7B9B5707EACD22BE1E9E"
+    },
+    {
+      "scenario_id": "IVS08",
+      "seed": 9708,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS08.json",
+      "scenario_config_sha256": "DF66D907A5718F48ECE3C7C23C419068F70FF65D6DBF776771F0D89F6B35E003",
+      "structure_sha256": "C4FDAD79D1F2F5788EE9B5BAC8144FAE3F7AAA85411661314DB5EF973D164171"
+    },
+    {
+      "scenario_id": "IVS09",
+      "seed": 9709,
+      "scenario_config_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\scenario_configs\\IVS09.json",
+      "scenario_config_sha256": "00C6F1350C5382340E111772ED5196A1516C4106DCBED41D49F2149D9B8954CD",
+      "structure_sha256": "CE762846F54109D6E608DC5DF1E71AAB6A1E3E30308B396D92925854035B5343"
+    }
+  ],
+  "P": {
+    "fog_percent": 5.0,
+    "illumination_lux": 12000.0,
+    "camera_noise": 0.02
+  },
+  "Q": {
+    "fog_percent": 76.0,
+    "illumination_lux": 2450.0,
+    "camera_noise": 0.49
+  },
+  "validation_severity": 0.7,
+  "validation_conditions": {
+    "fog": {
+      "fog_percent": 70.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.02
+    },
+    "illumination": {
+      "fog_percent": 5.0,
+      "illumination_lux": 4640.0,
+      "camera_noise": 0.02
+    },
+    "noise": {
+      "fog_percent": 5.0,
+      "illumination_lux": 12000.0,
+      "camera_noise": 0.42
+    }
+  },
+  "severity_transform": {
+    "fog": "fog_percent/100",
+    "illumination": "(15000-illumination_lux)/14800",
+    "noise": "camera_noise/0.6"
+  },
+  "renderer_transfer": {
+    "fog": "fog_norm=clip(fog_percent/100,0,1); blend weight=0.85*fog_norm",
+    "illumination": "low_light=max(0,(3000-lux)/3000); multiplier=max(0.10,1-0.85*low_light)",
+    "noise": "noise_amplitude=0.40*camera_noise",
+    "P": {
+      "fog_norm": 0.05,
+      "low_light": 0.0,
+      "illumination_multiplier": 1.0,
+      "noise_amplitude": 0.008
+    },
+    "Q": {
+      "fog_norm": 0.76,
+      "low_light": 0.18333333333333332,
+      "illumination_multiplier": 0.8441666666666667,
+      "noise_amplitude": 0.196
+    },
+    "validation": {
+      "fog": {
+        "fog_norm": 0.7,
+        "low_light": 0.0,
+        "illumination_multiplier": 1.0,
+        "noise_amplitude": 0.008
+      },
+      "illumination": {
+        "fog_norm": 0.05,
+        "low_light": 0.0,
+        "illumination_multiplier": 1.0,
+        "noise_amplitude": 0.008
+      },
+      "noise": {
+        "fog_norm": 0.05,
+        "low_light": 0.0,
+        "illumination_multiplier": 1.0,
+        "noise_amplitude": 0.168
+      }
+    }
+  },
+  "exact_shapley": {
+    "function": "D(S)=mAP(P)-mAP(x_S)",
+    "variables_in_mask_order": [
+      "fog",
+      "illumination",
+      "noise"
+    ],
+    "coalitions": 8,
+    "formula": "phi_i=sum_{S subseteq N\\{i}} |S|!(3-|S|-1)!/3! * [D(S union {i})-D(S)]",
+    "independent_recalculation": "mean marginal contribution across all 3!=6 permutations",
+    "positive_means": "actual mAP degradation",
+    "sign_preserved": true,
+    "additivity_and_cross_calculation_tolerance": 1e-12
+  },
+  "detector": {
+    "architecture": "YOLOv8s",
+    "model_seed": 42,
+    "weights_path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\diverse_training_scenario_split\\training\\diverse_training_scenario_split_v2\\diverse_yolov8s_seed42__20260903_010327_583537\\weights\\best.pt",
+    "weights_sha256": "E141B3DC0104CBC03AD2EE573FFA451C369C9D93D8690E560E07C146078F5D9E",
+    "input_size": 640,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.7,
+    "ap_iou_threshold": 0.5,
+    "batch_size": 16,
+    "device": "cuda:0"
+  },
+  "source_files": {
+    "evaluation_core": {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\shap_counterfactual_boundary_v3\\evaluation_core.py",
+      "sha256": "DD655170A6CEEF39FACE2E5DD53B57495051F442C6A1828243386CC663A1D2DE"
+    },
+    "renderer": {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\shap_counterfactual_boundary_v3\\matlab\\eo_camera_3d_render.m",
+      "sha256": "1358E799BAC65E4EDE732FE708803E909240B56624D81A583BDC783651D7C474"
+    },
+    "exporter": {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\shap_counterfactual_boundary_v3\\matlab\\export_v3_scenario_frames.m",
+      "sha256": "F910BFF8B9156A4D5337FEC9FD394947AAA9A10E509BBAFA1E5F4697F496A0A8"
+    },
+    "render_effects": {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\shap_counterfactual_boundary_v3\\matlab\\render_eo_image.m",
+      "sha256": "51D01F060E90681A163F6FB4FB70D824B29DD19C94F3035ACBAF830E47B38CB6"
+    },
+    "geometry_reference": {
+      "path": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\experiments\\yolov8_search_comparison\\geometry_reference_v1.mat",
+      "sha256": "DE9CCEA4CECA2364B3ADC25547BEC4514EF3829507C315CCD2282C01C953BFC5"
+    }
+  },
+  "execution": {
+    "account": "DESKTOP-CMOIPGE\\lab",
+    "MATLAB_PREFDIR_must_be_absent": true,
+    "matlab_options": "-nodesktop -nosplash",
+    "matlab_startup_timeout_seconds": 300,
+    "render_timeout_per_condition_seconds": 300,
+    "yolo_timeout_per_condition_seconds": 120,
+    "condition_timeout_seconds": 420,
+    "overall_timeout_seconds": 14400,
+    "automatic_retry": false,
+    "unrelated_process_termination": false
+  },
+  "logical_conditions": 110,
+  "frames_per_condition": 181,
+  "logical_frames": 19910,
+  "reuse_candidates": 0,
+  "measured_cost_basis": {
+    "source_stage_events": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\pilot_run_001\\stage_events.jsonl",
+    "source_completed_conditions": 33,
+    "source_new_renders": 30,
+    "source_elapsed_minutes": 42.94495885,
+    "linear_runtime_estimate_minutes_for_110_new": 157.46484911666667,
+    "reported_runtime_range_hours": [
+      2.3,
+      3.2
+    ],
+    "hard_overall_timeout_seconds": 14400,
+    "source_render_cache_directories": 30,
+    "source_median_render_bytes": 79587161,
+    "median_storage_estimate_gb_for_110": 8.153345165774226,
+    "conservative_storage_planning_gb": 11.0
+  },
+  "excluded_scenes": [
+    "DTR0",
+    "F02",
+    "F09",
+    "H00-H09",
+    "G00-G04",
+    "all previously rendered training/validation/test scenario IDs"
+  ],
+  "scientific_scope": "independent validation of direct exact-Shapley top-variable selection only; no boundary-search efficiency comparison",
+  "RF_or_surrogate_or_virtual_map_used": false,
+  "pre_result_technical_revision": {
+    "revision": 2,
+    "reason": "lock the geometry file actually loaded by the unchanged MATLAB exporter; no scene, environment, gate, model, or result changed",
+    "previous_files_preserved_at": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\preparation_revision_history\\attempt_001"
+  }
+}

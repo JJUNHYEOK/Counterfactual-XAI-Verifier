@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "created_at_utc": "2026-09-06T07:52:34.645454+00:00",
+  "revision": 2,
+  "status": "PRE_RESULT_TECHNICAL_REVISION",
+  "reason": "The first static validator treated a prior observed metadata envelope as a renderer hard bound. The unchanged exporter has no such object-coordinate bound and loads a -100..100 m terrain grid. The actual geometry input was also added to the source lock.",
+  "scientific_changes": [],
+  "unchanged": [
+    "ten scene configurations",
+    "P",
+    "Q",
+    "three severity-0.70 validation conditions",
+    "110-condition set",
+    "Shapley formula",
+    "0.01 tie rule",
+    "7/10 gate",
+    "YOLO weights and evaluator"
+  ],
+  "mechanical_changes": [
+    "static validator uses actual geometry grid bounds",
+    "geometry-reference hash added to settings, source manifest, and condition setting identities"
+  ],
+  "original_files_preserved_at": "C:\\Users\\lab\\Counterfactual-XAI-Verifier\\.k\\final_kci_direct_yolo_shap_v1\\independent_shap_variable_validation_v1_preparation\\preparation_revision_history\\attempt_001",
+  "matlab_render_yolo_shap_executed": false
+}
